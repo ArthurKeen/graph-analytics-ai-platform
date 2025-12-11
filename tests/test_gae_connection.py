@@ -3,6 +3,7 @@
 import pytest
 from unittest.mock import patch, MagicMock, Mock
 from datetime import datetime, timedelta
+import time
 
 from graph_analytics_ai.gae_connection import (
     GAEManager,
@@ -172,6 +173,118 @@ class TestGenAIGAEConnection:
         
         assert token == 'test-jwt-token'
         assert connection.jwt_token == 'test-jwt-token'
+    
+    @patch('graph_analytics_ai.gae_connection.get_arango_config')
+    def test_ensure_service_reuses_existing(self, mock_get_config, mock_env_self_managed):
+        """Test ensure_service reuses an existing DEPLOYED service."""
+        mock_config = {
+            'endpoint': 'https://test.local:8529',
+            'user': 'root',
+            'password': 'testpass',
+            'database': 'testdb'
+        }
+        mock_get_config.return_value = mock_config
+        
+        connection = GenAIGAEConnection()
+        
+        # Mock list_services to return a deployed service
+        connection.list_services = MagicMock(return_value=[
+            {'serviceId': 's1', 'status': 'FAILED', 'type': 'gral'},
+            {'serviceId': 's2', 'status': 'DEPLOYED', 'type': 'gral'}
+        ])
+        
+        # Mock health checks
+        connection._get_engine_url = MagicMock(return_value="https://test.local:8529/gral/s2")
+        connection.get_engine_version = MagicMock(return_value={'version': '1.0'})
+        connection.start_engine = MagicMock()  # Should not be called
+        
+        service_id = connection.ensure_service(reuse_existing=True)
+        
+        assert service_id == 's2'
+        assert connection.engine_id == 's2'
+        connection.start_engine.assert_not_called()
+        connection.get_engine_version.assert_called_once()
+        
+    @patch('graph_analytics_ai.gae_connection.get_arango_config')
+    def test_ensure_service_starts_new_if_none_exist(self, mock_get_config, mock_env_self_managed):
+        """Test ensure_service starts a new service if no suitable existing one is found."""
+        mock_config = {
+            'endpoint': 'https://test.local:8529',
+            'user': 'root',
+            'password': 'testpass',
+            'database': 'testdb'
+        }
+        mock_get_config.return_value = mock_config
+        
+        connection = GenAIGAEConnection()
+        
+        # Mock list_services to return no deployed services
+        connection.list_services = MagicMock(return_value=[
+            {'serviceId': 's1', 'status': 'FAILED', 'type': 'gral'}
+        ])
+        
+        # Mock start_engine and health checks
+        connection.start_engine = MagicMock(return_value='new-service-id')
+        connection._get_engine_url = MagicMock(return_value="https://test.local:8529/gral/new-service-id")
+        connection.get_engine_version = MagicMock(return_value={'version': '1.0'})
+        
+        service_id = connection.ensure_service(reuse_existing=True)
+        
+        assert service_id == 'new-service-id'
+        connection.start_engine.assert_called_once()
+        
+    @patch('graph_analytics_ai.gae_connection.get_arango_config')
+    def test_ensure_service_starts_new_if_reuse_disabled(self, mock_get_config, mock_env_self_managed):
+        """Test ensure_service starts a new service if reuse_existing=False."""
+        mock_config = {
+            'endpoint': 'https://test.local:8529',
+            'user': 'root',
+            'password': 'testpass',
+            'database': 'testdb'
+        }
+        mock_get_config.return_value = mock_config
+        
+        connection = GenAIGAEConnection()
+        
+        # Mock list_services (should not be called if reuse is False, or result ignored)
+        connection.list_services = MagicMock(return_value=[
+            {'serviceId': 's2', 'status': 'DEPLOYED', 'type': 'gral'}
+        ])
+        
+        connection.start_engine = MagicMock(return_value='new-service-id')
+        connection._get_engine_url = MagicMock(return_value="https://test.local:8529/gral/new-service-id")
+        connection.get_engine_version = MagicMock(return_value={'version': '1.0'})
+        
+        service_id = connection.ensure_service(reuse_existing=False)
+        
+        assert service_id == 'new-service-id'
+        connection.start_engine.assert_called_once()
+        
+    @patch('graph_analytics_ai.gae_connection.get_arango_config')
+    def test_ensure_service_waits_for_ready(self, mock_get_config, mock_env_self_managed):
+        """Test ensure_service retries health check until ready."""
+        mock_config = {
+            'endpoint': 'https://test.local:8529',
+            'user': 'root',
+            'password': 'testpass',
+            'database': 'testdb'
+        }
+        mock_get_config.return_value = mock_config
+        
+        connection = GenAIGAEConnection()
+        connection.list_services = MagicMock(return_value=[
+             {'serviceId': 's1', 'status': 'DEPLOYED', 'type': 'gral'}
+        ])
+        connection._get_engine_url = MagicMock(return_value="https://test.local:8529/gral/s1")
+        
+        # First call fails, second succeeds
+        connection.get_engine_version = MagicMock(side_effect=[Exception("Not ready"), {'version': '1.0'}])
+        
+        with patch('time.sleep', return_value=None):  # Skip sleep delay
+            service_id = connection.ensure_service(reuse_existing=True, max_retries=5)
+            
+        assert service_id == 's1'
+        assert connection.get_engine_version.call_count == 2
 
 
 class TestGetGAEConnection:
@@ -209,4 +322,3 @@ class TestGetGAEConnection:
         with patch('graph_analytics_ai.gae_connection.GenAIGAEConnection') as mock_connection:
             connection = get_gae_connection()
             mock_connection.assert_called_once()
-

@@ -567,7 +567,8 @@ class GenAIGAEConnection(GAEConnectionBase):
         db_user: Optional[str] = None,
         db_password: Optional[str] = None,
         timeout: int = DEFAULT_TIMEOUT,
-        verify_ssl: bool = False
+        verify_ssl: bool = False,
+        auto_reuse_services: bool = True
     ):
         """
         Initialize GenAI GAE Connection.
@@ -579,6 +580,7 @@ class GenAIGAEConnection(GAEConnectionBase):
             db_password: Database password
             timeout: Request timeout in seconds
             verify_ssl: Verify SSL certificates (False for self-signed)
+            auto_reuse_services: Automatically reuse existing services (default: True)
         """
         # Get config from environment or parameters
         arango_config = get_arango_config()
@@ -593,6 +595,7 @@ class GenAIGAEConnection(GAEConnectionBase):
             verify_ssl_str = os.getenv('ARANGO_VERIFY_SSL', 'false').lower()
             verify_ssl = verify_ssl_str in ('true', '1', 'yes')
         self.verify_ssl = verify_ssl
+        self.auto_reuse_services = auto_reuse_services
         
         # Security warning if SSL verification is disabled
         if not self.verify_ssl:
@@ -777,6 +780,80 @@ class GenAIGAEConnection(GAEConnectionBase):
             print(f"Failed to stop engine: {e}")
             return False
     
+    def ensure_service(
+        self,
+        size_id: str = 'e8',
+        reuse_existing: bool = True,
+        wait_for_ready: bool = True,
+        max_retries: int = 60,
+        retry_interval: int = 2
+    ) -> str:
+        """
+        Ensure a GAE service is available, reusing existing if possible.
+        
+        This method intelligently manages GAE services by:
+        1. Checking for existing DEPLOYED GRAL services
+        2. Reusing them if found (avoids 404 errors)
+        3. Starting a new service if needed
+        4. Waiting for service API to be ready
+        
+        Args:
+            size_id: Engine size (e.g., 'e8', 'e16') - used only if starting new service
+            reuse_existing: If True, reuse existing DEPLOYED services (default: True)
+            wait_for_ready: If True, wait for service API health check (default: True)
+            max_retries: Maximum health check attempts (default: 60 = 120 seconds)
+            retry_interval: Seconds between health checks (default: 2)
+            
+        Returns:
+            Service ID of the ready service
+        """
+        service_id = None
+        
+        # 1. Try to reuse existing service
+        if reuse_existing:
+            print("Checking for existing GAE services...")
+            try:
+                services = self.list_services()
+                
+                # Filter for DEPLOYED GRAL services
+                for service in services:
+                    if (service.get('status') == 'DEPLOYED' and 
+                        service.get('type') == 'gral'):
+                        service_id = service.get('serviceId')
+                        print(f"Found existing DEPLOYED service: {service_id}")
+                        self.engine_id = service_id
+                        break
+            except Exception as e:
+                print(f"Warning: Failed to list services: {e}")
+        
+        # 2. Start new service if needed
+        if not service_id:
+            print("No suitable existing service found. Starting new one...")
+            # Note: start_engine doesn't currently support size_id for GenAI
+            # but we keep the parameter for future compatibility
+            service_id = self.start_engine()
+        
+        # 3. Wait for service to be ready
+        if wait_for_ready:
+            print(f"Waiting for service {service_id} to be ready...")
+            
+            for i in range(max_retries):
+                try:
+                    # Test connection by checking version
+                    self._get_engine_url()  # Ensures URL is constructed correctly
+                    self.get_engine_version()
+                    print(f"✓ Service {service_id} is ready")
+                    return service_id
+                except Exception:
+                    if i % 5 == 0:  # Log every 5th attempt to avoid spam
+                        print(f"  Waiting for API... ({i+1}/{max_retries})")
+                    time.sleep(retry_interval)
+            
+            # If we get here, we timed out
+            print(f"Warning: Service {service_id} did not become ready after {max_retries*retry_interval}s")
+        
+        return service_id
+
     def delete_engine(self, engine_id: Optional[str] = None) -> Dict[str, Any]:
         """Delete engine (alias for stop_engine)."""
         service_id = engine_id or self.engine_id
@@ -820,7 +897,10 @@ class GenAIGAEConnection(GAEConnectionBase):
             requests.HTTPError: If request fails
         """
         if not self.engine_id:
-            self.start_engine()
+            if self.auto_reuse_services:
+                self.ensure_service()
+            else:
+                self.start_engine()
         
         engine_url = self._get_engine_url()
         url = f"{engine_url}/{endpoint.lstrip('/')}"
@@ -916,7 +996,10 @@ class GenAIGAEConnection(GAEConnectionBase):
             )
         
         if not self.engine_id:
-            self.start_engine()
+            if self.auto_reuse_services:
+                self.ensure_service()
+            else:
+                self.start_engine()
         
         engine_url = self._get_engine_url()
         url = f"{engine_url}/v1/loaddata"
