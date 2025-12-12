@@ -61,12 +61,13 @@ from .llm import (
     get_default_provider
 )
 
-# Schema analysis / documents / generation (import submodules for convenience)
+# Schema analysis / documents / generation / workflow (import submodules for convenience)
 from . import schema
 from . import documents
 from . import generation
+from . import workflow
 
-__version__ = "0.4.0"  # AI module version (separate from core library)
+__version__ = "2.0.0"  # AI module version (v2.0 = Phase 6 complete)
 
 __all__ = [
     # LLM providers
@@ -81,4 +82,5 @@ __all__ = [
     "schema",
     "documents",
     "generation",
+    "workflow",
 ]
