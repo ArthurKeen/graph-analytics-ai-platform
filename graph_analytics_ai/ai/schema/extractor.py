@@ -107,8 +107,9 @@ class SchemaExtractor:
         """Determine if collection is vertex, edge, or document."""
         col_type = col_info.get('type')
         
-        # Type 2 = document collection, Type 3 = edge collection
-        if col_type == 3:
+        # python-arango returns 'edge' or 'document' as strings
+        # or legacy integer values: Type 2 = document collection, Type 3 = edge collection
+        if col_type == 3 or col_type == 'edge':
             return CollectionType.EDGE
         
         # For document collections, check if they're used as vertices
