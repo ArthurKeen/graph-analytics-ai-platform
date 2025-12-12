@@ -352,8 +352,8 @@ class SchemaExtractor:
         if len(parts) == 1:
             return name.upper()
         
-        # Otherwise, use middle part if 3 parts
-        if len(parts) == 3:
+        # Otherwise, use middle part if 3 or more parts (fallback heuristic)
+        if len(parts) >= 3:
             return parts[1].upper()
         
         return None

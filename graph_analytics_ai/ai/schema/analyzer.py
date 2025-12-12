@@ -232,10 +232,22 @@ class SchemaAnalyzer:
         key_relationships = [name for name, _ in all_edge_cols[:3]]
         
         # Create basic description
+        # Build a richer description that surfaces collection sizes (helps tests and users)
+        top_entities_desc = ""
+        if key_entities:
+            parts = []
+            for name in key_entities:
+                col = schema.vertex_collections.get(name)
+                if col:
+                    parts.append(f"{name} ({col.document_count:,} docs)")
+            if parts:
+                top_entities_desc = f" Top entities: {', '.join(parts)}."
+
         description = (
             f"Graph database with {len(schema.vertex_collections)} vertex collections, "
             f"{len(schema.edge_collections)} edge collections, "
             f"and {schema.total_documents:,} total documents."
+            f"{top_entities_desc}"
         )
         
         if error:

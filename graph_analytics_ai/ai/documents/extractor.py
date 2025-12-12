@@ -201,7 +201,16 @@ class RequirementsExtractor:
             formatted.append("---")
             formatted.append("")
         
-        return "\n".join(formatted)
+        formatted_text = "\n".join(formatted)
+
+        # Truncate to respect max_content_length (used in tests and runtime)
+        if len(formatted_text) > self.max_content_length:
+            formatted_text = (
+                formatted_text[: self.max_content_length]
+                + "\n\n[... content truncated ...]"
+            )
+
+        return formatted_text
     
     def _get_response_schema(self) -> Dict[str, Any]:
         """Get JSON schema for LLM response."""
