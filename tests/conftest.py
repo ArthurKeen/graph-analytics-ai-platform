@@ -4,6 +4,12 @@ import os
 import pytest
 from unittest.mock import patch, MagicMock
 
+# Plugin declarations must be at top-level conftest
+pytest_plugins = [
+    "tests.unit.ai.documents.conftest",
+    "tests.unit.ai.schema.conftest",
+]
+
 
 @pytest.fixture
 def mock_env_amp():
