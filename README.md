@@ -1,38 +1,37 @@
 #  AI-Assisted Graph Analytics Platform
 
-**Enterprise-grade AI platform for automated graph analytics workflow orchestration**
+**Enterprise-grade AI platform for automated graph analytics - Traditional or Agentic**
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-3.0.0-green.svg)](https://github.com/ArthurKeen/graph-analytics-ai)
 
-Transform business requirements into actionable graph analytics insights with AI-powered automation. From requirements documents to intelligence reports in minutes, not weeks.
+Transform business requirements into actionable graph analytics insights with AI-powered automation. Choose between a traditional workflow orchestrator for full control or an autonomous agentic system for hands-off execution. From requirements documents to intelligence reports in minutes, not weeks.
 
 ---
 
 ##  Key Features
 
- **Autonomous Workflow**
-- 6 specialized AI agents with domain expertise
-- Supervisor pattern for intelligent coordination
-- Self-healing error recovery
-- Explainable AI decisions
+**Two Workflow Modes**
+- **Traditional Orchestrator**: Step-by-step control, easy to understand and debug
+- **Agentic System**: Autonomous AI agents with self-healing and intelligent routing
+- Use the approach that fits your needs - both are production-ready
 
- **Complete Automation**
-- Requirements (PDF/DOCX) → Actionable Intelligence
-- Schema analysis → Use case generation → Template creation → Execution → Reports
-- Zero manual configuration required
+**Complete AI-Powered Pipeline**
+- Requirements (PDF/DOCX/Text) → Schema Analysis → Use Cases → Templates → Execution → Intelligence Reports
+- LLM-powered decision making at every step
+- Fully automated or manually controlled - your choice
 
- **Production Ready**
+**Production Ready**
 - Real ArangoDB AMP cluster integration
 - Graph Analytics Engine (GAE) support
 - Multiple LLM providers (OpenAI, Anthropic, Gemini)
-- Enterprise-grade error handling
+- Enterprise-grade error handling and checkpointing
 
- **Intelligent Output**
-- Actionable intelligence reports
-- Business insights with confidence scores
-- Prioritized recommendations
+**Intelligent Output**
+- Actionable intelligence reports with business context
+- Insights with confidence scores and supporting evidence
+- Prioritized recommendations with effort/impact estimates
 - Multiple formats (Markdown, JSON, HTML, Text)
 
 ---
@@ -88,110 +87,171 @@ GEMINI_MODEL=gemini-pro
 
 ### Run Your First Workflow
 
+**Option 1: Traditional Workflow (Recommended for learning)**
+
+```python
+from graph_analytics_ai.ai.workflow import WorkflowOrchestrator
+
+# Initialize orchestrator
+orchestrator = WorkflowOrchestrator(graph_name="your_graph")
+
+# Run complete workflow with full control
+result = orchestrator.run_complete_workflow(
+    input_files=["requirements.pdf"]
+)
+
+# Access results
+print(f"Status: {result.status}")
+print(f"Generated {len(result.reports)} reports")
+```
+
+**Option 2: Agentic Workflow (Autonomous)**
+
 ```python
 from graph_analytics_ai.ai.agents import AgenticWorkflowRunner
 
-# Initialize runner
+# One-line autonomous execution
 runner = AgenticWorkflowRunner(graph_name="your_graph")
-
-# Run complete workflow (autonomous!)
 state = runner.run()
 
-# Access results
+# AI agents handle everything automatically
 print(f"Generated {len(state.reports)} reports")
-for report in state.reports:
-    print(f"\n{report.title}")
-    print(f"Insights: {len(report.insights)}")
-    print(f"Recommendations: {len(report.recommendations)}")
 ```
 
-**That's it!** The AI agents will:
-1.  Analyze your graph schema
-2.  Extract business requirements
-3.  Generate analytics use cases
-4.  Create optimized GAE templates
-5.  Execute analyses on your cluster
-6.  Generate actionable intelligence reports
+**Both workflows execute the same pipeline:**
+1. Analyze your graph schema
+2. Extract business requirements
+3. Generate analytics use cases
+4. Create optimized GAE templates
+5. Execute analyses on your cluster
+6. Generate actionable intelligence reports
 
 ---
 
-##  Two Workflow Modes
+##  Choosing Your Workflow Mode
 
-### 1. Linear Workflow (Simple)
+### Traditional Orchestrator - Step-by-Step Control
 
-Perfect for learning and simple use cases:
+**When to use:**
+- Learning the platform
+- Building custom pipelines
+- Need granular control
+- Debugging and testing
+- Integrating specific steps into existing systems
+
+**Complete workflow:**
 
 ```python
-from graph_analytics_ai.db_connection import get_db_connection
-from graph_analytics_ai.ai.schema.extractor import SchemaExtractor
-from graph_analytics_ai.ai.schema.analyzer import SchemaAnalyzer
+from graph_analytics_ai.ai.workflow import WorkflowOrchestrator
+
+# Initialize with configuration
+orchestrator = WorkflowOrchestrator(
+    graph_name="ecommerce_graph",
+    checkpoint_dir="./checkpoints",
+    enable_retry=True
+)
+
+# Run complete workflow with checkpointing
+result = orchestrator.run_complete_workflow(
+    input_files=["requirements.pdf"]
+)
+
+# Access detailed results
+for step_name, step_result in result.steps.items():
+    print(f"{step_name}: {step_result.status}")
+    
+print(f"\nGenerated {len(result.reports)} reports")
+```
+
+**Individual module usage:**
+
+```python
+# Or use modules individually for custom pipelines
+from graph_analytics_ai.ai.schema import SchemaExtractor, SchemaAnalyzer
+from graph_analytics_ai.ai.generation import UseCaseGenerator
+from graph_analytics_ai.ai.templates import TemplateGenerator
 from graph_analytics_ai.ai.execution import AnalysisExecutor
 from graph_analytics_ai.ai.reporting import ReportGenerator
 
-# Extract and analyze schema
-db = get_db_connection()
-extractor = SchemaExtractor(db)
+# Build your own workflow
+extractor = SchemaExtractor(db_connection)
 schema = extractor.extract()
 
-# Execute analysis
-executor = AnalysisExecutor()
-result = executor.execute_template(template)
+analyzer = SchemaAnalyzer()
+analysis = analyzer.analyze(schema)
 
-# Generate report
-generator = ReportGenerator()
-report = generator.generate_report(result)
-print(report.summary)
+# ... continue with your custom logic
 ```
 
 **Benefits:**
-- ✓ Simple sequential execution
-- ✓ Easy to understand and debug
-- ✓ Full control over each step
+- Full control over each step
+- Easy to understand and debug
+- Checkpoint and resume support
+- Integrate into existing pipelines
+- Explicit error handling
 
-### 2. Agentic Workflow (Intelligent)
+---
 
-Production-ready with autonomous agents:
+### Agentic Workflow - Autonomous Intelligence
+
+**When to use:**
+- Production deployments
+- Hands-off automation
+- Complex multi-step scenarios
+- Need self-healing workflows
+- Want explainable AI decisions
+
+**Complete autonomous execution:**
 
 ```python
 from graph_analytics_ai.ai.agents import AgenticWorkflowRunner
 
-# One-line execution!
+# One-line autonomous execution
 runner = AgenticWorkflowRunner(graph_name="ecommerce_graph")
 state = runner.run()
 
-# Agents handle everything autonomously
-# - SchemaAnalyst analyzes your graph
-# - RequirementsAnalyst extracts requirements
-# - UseCaseExpert generates use cases
-# - TemplateEngineer creates configurations
-# - ExecutionSpecialist runs analyses
-# - ReportingSpecialist generates insights
+# Agents handle everything:
+# - SchemaAnalyst: Analyzes graph structure
+# - RequirementsAnalyst: Extracts business needs
+# - UseCaseExpert: Generates analytics use cases
+# - TemplateEngineer: Creates GAE configurations
+# - ExecutionSpecialist: Runs analyses on cluster
+# - ReportingSpecialist: Generates insights
+
+print(f"Workflow Status: {state.status}")
+for report in state.reports:
+    print(f"\n{report.title}")
+    for insight in report.insights:
+        print(f"  - {insight.title} (confidence: {insight.confidence:.0%})")
+```
+
+**Agent communication example:**
+```
+[Orchestrator] Starting workflow
+[SchemaAnalyst] Extracted: 3 vertex collections, 5 edge collections
+[RequirementsAnalyst] Extracted: 1 objective, 3 requirements
+[UseCaseExpert] Generated 2 use cases (PageRank, Community Detection)
+[TemplateEngineer] Created 2 optimized templates
+[ExecutionSpecialist] Completed analyses in 2.8s
+[ReportingSpecialist] Generated 2 intelligence reports
+[Orchestrator] Workflow complete - Success!
 ```
 
 **Benefits:**
-- ✓ Autonomous decision-making
-- ✓ Self-healing error recovery
-- ✓ Explainable AI (agent messages)
-- ✓ Adaptive workflow routing
-- ✓ Domain expertise per agent
-
-**Agent Communication:**
-```
-[Orchestrator]  Starting workflow
-[SchemaAnalyst] ✓ Extracted: 3V + 5E
-[RequirementsAnalyst] ✓ Extracted: 1 objectives
-[UseCaseExpert] ✓ Generated 2 use cases
-[TemplateEngineer] ✓ Generated 2 templates
-[ExecutionSpecialist] ✓ Completed in 2.8s
-[ReportingSpecialist] ✓ Generated 2 reports
-[Orchestrator]  Workflow complete!
-```
+- Autonomous decision-making
+- Self-healing error recovery
+- Explainable AI (agent messages)
+- Adaptive workflow routing
+- Domain expertise per agent
+- Minimal configuration required
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
-### System Overview
+### Core Pipeline
+
+Both workflow modes execute the same underlying pipeline:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -200,36 +260,34 @@ state = runner.run()
 └────────────────────────┬────────────────────────────────────┘
                          │
                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Orchestrator Agent (Supervisor)                 │
-│  • Coordinates workflow                                      │
-│  • Delegates to specialist agents                            │
-│  • Monitors progress and handles errors                      │
-└──────────────┬──────────────────────────────────────────────┘
-               │
-               ├──► Schema Analysis Agent
-               │    • Extracts graph structure
-               │    • Analyzes complexity
-               │
-               ├──► Requirements Agent
-               │    • Parses documents
-               │    • Extracts objectives
-               │
-               ├──► Use Case Agent
-               │    • Maps requirements to algorithms
-               │    • Prioritizes by business value
-               │
-               ├──► Template Agent
-               │    • Generates GAE configurations
-               │    • Optimizes parameters
-               │
-               ├──► Execution Agent
-               │    • Runs analyses on cluster
-               │    • Monitors progress
-               │
-               └──► Reporting Agent
-                    • Generates insights
-                    • Creates recommendations
+                 ┌───────────────┐
+                 │ Schema Extract │  → Extract graph structure
+                 └───────┬───────┘
+                         │
+                         ▼
+                 ┌───────────────┐
+                 │ Requirements  │  → Parse business needs
+                 └───────┬───────┘
+                         │
+                         ▼
+                 ┌───────────────┐
+                 │  Use Cases    │  → Map to algorithms
+                 └───────┬───────┘
+                         │
+                         ▼
+                 ┌───────────────┐
+                 │  Templates    │  → Generate GAE configs
+                 └───────┬───────┘
+                         │
+                         ▼
+                 ┌───────────────┐
+                 │   Execute     │  → Run on ArangoDB GAE
+                 └───────┬───────┘
+                         │
+                         ▼
+                 ┌───────────────┐
+                 │    Report     │  → Generate insights
+                 └───────┬───────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
@@ -239,6 +297,22 @@ state = runner.run()
 │  • Multiple output formats                                   │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+### Workflow Mode Comparison
+
+**Traditional Orchestrator** (Phase 6)
+- Sequential step execution with checkpointing
+- Full programmatic control over each phase
+- Easy to debug and customize
+- Direct module integration
+- Perfect for custom pipelines
+
+**Agentic System** (Phase 10)
+- 6 specialized AI agents with domain expertise
+- Supervisor pattern for intelligent coordination
+- Self-healing error recovery
+- Explainable AI decision-making
+- Autonomous workflow adaptation
 
 ### Technology Stack
 
@@ -253,24 +327,33 @@ state = runner.run()
 
 ##  CLI Interface
 
-The platform includes a comprehensive CLI:
+The platform includes a comprehensive CLI supporting both workflow modes:
 
 ```bash
 # Check version
 gaai version
 
-# Run complete workflow
+# Run traditional workflow (with checkpointing)
 gaai run-workflow \
   --database graph_db \
   --graph my_graph \
+  --input requirements.pdf \
+  --output results/ \
+  --checkpoint checkpoints/
+
+# Run agentic workflow (autonomous)
+gaai run-workflow \
+  --database graph_db \
+  --graph my_graph \
+  --input requirements.pdf \
+  --mode agentic \
   --output results/
 
-# Analyze schema only
+# Use individual modules
 gaai analyze-schema \
   --database graph_db \
   --output schema.json
 
-# Parse requirements
 gaai parse-requirements \
   --input requirements.pdf \
   --output requirements.json
@@ -283,11 +366,41 @@ gaai status --checkpoint checkpoint.json
 
 ##  Examples
 
-### Example 1: E-commerce Analytics
+### Example 1: Complete Workflow (Traditional)
+
+```python
+from graph_analytics_ai.ai.workflow import WorkflowOrchestrator
+
+# Initialize orchestrator
+orchestrator = WorkflowOrchestrator(
+    graph_name="ecommerce_graph",
+    checkpoint_dir="./checkpoints"
+)
+
+# Run complete workflow with full control
+result = orchestrator.run_complete_workflow(
+    input_files=["business_requirements.pdf"]
+)
+
+# Check status and access results
+if result.success:
+    print(f"Workflow completed successfully!")
+    print(f"Generated {len(result.reports)} reports")
+    
+    for report in result.reports:
+        print(f"\n{report.title}")
+        print(f"  Insights: {len(report.insights)}")
+        print(f"  Recommendations: {len(report.recommendations)}")
+else:
+    print(f"Workflow failed: {result.error}")
+```
+
+### Example 2: E-commerce Analytics (Agentic)
 
 ```python
 from graph_analytics_ai.ai.agents import AgenticWorkflowRunner
 
+# One-line autonomous execution
 runner = AgenticWorkflowRunner(graph_name="ecommerce_graph")
 state = runner.run()
 
@@ -295,60 +408,68 @@ state = runner.run()
 for report in state.reports:
     print(f"\n{report.title}")
     for insight in report.insights:
-        print(f"  • {insight.title} (confidence: {insight.confidence*100:.0f}%)")
+        print(f"  - {insight.title} (confidence: {insight.confidence*100:.0f}%)")
 ```
 
-### Example 2: Custom Requirements
+### Example 3: Custom Module Integration
+
+Build your own pipeline using individual modules:
 
 ```python
+from graph_analytics_ai.db_connection import get_db_connection
+from graph_analytics_ai.ai.schema import SchemaExtractor, SchemaAnalyzer
+from graph_analytics_ai.ai.generation import UseCaseGenerator
+from graph_analytics_ai.ai.templates import TemplateGenerator
+from graph_analytics_ai.ai.execution import AnalysisExecutor
+from graph_analytics_ai.ai.reporting import ReportGenerator
+
+# Step 1: Extract schema
+db = get_db_connection()
+extractor = SchemaExtractor(db)
+schema = extractor.extract()
+
+# Step 2: Analyze schema
+analyzer = SchemaAnalyzer()
+analysis = analyzer.analyze(schema)
+
+# Step 3: Create custom requirements
 from graph_analytics_ai.ai.documents.models import (
-    ExtractedRequirements, Objective, Requirement, Priority
+    ExtractedRequirements, Objective, Priority
 )
 
 requirements = ExtractedRequirements(
     domain="Social Network",
-    summary="Identify influential users and communities",
+    summary="Find key influencers",
     objectives=[
         Objective(
             id="OBJ-001",
-            title="Find Key Influencers",
+            title="Identify Top Influencers",
             priority=Priority.CRITICAL
-        )
-    ],
-    requirements=[
-        Requirement(
-            id="REQ-001",
-            text="Identify top 100 influential users",
-            priority=Priority.HIGH
         )
     ]
 )
 
-# Use with workflow
-from graph_analytics_ai.ai.generation.use_cases import UseCaseGenerator
+# Step 4: Generate use cases
 uc_generator = UseCaseGenerator()
-use_cases = uc_generator.generate(requirements, schema_analysis)
-```
+use_cases = uc_generator.generate(requirements, analysis)
 
-### Example 3: Template Execution
-
-```python
-from graph_analytics_ai.ai.execution import AnalysisExecutor
-from graph_analytics_ai.ai.templates import TemplateGenerator
-
-# Generate template
-template_gen = TemplateGenerator(graph_name="my_graph")
+# Step 5: Generate templates
+template_gen = TemplateGenerator(graph_name="social_network")
 templates = template_gen.generate_templates(use_cases, schema, analysis)
 
-# Execute
+# Step 6: Execute and report
 executor = AnalysisExecutor()
+report_gen = ReportGenerator()
+
 for template in templates:
     result = executor.execute_template(template, wait=True)
     if result.success:
-        print(f"✓ {template.name}: {len(result.results)} results")
+        report = report_gen.generate_report(result)
+        print(f"\n{report.title}")
+        print(report.summary)
 ```
 
-### Example 4: Report Generation
+### Example 5: Report Generation
 
 ```python
 from graph_analytics_ai.ai.reporting import ReportGenerator, ReportFormat
@@ -675,12 +796,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ##  Statistics
 
 - **~15,000+** lines of production code
-- **6** autonomous AI agents
+- **2** workflow modes (traditional orchestrator + agentic)
+- **6** specialized AI agents (for agentic mode)
+- **7** core modules (schema, documents, PRD, use cases, templates, execution, reporting)
 - **10** complete implementation phases
 - **90%+** test coverage
-- **2** workflow modes (linear + agentic)
-- **4** LLM providers supported
-- **Multiple** output formats
+- **4** LLM providers supported (OpenAI, Anthropic, Gemini, + custom)
+- **Multiple** output formats (Markdown, JSON, HTML, Text)
 
 ---
 
