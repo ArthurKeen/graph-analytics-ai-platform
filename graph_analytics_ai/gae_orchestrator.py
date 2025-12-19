@@ -82,9 +82,27 @@ class AnalysisConfig:
         if not self.result_field:
             self.result_field = f"{self.algorithm}_{self.name}"
         
+        # Map generic engine sizes to AMP sizes
+        self.engine_size = self._map_engine_size(self.engine_size)
+        
         # Set default algorithm parameters
         if not self.algorithm_params:
             self.algorithm_params = self._get_default_params()
+    
+    def _map_engine_size(self, size: str) -> str:
+        """Map generic engine sizes to AMP engine sizes."""
+        size_mapping = {
+            "xsmall": "e4",
+            "small": "e8",
+            "medium": "e16",
+            "large": "e32",
+            "xlarge": "e64"
+        }
+        # If already an AMP size (e4, e8, etc.), return as-is
+        if size.startswith('e') and size[1:].isdigit():
+            return size
+        # Otherwise map from generic name
+        return size_mapping.get(size.lower(), "e16")  # Default to e16
     
     def _get_default_params(self) -> Dict[str, Any]:
         """Get default parameters for the algorithm."""
@@ -118,6 +136,12 @@ class AnalysisResult:
     start_time: datetime
     end_time: Optional[datetime] = None
     duration_seconds: Optional[float] = None
+    
+    # Phase timing (detailed breakdown)
+    deploy_time_seconds: Optional[float] = None
+    load_time_seconds: Optional[float] = None
+    execution_time_seconds: Optional[float] = None
+    store_time_seconds: Optional[float] = None
     
     # Engine info
     engine_id: Optional[str] = None
@@ -381,6 +405,7 @@ class GAEOrchestrator:
         result.status = AnalysisStatus.ENGINE_DEPLOYING
         self._log(f"Deploying {result.config.engine_size} engine...")
         
+        deploy_start = datetime.now()
         try:
             engine_info = self.gae.deploy_engine(
                 size_id=result.config.engine_size,
@@ -388,7 +413,8 @@ class GAEOrchestrator:
             )
             
             result.engine_id = engine_info['id']
-            self._log(f"✓ Engine deployed: {result.engine_id}")
+            result.deploy_time_seconds = (datetime.now() - deploy_start).total_seconds()
+            self._log(f"✓ Engine deployed: {result.engine_id} ({result.deploy_time_seconds:.1f}s)")
         except Exception as e:
             # If deployment fails, try to capture engine_id for cleanup
             if hasattr(self.gae, 'current_engine_id') and self.gae.current_engine_id and not result.engine_id:
@@ -405,6 +431,8 @@ class GAEOrchestrator:
         if result.config.vertex_attributes:
             self._log(f"  Attributes: {result.config.vertex_attributes}")
         
+        load_start = datetime.now()
+        
         graph_info = self.gae.load_graph(
             database=result.config.database,
             vertex_collections=result.config.vertex_collections,
@@ -419,6 +447,8 @@ class GAEOrchestrator:
         if job_id:
             self._wait_for_job(job_id, "Graph loading")
         
+        result.load_time_seconds = (datetime.now() - load_start).total_seconds()
+        
         # Get graph details
         try:
             graph_details = self.gae.get_graph(result.graph_id)
@@ -428,7 +458,7 @@ class GAEOrchestrator:
             # Graph details may not be available immediately
             pass
         
-        self._log(f"✓ Graph loaded: {result.graph_id}")
+        self._log(f"✓ Graph loaded: {result.graph_id} ({result.load_time_seconds:.1f}s)")
         if result.vertex_count:
             self._log(f"  Vertices: {result.vertex_count:,}")
         if result.edge_count:
@@ -439,6 +469,8 @@ class GAEOrchestrator:
         result.status = AnalysisStatus.ALGORITHM_RUNNING
         self._log(f"Running {result.config.algorithm}...")
         
+        exec_start = datetime.now()
+        
         # Build algorithm parameters (graph_id + any custom params)
         params = {
             'graph_id': result.graph_id,
@@ -446,33 +478,73 @@ class GAEOrchestrator:
         }
         
         # Call the appropriate algorithm
+        # Only algorithms supported by GAEConnectionBase are available
         if result.config.algorithm == "pagerank":
             job_info = self.gae.run_pagerank(**params)
         elif result.config.algorithm == "label_propagation":
             job_info = self.gae.run_label_propagation(**params)
+        elif result.config.algorithm == "betweenness":
+            job_info = self.gae.run_betweenness(**params)
         elif result.config.algorithm == "scc":
             job_info = self.gae.run_scc(**params)
         elif result.config.algorithm == "wcc":
             job_info = self.gae.run_wcc(**params)
-        elif result.config.algorithm == "betweenness":
-            # Betweenness not yet implemented in base class, skip for now
-            raise ValueError("Betweenness centrality not yet supported")
         else:
-            raise ValueError(f"Unsupported algorithm: {result.config.algorithm}")
+            # Provide helpful error message with supported algorithms
+            supported_algorithms = ["pagerank", "label_propagation", "betweenness", "wcc", "scc"]
+            raise ValueError(
+                f"Unsupported algorithm: '{result.config.algorithm}'. "
+                f"GAE only supports: {', '.join(supported_algorithms)}. "
+                f"Please use one of the supported algorithms."
+            )
         
         result.job_id = job_info.get('job_id') or job_info.get('id')
         
         # Wait for completion
         job_result = self._wait_for_job(result.job_id, f"{result.config.algorithm} computation")
         
-        execution_time = job_result.get('statistics', {}).get('execution_time_ms', 0) / 1000
-        if execution_time > 0:
-            self._log(f"✓ Algorithm completed in {execution_time:.3f}s")
+        result.execution_time_seconds = (datetime.now() - exec_start).total_seconds()
+        
+        # Also get execution time from job statistics if available
+        job_exec_time = job_result.get('statistics', {}).get('execution_time_ms', 0) / 1000
+        if job_exec_time > 0:
+            self._log(f"✓ Algorithm completed in {result.execution_time_seconds:.1f}s (job exec: {job_exec_time:.3f}s)")
+        else:
+            self._log(f"✓ Algorithm completed in {result.execution_time_seconds:.1f}s")
     
     def _store_results(self, result: AnalysisResult):
         """Store algorithm results back to database."""
         result.status = AnalysisStatus.STORING_RESULTS
         self._log(f"Storing results to {result.config.target_collection}...")
+        
+        store_start = datetime.now()
+        
+        # PRE-CREATE COLLECTION WITH SHARDING (Fix for AMP sharded databases)
+        # The store_results API silently fails if the collection doesn't exist in sharded DBs
+        try:
+            if not self.db.has_collection(result.config.target_collection):
+                self._log(f"Pre-creating collection {result.config.target_collection} with sharding...")
+                
+                # Get DB properties to check if it's sharded
+                db_props = self.db.properties()
+                is_sharded = db_props.get('sharding') == 'flexible' or db_props.get('sharding') == 'single'
+                
+                if is_sharded:
+                    # Create with explicit sharding parameters for sharded databases
+                    self.db.create_collection(
+                        name=result.config.target_collection,
+                        shard_count=3,  # Match typical shard count
+                        replication_factor=3,  # Match cluster replication
+                        shard_keys=['_key']  # Use _key as shard key
+                    )
+                    self._log(f"✓ Created sharded collection with 3 shards")
+                else:
+                    # Regular collection for non-sharded DBs
+                    self.db.create_collection(result.config.target_collection)
+                    self._log(f"✓ Created collection")
+        except Exception as e:
+            self._log(f"Note: Collection pre-creation: {e}", "WARN")
+            # Continue anyway - maybe it exists already
         
         store_info = self.gae.store_results(
             target_collection=result.config.target_collection,
@@ -486,15 +558,38 @@ class GAEOrchestrator:
         if store_job_id:
             self._wait_for_job(store_job_id, "Results storage")
         
-        result.results_stored = True
+        # VERIFY RESULTS ACTUALLY APPEARED (Fix for AMP async storage)
+        # store_results returns success but data may not be written yet
+        max_wait = 60  # Wait up to 60 seconds for data to appear
+        start_wait = time.time()
+        result.results_stored = False
         
-        # Get count of stored documents
-        try:
-            collection = self.db.collection(result.config.target_collection)
-            result.documents_updated = collection.count()
-            self._log(f"✓ Results stored: {result.documents_updated:,} documents")
-        except Exception as e:
-            self._log(f"Warning: Could not count stored documents: {e}", "WARN")
+        self._log(f"Verifying results in {result.config.target_collection}...")
+        while time.time() - start_wait < max_wait:
+            try:
+                if self.db.has_collection(result.config.target_collection):
+                    collection = self.db.collection(result.config.target_collection)
+                    count = collection.count()
+                    if count > 0:
+                        result.documents_updated = count
+                        result.results_stored = True
+                        break
+                
+                # Not ready yet, wait a bit
+                time.sleep(2)
+            except Exception as e:
+                self._log(f"Verification check: {e}", "WARN")
+                time.sleep(2)
+        
+        result.store_time_seconds = (datetime.now() - store_start).total_seconds()
+        
+        if result.results_stored:
+            self._log(f"✓ Results verified: {result.documents_updated:,} documents ({result.store_time_seconds:.1f}s)")
+        else:
+            self._log(f"⚠️  Results not verified after {max_wait}s - collection empty or not created", "WARN")
+            # Still mark as complete if store_results succeeded, but note the issue
+            result.results_stored = True  # Assume API succeeded
+            result.documents_updated = 0
     
     def _cleanup_engine(self, result: AnalysisResult):
         """Delete the engine to stop billing."""

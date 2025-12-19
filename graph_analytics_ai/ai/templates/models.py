@@ -10,15 +10,17 @@ from typing import Dict, List, Optional, Any
 
 
 class AlgorithmType(Enum):
-    """GAE algorithm types."""
+    """
+    GAE algorithm types.
+    
+    Only includes algorithms that are actually supported by GAE
+    and implemented in the library.
+    """
     PAGERANK = "pagerank"
-    LOUVAIN = "louvain"
-    SHORTEST_PATH = "shortest_path"
-    BETWEENNESS_CENTRALITY = "betweenness_centrality"
-    CLOSENESS_CENTRALITY = "closeness_centrality"
     LABEL_PROPAGATION = "label_propagation"
     WCC = "wcc"  # Weakly Connected Components
     SCC = "scc"  # Strongly Connected Components
+    BETWEENNESS_CENTRALITY = "betweenness"
 
 
 class EngineSize(Enum):
@@ -143,31 +145,20 @@ class AnalysisTemplate:
         }
 
 
-# Default algorithm parameters
+# Default algorithm parameters for supported GAE algorithms
 DEFAULT_ALGORITHM_PARAMS = {
     AlgorithmType.PAGERANK: {
-        "threshold": 0.0001,
-        "max_iterations": 100,
-        "damping_factor": 0.85
-    },
-    AlgorithmType.LOUVAIN: {
-        "resolution": 1.0,
-        "min_community_size": 2
-    },
-    AlgorithmType.SHORTEST_PATH: {
-        "weight_attribute": None,  # Use default weights
-        "direction": "outbound"
-    },
-    AlgorithmType.BETWEENNESS_CENTRALITY: {
-        "normalized": True,
-        "directed": True
-    },
-    AlgorithmType.CLOSENESS_CENTRALITY: {
-        "normalized": True,
-        "weight_attribute": None
+        "damping_factor": 0.85,
+        "maximum_supersteps": 100
     },
     AlgorithmType.LABEL_PROPAGATION: {
-        "max_iterations": 100
+        "start_label_attribute": "_key",
+        "synchronous": False,
+        "random_tiebreak": False,
+        "maximum_supersteps": 100
+    },
+    AlgorithmType.BETWEENNESS_CENTRALITY: {
+        "maximum_supersteps": 100
     },
     AlgorithmType.WCC: {},
     AlgorithmType.SCC: {}

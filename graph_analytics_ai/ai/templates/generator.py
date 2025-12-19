@@ -20,34 +20,32 @@ from .models import (
 
 
 # Mapping from use case types to algorithm types
+# Only includes algorithms that are actually supported by GAE
 USE_CASE_TO_ALGORITHM = {
     UseCaseType.CENTRALITY: [
-        AlgorithmType.PAGERANK,
-        AlgorithmType.BETWEENNESS_CENTRALITY,
-        AlgorithmType.CLOSENESS_CENTRALITY
-    ],
-    UseCaseType.COMMUNITY: [
-        AlgorithmType.LOUVAIN,
-        AlgorithmType.LABEL_PROPAGATION,
-        AlgorithmType.WCC
-    ],
-    UseCaseType.PATHFINDING: [
-        AlgorithmType.SHORTEST_PATH
-    ],
-    UseCaseType.PATTERN: [
-        AlgorithmType.PAGERANK,  # Can help identify patterns
-        AlgorithmType.LOUVAIN
-    ],
-    UseCaseType.ANOMALY: [
-        AlgorithmType.BETWEENNESS_CENTRALITY,  # Unusual connections
-        AlgorithmType.PAGERANK  # Unusual importance
-    ],
-    UseCaseType.RECOMMENDATION: [
-        AlgorithmType.SHORTEST_PATH,
         AlgorithmType.PAGERANK
     ],
+    UseCaseType.COMMUNITY: [
+        AlgorithmType.WCC,
+        AlgorithmType.SCC,
+        AlgorithmType.LABEL_PROPAGATION
+    ],
+    UseCaseType.PATHFINDING: [
+        AlgorithmType.PAGERANK  # Best available for path/influence analysis
+    ],
+    UseCaseType.PATTERN: [
+        AlgorithmType.WCC,  # For connected pattern detection
+        AlgorithmType.LABEL_PROPAGATION
+    ],
+    UseCaseType.ANOMALY: [
+        AlgorithmType.WCC,  # For anomaly clusters
+        AlgorithmType.PAGERANK  # For anomalous influence patterns
+    ],
+    UseCaseType.RECOMMENDATION: [
+        AlgorithmType.PAGERANK  # For recommendation scoring
+    ],
     UseCaseType.SIMILARITY: [
-        AlgorithmType.LOUVAIN,
+        AlgorithmType.WCC,
         AlgorithmType.LABEL_PROPAGATION
     ]
 }
@@ -161,6 +159,13 @@ class TemplateGenerator:
         # Extract collections from use case data needs
         vertex_collections, edge_collections = self._extract_collections(use_case)
         
+        # Fallback: if no collections found, use ALL from schema
+        if (not vertex_collections or not edge_collections) and schema:
+            if not vertex_collections and schema.vertex_collections:
+                vertex_collections = list(schema.vertex_collections.keys())[:5]  # Limit to first 5
+            if not edge_collections and schema.edge_collections:
+                edge_collections = list(schema.edge_collections.keys())[:5]
+        
         # Create template config
         config = TemplateConfig(
             graph_name=self.graph_name,
@@ -225,9 +230,9 @@ class TemplateGenerator:
         if algorithm_type == AlgorithmType.PAGERANK:
             # Adjust iterations based on graph size
             if total_docs > 10000:
-                optimized["max_iterations"] = 50  # Fewer for large graphs
+                optimized["maximum_supersteps"] = 50  # Fewer for large graphs
             elif total_docs < 1000:
-                optimized["max_iterations"] = 150  # More for small graphs
+                optimized["maximum_supersteps"] = 150  # More for small graphs
             
             # Adjust threshold based on density
             if avg_degree > 10:
@@ -273,9 +278,6 @@ class TemplateGenerator:
             # Common patterns
             if "user" in need_lower or "customer" in need_lower:
                 vertex_collections.append("users")
-            if "product" in need_lower:
-                vertex_collections.append("products")
-            if "category" in need_lower or "categories" in need_lower:
                 vertex_collections.append("categories")
             
             if "purchase" in need_lower or "buy" in need_lower or "transaction" in need_lower:

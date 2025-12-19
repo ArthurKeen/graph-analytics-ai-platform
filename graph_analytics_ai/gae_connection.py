@@ -8,7 +8,7 @@ import os
 import requests
 import time
 import subprocess
-import warnings
+import logging
 from typing import Optional, Dict, List, Any, Union
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -35,6 +35,9 @@ from .constants import (
     TOKEN_LIFETIME_HOURS,
     TOKEN_REFRESH_THRESHOLD_HOURS
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class GAEConnectionBase(ABC):
@@ -92,6 +95,11 @@ class GAEConnectionBase(ABC):
                              synchronous: bool = False, random_tiebreak: bool = False,
                              maximum_supersteps: int = DEFAULT_MAX_SUPERSTEPS) -> Dict[str, Any]:
         """Run Label Propagation."""
+        pass
+    
+    @abstractmethod
+    def run_betweenness(self, graph_id: str, maximum_supersteps: int = DEFAULT_MAX_SUPERSTEPS) -> Dict[str, Any]:
+        """Run Betweenness Centrality."""
         pass
     
     @abstractmethod
@@ -512,6 +520,18 @@ class GAEManager(GAEConnectionBase):
         print(f"✓ Label Propagation job started: {result.get('job_id')}")
         return result
     
+    def run_betweenness(self, graph_id: str, maximum_supersteps: int = DEFAULT_MAX_SUPERSTEPS) -> Dict[str, Any]:
+        """Run Betweenness Centrality on a graph."""
+        payload = {
+            'graph_id': graph_id,
+            'maximum_supersteps': maximum_supersteps
+        }
+        
+        print(f"Running Betweenness Centrality on graph {graph_id}...")
+        result = self._engine_api_call('v1/betweenness', method='POST', data=payload)
+        print(f"✓ Betweenness Centrality job started: {result.get('job_id')}")
+        return result
+    
     def store_results(self, target_collection: str,
                      job_ids: List[str], attribute_names: List[str],
                      database: Optional[str] = None,
@@ -599,10 +619,9 @@ class GenAIGAEConnection(GAEConnectionBase):
         
         # Security warning if SSL verification is disabled
         if not self.verify_ssl:
-            warnings.warn(
+            logger.warning(
                 "SSL verification is disabled. This may allow man-in-the-middle attacks. "
-                "Only disable SSL verification in trusted environments.",
-                UserWarning
+                "Only disable SSL verification in trusted environments."
             )
         
         # Will be populated after authentication
@@ -621,12 +640,11 @@ class GenAIGAEConnection(GAEConnectionBase):
             host_part = self.db_endpoint.split('://', 1)[-1].split('/', 1)[0]
             # Check if port is missing (no colon in hostname part)
             if ':' not in host_part:
-                warnings.warn(
+                logger.warning(
                     f"ARANGO_ENDPOINT appears to be missing the port number.\n"
                     f"  Current: {self.db_endpoint}\n"
                     f"  Expected: {self.db_endpoint}:8529\n"
-                    f"  If you get 401 errors, add :8529 to your endpoint URL.",
-                    UserWarning
+                    f"  If you get 401 errors, add :8529 to your endpoint URL."
                 )
     
     def _get_jwt_token(self) -> str:
@@ -1112,6 +1130,25 @@ class GenAIGAEConnection(GAEConnectionBase):
             payload=payload,
             success_message="Label Propagation job submitted: {job_id}",
             error_message="Failed to run Label Propagation"
+        )
+        
+        return self._normalize_job_response(job)
+    
+    def run_betweenness(self, graph_id: str, maximum_supersteps: int = DEFAULT_MAX_SUPERSTEPS) -> Dict[str, Any]:
+        """Run Betweenness Centrality algorithm."""
+        print(f"Running Betweenness Centrality on graph {graph_id}...")
+        
+        payload = {
+            "graph_id": graph_id,
+            "maximum_supersteps": maximum_supersteps
+        }
+        
+        job = self._make_request(
+            method='POST',
+            endpoint=f"{API_VERSION_PREFIX}betweenness",
+            payload=payload,
+            success_message="Betweenness Centrality job submitted: {job_id}",
+            error_message="Failed to run Betweenness Centrality"
         )
         
         return self._normalize_job_response(job)

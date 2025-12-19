@@ -26,15 +26,13 @@ class TestUseCaseToAlgorithmMapping:
         """Test centrality use case algorithms."""
         algos = USE_CASE_TO_ALGORITHM[UseCaseType.CENTRALITY]
         assert AlgorithmType.PAGERANK in algos
-        assert AlgorithmType.BETWEENNESS_CENTRALITY in algos
-        assert AlgorithmType.CLOSENESS_CENTRALITY in algos
     
     def test_community_algorithms(self):
         """Test community use case algorithms."""
         algos = USE_CASE_TO_ALGORITHM[UseCaseType.COMMUNITY]
-        assert AlgorithmType.LOUVAIN in algos
-        assert AlgorithmType.LABEL_PROPAGATION in algos
         assert AlgorithmType.WCC in algos
+        assert AlgorithmType.SCC in algos
+        assert AlgorithmType.LABEL_PROPAGATION in algos
 
 
 class TestTemplateGenerator:

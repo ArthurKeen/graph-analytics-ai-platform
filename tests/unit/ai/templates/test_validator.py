@@ -222,18 +222,38 @@ class TestTemplateValidator:
         # Should have error or warning
         assert result.is_valid is False or len(result.warnings) > 0
     
-    def test_validate_louvain_parameters(self):
-        """Test validation of Louvain algorithm parameters."""
+    def test_validate_label_propagation_parameters(self):
+        """Test validation of Label Propagation algorithm parameters."""
         validator = TemplateValidator()
         
         template = AnalysisTemplate(
             name="Community Detection",
-            description="Louvain community detection",
+            description="Label propagation community detection",
             algorithm=AlgorithmParameters(
-                algorithm=AlgorithmType.LOUVAIN,
+                algorithm=AlgorithmType.LABEL_PROPAGATION,
                 parameters={
-                    "resolution": 1.0,
-                    "min_community_size": 2
+                    "start_label_attribute": "_key",
+                    "maximum_supersteps": 100
+                }
+            ),
+            config=TemplateConfig(graph_name="test_graph")
+        )
+        
+        result = validator.validate(template)
+        
+        assert result.is_valid is True
+    
+    def test_validate_betweenness_parameters(self):
+        """Test validation of Betweenness Centrality algorithm parameters."""
+        validator = TemplateValidator()
+        
+        template = AnalysisTemplate(
+            name="Betweenness Analysis",
+            description="Betweenness centrality analysis",
+            algorithm=AlgorithmParameters(
+                algorithm=AlgorithmType.BETWEENNESS_CENTRALITY,
+                parameters={
+                    "maximum_supersteps": 100
                 }
             ),
             config=TemplateConfig(graph_name="test_graph")
@@ -249,9 +269,10 @@ class TestTemplateValidator:
         
         algorithms = [
             AlgorithmType.PAGERANK,
-            AlgorithmType.LOUVAIN,
-            AlgorithmType.SHORTEST_PATH,
-            AlgorithmType.WCC
+            AlgorithmType.LABEL_PROPAGATION,
+            AlgorithmType.BETWEENNESS_CENTRALITY,
+            AlgorithmType.WCC,
+            AlgorithmType.SCC
         ]
         
         for algo in algorithms:
@@ -358,7 +379,7 @@ class TestTemplateValidator:
             AnalysisTemplate(
                 name="",  # Invalid
                 description="Description 2",
-                algorithm=AlgorithmParameters(algorithm=AlgorithmType.LOUVAIN),
+                algorithm=AlgorithmParameters(algorithm=AlgorithmType.LABEL_PROPAGATION),
                 config=TemplateConfig(graph_name="graph2")
             ),
             AnalysisTemplate(

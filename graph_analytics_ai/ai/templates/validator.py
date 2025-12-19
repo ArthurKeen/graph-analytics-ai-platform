@@ -147,7 +147,7 @@ class TemplateValidator:
         algo_type = algo.algorithm
         params = algo.parameters
         
-        # Algorithm-specific validation
+        # Algorithm-specific validation for supported GAE algorithms
         if algo_type == AlgorithmType.PAGERANK:
             # Check damping factor
             if 'damping_factor' in params:
@@ -155,49 +155,42 @@ class TemplateValidator:
                 if not (0 < df < 1):
                     errors.append(f"PageRank damping_factor must be between 0 and 1, got {df}")
             
-            # Check threshold
-            if 'threshold' in params:
-                t = params['threshold']
-                if t <= 0:
-                    errors.append(f"PageRank threshold must be positive, got {t}")
-                elif t > 0.1:
-                    warnings.append(f"PageRank threshold seems high: {t}")
+            # Check maximum supersteps
+            if 'maximum_supersteps' in params:
+                ms = params['maximum_supersteps']
+                if ms < 1:
+                    errors.append(f"PageRank maximum_supersteps must be positive, got {ms}")
+                elif ms > 500:
+                    warnings.append(f"PageRank maximum_supersteps is very high: {ms}")
+        
+        elif algo_type == AlgorithmType.LABEL_PROPAGATION:
+            # Check maximum supersteps
+            if 'maximum_supersteps' in params:
+                ms = params['maximum_supersteps']
+                if ms < 1:
+                    errors.append(f"Label Propagation maximum_supersteps must be positive, got {ms}")
+                elif ms > 500:
+                    warnings.append(f"Label Propagation maximum_supersteps is very high: {ms}")
             
-            # Check max iterations
-            if 'max_iterations' in params:
-                mi = params['max_iterations']
-                if mi < 1:
-                    errors.append(f"PageRank max_iterations must be positive, got {mi}")
-                elif mi > 500:
-                    warnings.append(f"PageRank max_iterations is very high: {mi}")
+            # Check start_label_attribute
+            if 'start_label_attribute' in params:
+                attr = params['start_label_attribute']
+                if not isinstance(attr, str) or not attr.strip():
+                    errors.append("start_label_attribute must be a non-empty string")
         
-        elif algo_type == AlgorithmType.LOUVAIN:
-            # Check resolution
-            if 'resolution' in params:
-                r = params['resolution']
-                if r <= 0:
-                    errors.append(f"Louvain resolution must be positive, got {r}")
-                elif r > 5:
-                    warnings.append(f"Louvain resolution is very high: {r}")
-            
-            # Check min community size
-            if 'min_community_size' in params:
-                mcs = params['min_community_size']
-                if mcs < 1:
-                    errors.append(f"Louvain min_community_size must be >= 1, got {mcs}")
+        elif algo_type == AlgorithmType.BETWEENNESS_CENTRALITY:
+            # Check maximum supersteps
+            if 'maximum_supersteps' in params:
+                ms = params['maximum_supersteps']
+                if ms < 1:
+                    errors.append(f"Betweenness Centrality maximum_supersteps must be positive, got {ms}")
+                elif ms > 500:
+                    warnings.append(f"Betweenness Centrality maximum_supersteps is very high: {ms}")
         
-        elif algo_type == AlgorithmType.SHORTEST_PATH:
-            # Check direction
-            if 'direction' in params:
-                direction = params['direction']
-                if direction not in ('inbound', 'outbound', 'any'):
-                    errors.append(f"Invalid direction: {direction}")
-        
-        elif algo_type in (AlgorithmType.BETWEENNESS_CENTRALITY, AlgorithmType.CLOSENESS_CENTRALITY):
-            # Check normalized
-            if 'normalized' in params:
-                if not isinstance(params['normalized'], bool):
-                    errors.append("normalized must be a boolean")
+        elif algo_type in (AlgorithmType.WCC, AlgorithmType.SCC):
+            # WCC and SCC have no parameters - but warn if unexpected params provided
+            if params and any(k not in ['graph_id'] for k in params.keys()):
+                warnings.append(f"{algo_type.value.upper()} algorithm has no parameters, ignoring: {list(params.keys())}")
         
         return errors, warnings
     

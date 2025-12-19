@@ -16,19 +16,17 @@ class TestAlgorithmType:
     """Tests for AlgorithmType enum."""
     
     def test_algorithm_types_exist(self):
-        """Test that all expected algorithm types exist."""
+        """Test that all supported algorithm types exist."""
         assert AlgorithmType.PAGERANK.value == "pagerank"
-        assert AlgorithmType.LOUVAIN.value == "louvain"
-        assert AlgorithmType.SHORTEST_PATH.value == "shortest_path"
-        assert AlgorithmType.BETWEENNESS_CENTRALITY.value == "betweenness_centrality"
-        assert AlgorithmType.CLOSENESS_CENTRALITY.value == "closeness_centrality"
         assert AlgorithmType.LABEL_PROPAGATION.value == "label_propagation"
+        assert AlgorithmType.BETWEENNESS_CENTRALITY.value == "betweenness"
         assert AlgorithmType.WCC.value == "wcc"
         assert AlgorithmType.SCC.value == "scc"
     
     def test_algorithm_type_count(self):
         """Test that we have the expected number of algorithm types."""
-        assert len(AlgorithmType) == 8
+        # Only 5 algorithms are currently implemented and working
+        assert len(AlgorithmType) == 5
 
 
 class TestEngineSize:
@@ -72,15 +70,15 @@ class TestAlgorithmParameters:
     def test_to_dict(self):
         """Test conversion to dictionary."""
         params = AlgorithmParameters(
-            algorithm=AlgorithmType.LOUVAIN,
-            parameters={"resolution": 1.0}
+            algorithm=AlgorithmType.LABEL_PROPAGATION,
+            parameters={"maximum_supersteps": 100}
         )
         
         result = params.to_dict()
         
         assert result == {
-            "algorithm": "louvain",
-            "parameters": {"resolution": 1.0}
+            "algorithm": "label_propagation",
+            "parameters": {"maximum_supersteps": 100}
         }
 
 
@@ -187,29 +185,31 @@ class TestAnalysisTemplate:
     
     def test_to_dict(self):
         """Test conversion to dictionary."""
-        algo_params = AlgorithmParameters(
-            algorithm=AlgorithmType.LOUVAIN,
-            parameters={"resolution": 1.0}
-        )
-        config = TemplateConfig(
-            graph_name="test_graph",
-            engine_size=EngineSize.MEDIUM
-        )
-        
         template = AnalysisTemplate(
-            name="Community Detection",
-            description="Find communities",
-            algorithm=algo_params,
-            config=config,
+            name="test_analysis",
+            description="Test description",
+            algorithm=AlgorithmParameters(
+                algorithm=AlgorithmType.WCC,
+                parameters={}
+            ),
+            config=TemplateConfig(
+                graph_name="test_graph",
+                vertex_collections=["users"],
+                edge_collections=["follows"],
+                engine_size=EngineSize.SMALL,
+                store_results=True,
+                result_collection="wcc_results"
+            ),
             use_case_id="UC-002"
         )
         
         result = template.to_dict()
         
-        assert result["name"] == "Community Detection"
-        assert result["description"] == "Find communities"
-        assert result["algorithm"]["algorithm"] == "louvain"
-        assert result["config"]["engine_size"] == "medium"
+        assert result["name"] == "test_analysis"
+        assert result["description"] == "Test description"
+        assert result["algorithm"]["algorithm"] == "wcc"
+        assert result["config"]["graph_name"] == "test_graph"
+        assert result["use_case_id"] == "UC-002"
         assert result["use_case_id"] == "UC-002"
     
     def test_to_analysis_config(self):
@@ -254,35 +254,40 @@ class TestDefaultAlgorithmParams:
         """Test PageRank default parameters."""
         params = DEFAULT_ALGORITHM_PARAMS[AlgorithmType.PAGERANK]
         
-        assert "threshold" in params
-        assert "max_iterations" in params
         assert "damping_factor" in params
+        assert "maximum_supersteps" in params
         assert params["damping_factor"] == 0.85
     
-    def test_louvain_defaults(self):
-        """Test Louvain default parameters."""
-        params = DEFAULT_ALGORITHM_PARAMS[AlgorithmType.LOUVAIN]
+    def test_label_propagation_defaults(self):
+        """Test Label Propagation default parameters."""
+        params = DEFAULT_ALGORITHM_PARAMS[AlgorithmType.LABEL_PROPAGATION]
         
-        assert "resolution" in params
-        assert "min_community_size" in params
+        assert "start_label_attribute" in params
+        assert "synchronous" in params
+        assert "random_tiebreak" in params
+        assert "maximum_supersteps" in params
+    
+    def test_betweenness_defaults(self):
+        """Test Betweenness Centrality default parameters."""
+        params = DEFAULT_ALGORITHM_PARAMS[AlgorithmType.BETWEENNESS_CENTRALITY]
+        
+        assert "maximum_supersteps" in params
+        assert params["maximum_supersteps"] == 100
+    
+    def test_wcc_defaults(self):
+        """Test WCC default parameters (should be empty)."""
+        params = DEFAULT_ALGORITHM_PARAMS[AlgorithmType.WCC]
+        assert params == {}
+    
+    def test_scc_defaults(self):
+        """Test SCC default parameters (should be empty)."""
+        params = DEFAULT_ALGORITHM_PARAMS[AlgorithmType.SCC]
+        assert params == {}
     
     def test_all_algorithms_have_defaults(self):
         """Test that all algorithms have default parameters."""
         for algo_type in AlgorithmType:
             assert algo_type in DEFAULT_ALGORITHM_PARAMS
-    
-    def test_shortest_path_defaults(self):
-        """Test Shortest Path default parameters."""
-        params = DEFAULT_ALGORITHM_PARAMS[AlgorithmType.SHORTEST_PATH]
-        
-        assert "weight_attribute" in params
-        assert "direction" in params
-    
-    def test_centrality_defaults(self):
-        """Test centrality algorithms have normalized parameter."""
-        for algo in [AlgorithmType.BETWEENNESS_CENTRALITY, AlgorithmType.CLOSENESS_CENTRALITY]:
-            params = DEFAULT_ALGORITHM_PARAMS[algo]
-            assert "normalized" in params
 
 
 class TestRecommendEngineSize:
