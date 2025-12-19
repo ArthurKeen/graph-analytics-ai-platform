@@ -15,12 +15,32 @@ class AlgorithmType(Enum):
     
     Only includes algorithms that are actually supported by GAE
     and implemented in the library.
+    
+    IMPORTANT: This is the single source of truth for supported algorithms.
+    Do not reference unsupported algorithms (LOUVAIN, SHORTEST_PATH, CLOSENESS_CENTRALITY)
+    anywhere in the codebase.
     """
     PAGERANK = "pagerank"
     LABEL_PROPAGATION = "label_propagation"
     WCC = "wcc"  # Weakly Connected Components
     SCC = "scc"  # Strongly Connected Components
     BETWEENNESS_CENTRALITY = "betweenness"
+    
+    @classmethod
+    def get_supported_names(cls) -> list[str]:
+        """Get list of supported algorithm names."""
+        return [alg.value for alg in cls]
+    
+    @classmethod
+    def get_display_names(cls) -> dict[str, str]:
+        """Get mapping of algorithm values to display names."""
+        return {
+            cls.PAGERANK.value: "PageRank",
+            cls.LABEL_PROPAGATION.value: "Label Propagation",
+            cls.WCC.value: "Weakly Connected Components (WCC)",
+            cls.SCC.value: "Strongly Connected Components (SCC)",
+            cls.BETWEENNESS_CENTRALITY.value: "Betweenness Centrality"
+        }
 
 
 class EngineSize(Enum):

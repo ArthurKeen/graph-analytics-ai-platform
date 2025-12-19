@@ -11,7 +11,7 @@ long_description = readme_file.read_text() if readme_file.exists() else ""
 
 setup(
     name="graph-analytics-ai",
-    version="2.0.0",
+    version="3.0.0",
     description="AI-assisted graph analytics platform with automated workflow orchestration",
     long_description=long_description,
     long_description_content_type="text/markdown",

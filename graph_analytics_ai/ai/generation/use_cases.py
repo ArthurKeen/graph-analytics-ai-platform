@@ -47,7 +47,7 @@ class UseCase:
     """IDs of related requirements."""
     
     graph_algorithms: List[str] = field(default_factory=list)
-    """Suggested algorithms (e.g., PageRank, Louvain)."""
+    """Suggested algorithms (e.g., PageRank, WCC, Label Propagation)."""
     
     data_needs: List[str] = field(default_factory=list)
     """What data/collections are needed."""
@@ -241,7 +241,7 @@ class UseCaseGenerator:
         
         if "pagerank" in alg_lower or "betweenness" in alg_lower or "centrality" in alg_lower:
             return UseCaseType.CENTRALITY
-        elif "community" in alg_lower or "louvain" in alg_lower or "modularity" in alg_lower:
+        elif "community" in alg_lower or "cluster" in alg_lower or "modularity" in alg_lower or "propagation" in alg_lower:
             return UseCaseType.COMMUNITY
         elif "shortest" in alg_lower or "path" in alg_lower or "dijkstra" in alg_lower:
             return UseCaseType.PATHFINDING

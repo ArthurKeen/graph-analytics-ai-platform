@@ -157,12 +157,40 @@ class TemplateGenerator:
         engine_size = self._determine_engine_size(schema)
         
         # Extract collections from use case data needs
-        vertex_collections, edge_collections = self._extract_collections(use_case)
+        vertex_collections, edge_collections = self._extract_collections(use_case, schema)
         
-        # Fallback: if no collections found, use ALL from schema
-        if (not vertex_collections or not edge_collections) and schema:
+        # Use CollectionSelector to choose algorithm-appropriate collections
+        selection_metadata = {}
+        if schema and schema.vertex_collections:
+            collection_selection = self.collection_selector.select_collections(
+                algorithm=algorithm_type,
+                schema=schema,
+                collection_hints=self.collection_hints if self.collection_hints else None,
+                use_case_context=use_case.description
+            )
+            
+            # Override with algorithm-specific selection
+            vertex_collections = collection_selection.vertex_collections
+            edge_collections = collection_selection.edge_collections
+            
+            # Store selection reasoning in template metadata
+            selection_metadata = {
+                "collection_selection_reasoning": collection_selection.reasoning,
+                "excluded_collections": {
+                    "vertices": collection_selection.excluded_vertices,
+                    "edges": collection_selection.excluded_edges
+                },
+                "estimated_graph_size": collection_selection.estimated_graph_size
+            }
+        elif (not vertex_collections or not edge_collections) and schema:
+            # Fallback if selector can't be used
             if not vertex_collections and schema.vertex_collections:
-                vertex_collections = list(schema.vertex_collections.keys())[:5]  # Limit to first 5
+                available = [
+                    name for name, coll in schema.vertex_collections.items()
+                    if not any(pattern in name.lower() for pattern in ['uc_', 'result', '_temp'])
+                    and coll.document_count > 1000  # Only substantial collections
+                ]
+                vertex_collections = available[:5]  # Limit to first 5 substantial ones
             if not edge_collections and schema.edge_collections:
                 edge_collections = list(schema.edge_collections.keys())[:5]
         
@@ -194,7 +222,8 @@ class TemplateGenerator:
                 "priority": use_case.priority.value,
                 "use_case_type": use_case.use_case_type.value,
                 "algorithms": use_case.graph_algorithms,
-                "success_metrics": use_case.success_metrics
+                "success_metrics": use_case.success_metrics,
+                **selection_metadata  # Include collection selection info
             }
         )
         
@@ -238,16 +267,17 @@ class TemplateGenerator:
             if avg_degree > 10:
                 optimized["threshold"] = 0.0005  # Tighter for dense graphs
         
-        elif algorithm_type == AlgorithmType.LOUVAIN:
-            # Adjust resolution based on graph size
+        elif algorithm_type == AlgorithmType.LABEL_PROPAGATION:
+            # Adjust iterations based on graph size
             if total_docs > 10000:
-                optimized["resolution"] = 1.5  # Larger communities
-            elif total_docs < 500:
-                optimized["resolution"] = 0.5  # Smaller communities
-            
-            # Adjust min community size
-            min_size = max(2, int(total_docs * 0.005))  # 0.5% of documents
-            optimized["min_community_size"] = min_size
+                optimized["max_iterations"] = 30  # Fewer for large graphs
+            elif total_docs < 1000:
+                optimized["max_iterations"] = 100  # More for small graphs
+        
+        elif algorithm_type == AlgorithmType.WCC:
+            # WCC doesn't have many tunable parameters
+            # Result store name is set elsewhere
+            pass
         
         elif algorithm_type == AlgorithmType.BETWEENNESS_CENTRALITY:
             # For very large graphs, might want to sample
@@ -266,32 +296,122 @@ class TemplateGenerator:
             edge_count=schema.total_edges
         )
     
-    def _extract_collections(self, use_case: UseCase) -> tuple:
-        """Extract vertex and edge collections from use case."""
+    def _extract_collections(self, use_case: UseCase, schema: Optional[GraphSchema] = None) -> tuple:
+        """
+        Extract vertex and edge collections from use case and schema.
+        
+        IMPORTANT: For proper graph analysis, we need to avoid:
+        - Satellite collections that artificially connect everything
+        - Result collections from previous analyses  
+        - Hub collections that aren't relevant to the use case
+        
+        Args:
+            use_case: Use case with data requirements
+            schema: Optional schema for available collections
+            
+        Returns:
+            tuple: (vertex_collections, edge_collections)
+        """
         vertex_collections = []
         edge_collections = []
         
-        # Parse data needs
+        # If schema provided, get available collections
+        available_vertices = set()
+        available_edges = set()
+        
+        if schema:
+            if hasattr(schema, 'vertex_collections') and schema.vertex_collections:
+                available_vertices = set(schema.vertex_collections.keys())
+            if hasattr(schema, 'edge_collections') and schema.edge_collections:
+                available_edges = set(schema.edge_collections.keys())
+        
+        # Filter out result collections and common satellite collections
+        exclude_patterns = ['uc_', 'result', '_temp', '_backup']
+        
+        # Parse data needs from use case
         for need in use_case.data_needs:
             need_lower = need.lower()
             
-            # Common patterns
-            if "user" in need_lower or "customer" in need_lower:
-                vertex_collections.append("users")
-                vertex_collections.append("categories")
+            # Device and IP focused (household resolution)
+            if "device" in need_lower and "Device" in available_vertices:
+                vertex_collections.append("Device")
+            if "ip" in need_lower and "IP" in available_vertices:
+                vertex_collections.append("IP")
             
-            if "purchase" in need_lower or "buy" in need_lower or "transaction" in need_lower:
-                edge_collections.append("purchased")
-            if "view" in need_lower or "browse" in need_lower:
-                edge_collections.append("viewed")
-            if "rating" in need_lower or "review" in need_lower:
-                edge_collections.append("rated")
-            if "follow" in need_lower or "social" in need_lower:
-                edge_collections.append("follows")
+            # Content focused (inventory, apps, sites)
+            if ("app" in need_lower or "product" in need_lower) and "AppProduct" in available_vertices:
+                vertex_collections.append("AppProduct")
+            if ("site" in need_lower or "web" in need_lower) and "Site" in available_vertices:
+                vertex_collections.append("Site")
+            if "installedapp" in need_lower and "InstalledApp" in available_vertices:
+                vertex_collections.append("InstalledApp")
+            if "siteuse" in need_lower and "SiteUse" in available_vertices:
+                vertex_collections.append("SiteUse")
+            
+            # Publisher/content providers (but be careful - these can be hubs)
+            if "publisher" in need_lower and "Publisher" in available_vertices:
+                vertex_collections.append("Publisher")
+            
+            # Edges
+            if "seen_on_ip" in need_lower or ("device" in need_lower and "ip" in need_lower):
+                if "SEEN_ON_IP" in available_edges:
+                    edge_collections.append("SEEN_ON_IP")
+            if "seen_on_app" in need_lower or "app" in need_lower:
+                if "SEEN_ON_APP" in available_edges:
+                    edge_collections.append("SEEN_ON_APP")
+            if "seen_on_site" in need_lower or "site" in need_lower:
+                if "SEEN_ON_SITE" in available_edges:
+                    edge_collections.append("SEEN_ON_SITE")
+            if "instance_of" in need_lower:
+                if "INSTANCE_OF" in available_edges:
+                    edge_collections.append("INSTANCE_OF")
+        
+        # If nothing extracted from data_needs, infer from use case type and title
+        if not vertex_collections and not edge_collections:
+            title_lower = use_case.title.lower()
+            desc_lower = use_case.description.lower()
+            combined = f"{title_lower} {desc_lower}"
+            
+            # Household/identity resolution use cases
+            if any(term in combined for term in ["household", "identity", "resolution", "device", "ip"]):
+                if "Device" in available_vertices:
+                    vertex_collections.append("Device")
+                if "IP" in available_vertices:
+                    vertex_collections.append("IP")
+                if "SEEN_ON_IP" in available_edges:
+                    edge_collections.append("SEEN_ON_IP")
+            
+            # Fraud/anomaly detection
+            elif any(term in combined for term in ["fraud", "anomaly", "bot"]):
+                if "Device" in available_vertices:
+                    vertex_collections.append("Device")
+                if "IP" in available_vertices:
+                    vertex_collections.append("IP")
+                if "SEEN_ON_IP" in available_edges:
+                    edge_collections.append("SEEN_ON_IP")
+            
+            # Content/inventory analysis
+            elif any(term in combined for term in ["content", "inventory", "app", "site", "publisher"]):
+                if "AppProduct" in available_vertices:
+                    vertex_collections.append("AppProduct")
+                if "Site" in available_vertices:
+                    vertex_collections.append("Site")
+                if "Device" in available_vertices:
+                    vertex_collections.append("Device")
+                if "SEEN_ON_APP" in available_edges:
+                    edge_collections.append("SEEN_ON_APP")
+                if "SEEN_ON_SITE" in available_edges:
+                    edge_collections.append("SEEN_ON_SITE")
         
         # Remove duplicates while preserving order
         vertex_collections = list(dict.fromkeys(vertex_collections))
         edge_collections = list(dict.fromkeys(edge_collections))
+        
+        # Filter out excluded patterns
+        vertex_collections = [
+            v for v in vertex_collections 
+            if not any(pattern in v.lower() for pattern in exclude_patterns)
+        ]
         
         return vertex_collections, edge_collections
     
@@ -312,16 +432,19 @@ class TemplateGenerator:
             # O(iterations * m)
             return max(1.0, (n + m) / 10000)  # ~10k elements per second
         
-        elif algorithm_type == AlgorithmType.LOUVAIN:
-            # O(m * log(n))
-            import math
-            return max(2.0, (m * math.log(max(n, 2))) / 5000)
+        elif algorithm_type == AlgorithmType.LABEL_PROPAGATION:
+            # O(iterations * m)
+            return max(1.5, (n + m) / 8000)
         
-        elif algorithm_type == AlgorithmType.SHORTEST_PATH:
-            # Depends on start/end, but roughly O(n + m)
-            return max(0.5, (n + m) / 20000)
+        elif algorithm_type == AlgorithmType.WCC:
+            # O(m) - usually fast
+            return max(0.5, (n + m) / 15000)
         
-        elif algorithm_type in (AlgorithmType.BETWEENNESS_CENTRALITY, AlgorithmType.CLOSENESS_CENTRALITY):
+        elif algorithm_type == AlgorithmType.SCC:
+            # O(m) - similar to WCC
+            return max(0.5, (n + m) / 15000)
+        
+        elif algorithm_type == AlgorithmType.BETWEENNESS_CENTRALITY:
             # O(n * m) - can be slow
             return max(5.0, (n * m) / 100000)
         

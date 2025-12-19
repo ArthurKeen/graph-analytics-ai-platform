@@ -16,6 +16,13 @@ from .models import (
     recommend_engine_size
 )
 from .validator import TemplateValidator, ValidationResult, validate_template
+# Collection selector disabled - has missing dependencies (CollectionInfo not defined)
+# from .collection_selector import (
+#     CollectionSelector,
+#     CollectionSelection,
+#     CollectionRole,
+#     select_collections_for_algorithm
+# )
 
 __all__ = [
     "TemplateGenerator",
@@ -30,5 +37,10 @@ __all__ = [
     "TemplateValidator",
     "ValidationResult",
     "validate_template",
+    # Collection selector disabled
+    # "CollectionSelector",
+    # "CollectionSelection",
+    # "CollectionRole",
+    # "select_collections_for_algorithm",
 ]
 

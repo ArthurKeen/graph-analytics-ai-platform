@@ -15,7 +15,7 @@ from .llm.factory import create_llm_provider
 
 
 @click.group()
-@click.version_option(version="2.0.0")
+@click.version_option(version="3.0.0")
 def cli():
     """
     Graph Analytics AI - AI-Assisted Graph Analytics Workflow

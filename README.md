@@ -20,6 +20,7 @@ Transform business requirements into actionable graph analytics insights with AI
 **Complete AI-Powered Pipeline**
 - Requirements (PDF/DOCX/Text) → Schema Analysis → Use Cases → Templates → Execution → Intelligence Reports
 - LLM-powered decision making at every step
+- Algorithm-aware collection selection (WCC excludes satellites, PageRank uses full graph)
 - Fully automated or manually controlled - your choice
 
 **Production Ready**
@@ -546,6 +547,33 @@ result = orchestrator.run_complete_workflow(
     graph_name="my_graph"
 )
 ```
+
+### Algorithm-Specific Collection Selection
+
+Different algorithms require different graph subsets. The platform automatically selects appropriate collections:
+
+```python
+from graph_analytics_ai.ai.templates import TemplateGenerator
+
+# Specify which collections are satellite/core
+generator = TemplateGenerator(
+    graph_name="my_graph",
+    satellite_collections=["metadata", "configs", "lookup_tables"],
+    core_collections=["users", "products", "orders"]
+)
+
+# WCC will exclude satellites (find core components)
+# PageRank will include everything (full graph importance)
+# Betweenness will include everything (accurate centrality)
+templates = generator.generate_templates(use_cases, schema)
+
+# Check what was selected
+for template in templates:
+    print(f"{template.name}: {template.config.vertex_collections}")
+    print(f"Reasoning: {template.metadata['collection_selection_reasoning']}")
+```
+
+**See the [Collection Selection Guide](docs/COLLECTION_SELECTION_GUIDE.md) for details.**
 
 ---
 

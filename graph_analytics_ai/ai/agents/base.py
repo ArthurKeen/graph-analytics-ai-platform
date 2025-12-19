@@ -159,14 +159,44 @@ class AgentState:
             self.completed_steps.append(step)
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary."""
+        """Convert to dictionary with all data."""
         return {
             "current_step": self.current_step,
             "completed_steps": self.completed_steps,
             "messages_count": len(self.messages),
             "errors_count": len(self.errors),
-            "started_at": self.started_at.isoformat(),
-            "metadata": self.metadata
+            "started_at": self.started_at.isoformat() if self.started_at else None,
+            "metadata": self.metadata,
+            # Include actual data
+            "use_cases_count": len(self.use_cases),
+            "templates_count": len(self.templates),
+            "executions_count": len(self.execution_results),
+            "reports_count": len(self.reports),
+            # Serialize use cases
+            "use_cases": [uc.to_dict() if hasattr(uc, 'to_dict') else str(uc) for uc in self.use_cases],
+            # Serialize templates
+            "templates": [t.to_dict() if hasattr(t, 'to_dict') else str(t) for t in self.templates],
+            # Serialize execution results
+            "execution_results": [
+                {
+                    "job_id": r.job.job_id if hasattr(r, 'job') else None,
+                    "template_name": r.job.template_name if hasattr(r, 'job') else None,
+                    "algorithm": r.job.algorithm if hasattr(r, 'job') else None,
+                    "success": r.success,
+                    "status": str(r.job.status) if hasattr(r, 'job') else None,
+                    "execution_time": r.job.execution_time_seconds if hasattr(r, 'job') else None,
+                    "result_count": r.job.result_count if hasattr(r, 'job') else None,
+                    "result_collection": r.job.result_collection if hasattr(r, 'job') else None,
+                    "error": r.error if hasattr(r, 'error') else None
+                }
+                for r in self.execution_results
+            ],
+            # Serialize reports
+            "reports": [r.to_dict() if hasattr(r, 'to_dict') else str(r) for r in self.reports],
+            # Serialize messages
+            "messages": [m.to_dict() if hasattr(m, 'to_dict') else str(m) for m in self.messages],
+            # Serialize errors
+            "errors": self.errors
         }
 
 

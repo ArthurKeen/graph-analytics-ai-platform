@@ -276,13 +276,17 @@ class AnalysisExecutor:
         
         result = self._analysis_results[job.job_id]
         
+        # Import AnalysisStatus
+        from graph_analytics_ai.gae_orchestrator import AnalysisStatus
+        
         # Check if analysis succeeded
-        if result.status == __import__('graph_analytics_ai.gae_orchestrator', fromlist=['AnalysisStatus']).AnalysisStatus.COMPLETED:
+        # CLEANING_UP means the analysis completed successfully and is just cleaning up resources
+        if result.status in (AnalysisStatus.COMPLETED, AnalysisStatus.CLEANING_UP):
             # Update job with result details
             if result.duration_seconds:
                 job.execution_time_seconds = result.duration_seconds
             return True
-        elif result.status == __import__('graph_analytics_ai.gae_orchestrator', fromlist=['AnalysisStatus']).AnalysisStatus.FAILED:
+        elif result.status == AnalysisStatus.FAILED:
             job.error_message = result.error_message or "Analysis failed"
             return False
         else:

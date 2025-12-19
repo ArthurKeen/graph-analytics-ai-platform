@@ -67,7 +67,7 @@ from . import documents
 from . import generation
 from . import workflow
 
-__version__ = "2.0.0"  # AI module version (v2.0 = Phase 6 complete)
+__version__ = "3.0.0"  # AI module version (v3.0 = Phase 10 complete - All features)
 
 __all__ = [
     # LLM providers

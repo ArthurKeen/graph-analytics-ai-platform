@@ -177,19 +177,68 @@ class AgenticWorkflowRunner:
         import json
         from pathlib import Path
         
-        data = {
-            "workflow": state.to_dict(),
-            "messages": self.get_agent_messages(state),
-            "results": {
-                "use_cases": len(state.use_cases),
-                "templates": len(state.templates),
-                "executions": len(state.execution_results),
-                "reports": len(state.reports)
-            }
-        }
+        data = state.to_dict()
         
-        Path(output_path).write_text(json.dumps(data, indent=2))
+        Path(output_path).write_text(json.dumps(data, indent=2, default=str))
         print(f"💾 State exported to: {output_path}")
+    
+    def export_reports(self, state: AgentState, output_dir: str) -> None:
+        """
+        Export reports to markdown files.
+        
+        Args:
+            state: Workflow state
+            output_dir: Output directory path
+        """
+        from pathlib import Path
+        
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+        
+        if not state.reports:
+            print("⚠️  No reports to export")
+            return
+        
+        for i, report in enumerate(state.reports, 1):
+            # Generate filename from report title
+            safe_title = "".join(c if c.isalnum() or c in (' ', '-', '_') else '_' for c in report.title)
+            safe_title = safe_title.replace(' ', '_').lower()
+            filename = f"report_{i:02d}_{safe_title}.md"
+            
+            filepath = output_path / filename
+            
+            # Write report as markdown
+            with open(filepath, 'w') as f:
+                f.write(f"# {report.title}\n\n")
+                f.write(f"**Generated:** {report.generated_at}\n\n")
+                f.write(f"## Summary\n\n{report.summary}\n\n")
+                
+                if report.insights:
+                    f.write(f"## Insights ({len(report.insights)})\n\n")
+                    for j, insight in enumerate(report.insights, 1):
+                        f.write(f"### {j}. {insight.title}\n\n")
+                        f.write(f"{insight.description}\n\n")
+                        f.write(f"- **Type:** {insight.insight_type}\n")
+                        f.write(f"- **Confidence:** {insight.confidence:.0%}\n")
+                        if insight.business_impact:
+                            f.write(f"- **Business Impact:** {insight.business_impact}\n")
+                        f.write("\n")
+                
+                if report.recommendations:
+                    f.write(f"## Recommendations ({len(report.recommendations)})\n\n")
+                    for j, rec in enumerate(report.recommendations, 1):
+                        f.write(f"### {j}. {rec.title}\n\n")
+                        f.write(f"{rec.description}\n\n")
+                        f.write(f"- **Priority:** {rec.priority}\n")
+                        if hasattr(rec, 'effort_estimate') and rec.effort_estimate:
+                            f.write(f"- **Effort:** {rec.effort_estimate}\n")
+                        if hasattr(rec, 'expected_impact') and rec.expected_impact:
+                            f.write(f"- **Expected Impact:** {rec.expected_impact}\n")
+                        f.write("\n")
+            
+            print(f"📄 Report {i} exported to: {filepath}")
+        
+        print(f"\n✓ Exported {len(state.reports)} reports to {output_path}")
 
 
 def run_agentic_workflow(

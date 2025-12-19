@@ -234,10 +234,14 @@ class ReportGenerator:
         # Algorithm-specific insights
         if job.algorithm == "pagerank":
             insights.extend(self._pagerank_insights(results))
-        elif job.algorithm == "louvain":
-            insights.extend(self._louvain_insights(results))
-        elif job.algorithm == "shortest_path":
-            insights.extend(self._path_insights(results))
+        elif job.algorithm == "label_propagation":
+            insights.extend(self._label_propagation_insights(results))
+        elif job.algorithm == "wcc":
+            insights.extend(self._wcc_insights(results))
+        elif job.algorithm == "scc":
+            insights.extend(self._scc_insights(results))
+        elif job.algorithm == "betweenness":
+            insights.extend(self._betweenness_insights(results))
         
         return insights
     
@@ -350,38 +354,75 @@ class ReportGenerator:
         
         return insights
     
-    def _louvain_insights(self, results: List[Dict[str, Any]]) -> List[Insight]:
-        """Generate insights for Louvain community detection."""
+    def _label_propagation_insights(self, results: List[Dict[str, Any]]) -> List[Insight]:
+        """Generate insights for Label Propagation community detection."""
         insights = []
         
-        # Count communities
-        communities = set(r.get('community', 0) for r in results)
+        # Count communities/labels
+        labels = set(r.get('label', 0) for r in results)
         
         insights.append(Insight(
-            title=f"Discovered {len(communities)} Communities",
-            description=f"Graph contains {len(communities)} distinct communities.",
+            title=f"Discovered {len(labels)} Communities",
+            description=f"Graph contains {len(labels)} distinct communities via label propagation.",
             insight_type=InsightType.PATTERN,
             confidence=0.9,
-            supporting_data={"community_count": len(communities)},
+            supporting_data={"community_count": len(labels)},
             business_impact="Target strategies per community segment"
         ))
         
         return insights
     
-    def _path_insights(self, results: List[Dict[str, Any]]) -> List[Insight]:
-        """Generate insights for shortest path results."""
+    def _wcc_insights(self, results: List[Dict[str, Any]]) -> List[Insight]:
+        """Generate insights for Weakly Connected Components."""
+        insights = []
+        
+        # Count components
+        components = set(r.get('component', 0) for r in results)
+        
+        insights.append(Insight(
+            title=f"Found {len(components)} Connected Components",
+            description=f"Graph has {len(components)} separate weakly connected components.",
+            insight_type=InsightType.PATTERN,
+            confidence=0.95,
+            supporting_data={"component_count": len(components)},
+            business_impact="Identify isolated clusters and network structure"
+        ))
+        
+        return insights
+    
+    def _scc_insights(self, results: List[Dict[str, Any]]) -> List[Insight]:
+        """Generate insights for Strongly Connected Components."""
+        insights = []
+        
+        # Count components
+        components = set(r.get('component', 0) for r in results)
+        
+        insights.append(Insight(
+            title=f"Found {len(components)} Strongly Connected Components",
+            description=f"Graph has {len(components)} strongly connected components with bidirectional paths.",
+            insight_type=InsightType.PATTERN,
+            confidence=0.95,
+            supporting_data={"scc_count": len(components)},
+            business_impact="Understand reciprocal relationships and cycles"
+        ))
+        
+        return insights
+    
+    def _betweenness_insights(self, results: List[Dict[str, Any]]) -> List[Insight]:
+        """Generate insights for Betweenness Centrality."""
         insights = []
         
         if results:
-            avg_path_length = sum(len(r.get('path', [])) for r in results) / len(results)
+            # Find highest betweenness nodes
+            top_nodes = sorted(results, key=lambda x: x.get('betweenness', 0), reverse=True)[:5]
             
             insights.append(Insight(
-                title=f"Average Path Length: {avg_path_length:.1f} hops",
-                description=f"Average shortest path contains {avg_path_length:.1f} nodes.",
+                title=f"Top Bridge Nodes Identified",
+                description=f"Found {len(top_nodes)} nodes with highest betweenness centrality acting as bridges.",
                 insight_type=InsightType.KEY_FINDING,
-                confidence=0.95,
-                supporting_data={"avg_path_length": avg_path_length},
-                business_impact="Optimize recommendation chains"
+                confidence=0.9,
+                supporting_data={"top_bridge_nodes": [n.get('_key') for n in top_nodes]},
+                business_impact="Focus on bridge nodes for network flow optimization"
             ))
         
         return insights
