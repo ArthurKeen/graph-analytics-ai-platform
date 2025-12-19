@@ -335,4 +335,50 @@ class TestIntegration_BugFixes:
         # Verify validation would check for this field
         expected_field = ALGORITHM_RESULT_FIELDS.get(config.algorithm)
         assert expected_field == "component"
+    
+    def test_template_to_config_conversion_uses_standard_field(self):
+        """Test that template → config conversion uses standard field names."""
+        from graph_analytics_ai.ai.execution.executor import AnalysisExecutor
+        from graph_analytics_ai.ai.templates.models import (
+            AnalysisTemplate, AlgorithmParameters, AlgorithmType,
+            TemplateConfig, EngineSize
+        )
+        from graph_analytics_ai.gae_orchestrator import GAEOrchestrator
+        from unittest.mock import Mock
+        
+        # Create a mock orchestrator
+        mock_orchestrator = Mock(spec=GAEOrchestrator)
+        executor = AnalysisExecutor(orchestrator=mock_orchestrator)
+        
+        # Create a template with a human-readable name
+        template = AnalysisTemplate(
+            name="UC-S01: Household and Identity Resolution",  # Template name
+            description="Identify household clusters",
+            algorithm=AlgorithmParameters(
+                algorithm=AlgorithmType.WCC,
+                parameters={}  # Correct field name
+            ),
+            config=TemplateConfig(
+                graph_name="premion_graph",
+                vertex_collections=["Device", "IP"],
+                edge_collections=["device_to_ip"],
+                engine_size=EngineSize.SMALL,
+                store_results=True,
+                result_collection="uc_s01_results"
+            )
+        )
+        
+        # Convert template to config
+        config = executor._template_to_config(template)
+        
+        # Verify the config uses standard field name, NOT template name
+        assert config.result_field == "component", \
+            f"Expected 'component' but got '{config.result_field}'"
+        assert config.result_field != template.name, \
+            f"result_field should not be template name '{template.name}'"
+        
+        # Also verify other fields are correct
+        assert config.name == template.name  # Name can be human-readable
+        assert config.algorithm == "wcc"
+        assert config.target_collection == "uc_s01_results"
 

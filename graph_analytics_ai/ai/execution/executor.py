@@ -224,6 +224,9 @@ class AnalysisExecutor:
             edge_collections = template.edge_collections
         
         # Create AnalysisConfig object
+        # NOTE: We intentionally DON'T pass result_field here
+        # Let AnalysisConfig.__post_init__ generate the standard field name
+        # based on ALGORITHM_RESULT_FIELDS mapping (e.g., wcc -> "component")
         return AnalysisConfig(
             name=config_dict['name'],
             description=template.description,
@@ -232,8 +235,8 @@ class AnalysisExecutor:
             algorithm=config_dict['algorithm'],
             algorithm_params=config_dict['params'],
             engine_size=config_dict.get('engine_size', 'e16'),
-            target_collection=config_dict.get('result_collection', 'graph_analysis_results'),
-            result_field=config_dict.get('result_field', config_dict['name'])
+            target_collection=config_dict.get('result_collection', 'graph_analysis_results')
+            # result_field is NOT passed - will be auto-generated as standard name
         )
     
     def _submit_job(self, config: AnalysisConfig) -> str:
