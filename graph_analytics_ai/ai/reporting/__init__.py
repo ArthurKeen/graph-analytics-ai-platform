@@ -2,7 +2,7 @@
 GAE Analysis Report Generation Module
 
 Generates actionable intelligence reports from GAE analysis results.
-Provides insights, recommendations, and multiple output formats.
+Provides insights, recommendations, execution metrics, and multiple output formats.
 """
 
 from .generator import ReportGenerator, generate_report
@@ -13,6 +13,12 @@ from .models import (
     Recommendation,
     ReportFormat
 )
+from .config import (
+    ReportConfig,
+    WorkflowReportConfig,
+    ReportSection as ConfigReportSection
+)
+from .formatter import ExecutionReportFormatter
 
 __all__ = [
     "ReportGenerator",
@@ -22,5 +28,8 @@ __all__ = [
     "Insight",
     "Recommendation",
     "ReportFormat",
+    "ReportConfig",
+    "WorkflowReportConfig",
+    "ExecutionReportFormatter",
 ]
 
