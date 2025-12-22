@@ -2,7 +2,119 @@
 
 ## For Customer Projects (e.g., premion-graph-analytics)
 
-This guide explains how to use the **Collection Selection** feature in your project that imports the `graph-analytics-ai-platform` library.
+This guide explains how to use the latest features in your project that imports the `graph-analytics-ai-platform` library.
+
+**New Features** ✨:
+- **Interactive HTML Reports with Plotly Charts** - Beautiful visualizations for your analysis results
+- **Collection Selection** - Intelligent selection of graph collections for different algorithms
+
+---
+
+## 🎨 NEW: Interactive HTML Reports with Charts
+
+### What's New
+
+Your analysis reports can now include **interactive Plotly charts**:
+- Bar charts of top results (influencers, components, communities)
+- Distribution histograms (log-scale for skewed data)
+- Pie/donut charts for connectivity overview
+- Hover tooltips, zoom, pan controls
+- Professional gradient design
+
+### Quick Start with Charts
+
+```bash
+# Install Plotly (one-time)
+pip install plotly
+```
+
+```python
+from graph_analytics_ai.ai.reporting import ReportGenerator, HTMLReportFormatter
+
+# Generate report with interactive charts (enabled by default)
+generator = ReportGenerator(enable_charts=True)
+report = generator.generate_report(execution_result, context={
+    "use_case": {"title": "Your Analysis Name"},
+    "requirements": {"domain": "your domain"}
+})
+
+# Format as HTML
+formatter = HTMLReportFormatter()
+charts = report.metadata.get('charts', {})
+html_content = formatter.format_report(report, charts=charts)
+
+# Save
+with open('report.html', 'w') as f:
+    f.write(html_content)
+
+print(f"✅ Generated report with {len(charts)} interactive charts!")
+```
+
+### What Charts Are Generated
+
+| Algorithm | Charts |
+|-----------|--------|
+| **PageRank** | Top influencers bar chart, distribution histogram, cumulative influence |
+| **WCC** | Top components bar chart, size distribution, connectivity pie chart |
+| **Betweenness** | Top bridge nodes, centrality distribution |
+| **Label Propagation** | Top communities, community size distribution |
+| **SCC** | Same as WCC |
+
+### Example: Household Analysis Charts
+
+For Premion household identity resolution (WCC):
+
+```python
+# Your existing workflow automatically generates charts
+generator = ReportGenerator(enable_charts=True)
+report = generator.generate_report(wcc_execution_result, context={
+    "use_case": {"title": "Household Identity Resolution"},
+    "requirements": {"domain": "advertising technology"}
+})
+
+# Get charts
+formatter = HTMLReportFormatter()
+charts = report.metadata.get('charts', {})
+html = formatter.format_report(report, charts=charts)
+
+with open('household_analysis_report.html', 'w') as f:
+    f.write(html)
+
+# Result: 3 interactive charts showing:
+# 1. Top 10 largest household clusters (bar chart)
+# 2. Household size distribution (histogram)
+# 3. Network connectivity overview (pie chart)
+```
+
+### Chart Features
+
+✅ **Interactive** - Hover for exact values, zoom to explore, pan to navigate  
+✅ **Professional** - Modern gradient design, color-coded  
+✅ **Exportable** - Download charts as PNG for presentations  
+✅ **Responsive** - Works on desktop, tablet, mobile  
+✅ **Print-Friendly** - Formatted for PDF export  
+✅ **Offline** - No internet required after generation  
+
+### Disabling Charts
+
+If you don't want charts (e.g., automated pipelines):
+
+```python
+# Generate markdown reports only
+generator = ReportGenerator(enable_charts=False)
+```
+
+### More Information
+
+- **Full Guide**: See `docs/INTERACTIVE_REPORT_GENERATION.md` in the library repo
+- **Quick Reference**: See `CHART_GENERATION_QUICK_START.md`
+- **Example Code**: See `examples/chart_report_example.py`
+
+---
+
+## 📊 Collection Selection Feature
+
+This guide also explains how to use the **Collection Selection** feature for intelligent collection filtering.
 
 ---
 
@@ -453,12 +565,31 @@ for template in templates:
     print(f"  Status: {result.status}")
 
 # 7. Generate reports
-from graph_analytics_ai.ai.reporting import ReportGenerator
+from graph_analytics_ai.ai.reporting import ReportGenerator, HTMLReportFormatter
 
-report_gen = ReportGenerator()
-reports = report_gen.generate(results, use_cases)
+# Generate reports with interactive charts
+report_gen = ReportGenerator(enable_charts=True)
+reports = []
 
-print(f"\n✓ Generated {len(reports)} reports")
+for result in results:
+    report = report_gen.generate_report(result, context={
+        "use_case": {"title": result.job.template_name},
+        "requirements": {"domain": "your domain"}
+    })
+    reports.append(report)
+    
+    # Save as HTML with charts
+    formatter = HTMLReportFormatter()
+    charts = report.metadata.get('charts', {})
+    html = formatter.format_report(report, charts=charts)
+    
+    filename = f"{result.job.template_name.replace(' ', '_')}_report.html"
+    with open(filename, 'w') as f:
+        f.write(html)
+    
+    print(f"  Saved: {filename} ({len(charts)} charts)")
+
+print(f"\n✓ Generated {len(reports)} HTML reports with interactive charts")
 ```
 
 ---
