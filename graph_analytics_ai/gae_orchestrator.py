@@ -54,6 +54,7 @@ class AnalysisConfig:
     
     # Analysis identification
     name: str
+    algorithm: str  # pagerank, label_propagation, scc, wcc, betweenness - REQUIRED! (moved up to fix dataclass ordering)
     description: str = ""
     
     # Graph configuration
@@ -62,8 +63,7 @@ class AnalysisConfig:
     vertex_attributes: Optional[List[str]] = None  # Attributes to load (e.g., ['_key'])
     database: Optional[str] = None  # None = use default from config
     
-    # Algorithm configuration (NO DEFAULT - must be explicitly specified!)
-    algorithm: str  # pagerank, label_propagation, scc, wcc, betweenness - REQUIRED!
+    # Algorithm configuration
     algorithm_params: Dict[str, Any] = field(default_factory=dict)
     result_field: Optional[str] = None  # e.g., "pagerank_product_demand"
     
