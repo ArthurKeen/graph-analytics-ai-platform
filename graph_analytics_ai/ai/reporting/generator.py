@@ -44,7 +44,8 @@ class ReportGenerator:
     def __init__(
         self,
         llm_provider: Optional[LLMProvider] = None,
-        use_llm_interpretation: bool = True
+        use_llm_interpretation: bool = True,
+        enable_charts: bool = True
     ):
         """
         Initialize report generator.
@@ -52,9 +53,28 @@ class ReportGenerator:
         Args:
             llm_provider: LLM provider for interpretation (creates default if None)
             use_llm_interpretation: Whether to use LLM for insights
+            enable_charts: Whether to generate interactive charts
         """
         self.llm_provider = llm_provider or create_llm_provider()
         self.use_llm_interpretation = use_llm_interpretation
+        self.enable_charts = enable_charts
+        
+        # Import chart generator if enabled
+        if self.enable_charts:
+            try:
+                from .chart_generator import ChartGenerator, is_plotly_available
+                if is_plotly_available():
+                    self.chart_generator = ChartGenerator()
+                else:
+                    self.chart_generator = None
+                    self.enable_charts = False
+                    print("Warning: Plotly not available. Charts disabled. Install with: pip install plotly")
+            except ImportError:
+                self.chart_generator = None
+                self.enable_charts = False
+                print("Warning: Chart generation not available. Install plotly: pip install plotly")
+        else:
+            self.chart_generator = None
     
     def generate_report(
         self,
@@ -101,6 +121,10 @@ class ReportGenerator:
         
         # Generate summary
         report.summary = self._generate_summary(report)
+        
+        # Generate charts (if enabled)
+        if self.enable_charts and self.chart_generator and execution_result.results:
+            report.metadata['charts'] = self._generate_charts(execution_result)
         
         # Create report sections
         report.sections = self._create_sections(report, execution_result)
@@ -663,6 +687,40 @@ Focus on:
         ))
         
         return insights
+    
+    def _generate_charts(self, execution_result: ExecutionResult) -> Dict[str, str]:
+        """
+        Generate algorithm-specific charts for the report.
+        
+        Args:
+            execution_result: Execution result with algorithm and results
+            
+        Returns:
+            Dictionary of chart HTML strings
+        """
+        if not self.chart_generator:
+            return {}
+        
+        algorithm = execution_result.job.algorithm
+        results = execution_result.results
+        
+        try:
+            if algorithm == "pagerank":
+                return self.chart_generator.generate_pagerank_charts(results)
+            elif algorithm == "wcc":
+                return self.chart_generator.generate_wcc_charts(results)
+            elif algorithm == "scc":
+                return self.chart_generator.generate_scc_charts(results)
+            elif algorithm == "betweenness":
+                return self.chart_generator.generate_betweenness_charts(results)
+            elif algorithm == "label_propagation":
+                return self.chart_generator.generate_label_propagation_charts(results)
+            else:
+                # No specific chart generator for this algorithm
+                return {}
+        except Exception as e:
+            print(f"Warning: Chart generation failed for {algorithm}: {e}")
+            return {}
     
     def _create_sections(
         self,

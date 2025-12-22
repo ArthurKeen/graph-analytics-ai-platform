@@ -31,6 +31,7 @@ Transform business requirements into actionable graph analytics insights with AI
 
 **Intelligent Output**
 - Actionable intelligence reports with business context
+- **Interactive HTML reports with embedded Plotly charts** ✨ NEW
 - Insights with confidence scores and supporting evidence
 - Prioritized recommendations with effort/impact estimates
 - Multiple formats (Markdown, JSON, HTML, Text)
@@ -487,6 +488,51 @@ html = generator.format_report(report, ReportFormat.HTML)
 with open('report.md', 'w') as f:
     f.write(markdown)
 ```
+
+### Example 6: Interactive HTML Reports with Charts ✨ NEW
+
+```python
+from graph_analytics_ai.ai.reporting import (
+    ReportGenerator, 
+    HTMLReportFormatter,
+    is_plotly_available
+)
+
+# Check if charts are available
+if is_plotly_available():
+    # Generate report with interactive charts
+    generator = ReportGenerator(enable_charts=True)
+    report = generator.generate_report(execution_result, context={
+        "use_case": {"title": "Network Analysis"},
+        "requirements": {"domain": "social network"}
+    })
+    
+    # Format as HTML with embedded Plotly charts
+    html_formatter = HTMLReportFormatter()
+    charts = report.metadata.get('charts', {})
+    html_content = html_formatter.format_report(report, charts=charts)
+    
+    # Save interactive HTML report
+    with open('report.html', 'w') as f:
+        f.write(html_content)
+    
+    print(f"✅ Generated report with {len(charts)} interactive charts!")
+    # Charts include:
+    # - Top influencers/components bar charts
+    # - Distribution histograms (log-scale)
+    # - Connectivity pie charts
+    # - Fully interactive (hover, zoom, pan)
+else:
+    print("Install plotly for interactive charts: pip install plotly")
+```
+
+**Chart Types by Algorithm:**
+- **PageRank**: Top influencers, rank distribution, cumulative influence
+- **WCC**: Component sizes, distribution, connectivity overview
+- **Betweenness**: Bridge nodes, centrality distribution
+- **Label Propagation**: Community sizes, distribution
+
+See [Interactive Report Generation Guide](docs/INTERACTIVE_REPORT_GENERATION.md) for details.
 
 ---
 
