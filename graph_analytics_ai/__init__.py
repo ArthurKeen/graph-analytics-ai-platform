@@ -12,62 +12,57 @@ Key Features:
 - Comprehensive error handling and retry logic
 """
 
-__version__ = "1.2.0"
+__version__ = "3.0.0"
 
 from .config import (
     get_arango_config,
     get_gae_config,
     GAEConfig,
     ArangoConfig,
-    DeploymentMode
+    DeploymentMode,
 )
 from .db_connection import get_db_connection, get_connection_info
-from .gae_connection import (
-    GAEManager,
-    GenAIGAEConnection,
-    GAEConnectionBase
-)
+from .gae_connection import GAEManager, GenAIGAEConnection, GAEConnectionBase
 from .gae_orchestrator import (
     GAEOrchestrator,
     AnalysisConfig,
     AnalysisResult,
-    AnalysisStatus
+    AnalysisStatus,
 )
 from .utils import (
     validate_endpoint_format,
     check_password_format,
     validate_credentials,
-    get_credential_validation_report
+    get_credential_validation_report,
 )
 from . import results, queries, export
 
 __all__ = [
     # Configuration
-    'get_arango_config',
-    'get_gae_config',
-    'GAEConfig',
-    'ArangoConfig',
-    'DeploymentMode',
+    "get_arango_config",
+    "get_gae_config",
+    "GAEConfig",
+    "ArangoConfig",
+    "DeploymentMode",
     # Database
-    'get_db_connection',
-    'get_connection_info',
+    "get_db_connection",
+    "get_connection_info",
     # GAE Connections
-    'GAEManager',
-    'GenAIGAEConnection',
-    'GAEConnectionBase',
+    "GAEManager",
+    "GenAIGAEConnection",
+    "GAEConnectionBase",
     # Orchestration
-    'GAEOrchestrator',
-    'AnalysisConfig',
-    'AnalysisResult',
-    'AnalysisStatus',
+    "GAEOrchestrator",
+    "AnalysisConfig",
+    "AnalysisResult",
+    "AnalysisStatus",
     # Utilities
-    'validate_endpoint_format',
-    'check_password_format',
-    'validate_credentials',
-    'get_credential_validation_report',
+    "validate_endpoint_format",
+    "check_password_format",
+    "validate_credentials",
+    "get_credential_validation_report",
     # Result Management Modules
-    'results',
-    'queries',
-    'export',
+    "results",
+    "queries",
+    "export",
 ]
-

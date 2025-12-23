@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-12-16T07:54:37.057096",
+  "traditional": {
+    "success": true,
+    "data": {
+      "duration": 5.063031911849976,
+      "use_cases": 1,
+      "templates": 1,
+      "valid_templates": 1
+    }
+  },
+  "agentic": {
+    "success": true,
+    "data": {
+      "duration": 8.912927865982056,
+      "use_cases": 2,
+      "templates": 2,
+      "executions": 2,
+      "reports": 2
+    }
+  }
+}

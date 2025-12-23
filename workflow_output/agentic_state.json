@@ -1,0 +1,210 @@
+{
+  "workflow": {
+    "current_step": "reporting",
+    "completed_steps": [
+      "schema_analysis",
+      "requirements_extraction",
+      "use_case_generation",
+      "template_generation",
+      "execution",
+      "reporting"
+    ],
+    "messages_count": 12,
+    "errors_count": 0,
+    "started_at": "2025-12-12T18:31:52.514522",
+    "metadata": {}
+  },
+  "messages": [
+    {
+      "from_agent": "Orchestrator",
+      "to_agent": "SchemaAnalyst",
+      "message_type": "task",
+      "content": {
+        "step": "schema_analysis",
+        "instructions": "Execute schema_analysis"
+      },
+      "timestamp": "2025-12-12T18:31:52.514565",
+      "reply_to": null,
+      "message_id": "msg_1765589512.514566"
+    },
+    {
+      "from_agent": "SchemaAnalyst",
+      "to_agent": "orchestrator",
+      "message_type": "result",
+      "content": {
+        "status": "success",
+        "schema": {
+          "vertices": 3,
+          "edges": 5,
+          "total_documents": 7214,
+          "total_edges": 6499
+        },
+        "analysis": {
+          "domain": "Unknown (LLM analysis unavailable)",
+          "complexity": 3.6666666666666665
+        }
+      },
+      "timestamp": "2025-12-12T18:31:57.538643",
+      "reply_to": "msg_1765589512.514566",
+      "message_id": "msg_1765589517.538658"
+    },
+    {
+      "from_agent": "Orchestrator",
+      "to_agent": "RequirementsAnalyst",
+      "message_type": "task",
+      "content": {
+        "step": "requirements_extraction",
+        "instructions": "Execute requirements_extraction"
+      },
+      "timestamp": "2025-12-12T18:31:57.538707",
+      "reply_to": null,
+      "message_id": "msg_1765589517.538709"
+    },
+    {
+      "from_agent": "RequirementsAnalyst",
+      "to_agent": "orchestrator",
+      "message_type": "result",
+      "content": {
+        "status": "success",
+        "requirements": {
+          "domain": "Graph Analytics",
+          "objectives_count": 1,
+          "requirements_count": 1
+        }
+      },
+      "timestamp": "2025-12-12T18:31:57.538825",
+      "reply_to": "msg_1765589517.538709",
+      "message_id": "msg_1765589517.538827"
+    },
+    {
+      "from_agent": "Orchestrator",
+      "to_agent": "UseCaseExpert",
+      "message_type": "task",
+      "content": {
+        "step": "use_case_generation",
+        "instructions": "Execute use_case_generation"
+      },
+      "timestamp": "2025-12-12T18:31:57.538843",
+      "reply_to": null,
+      "message_id": "msg_1765589517.538845"
+    },
+    {
+      "from_agent": "UseCaseExpert",
+      "to_agent": "orchestrator",
+      "message_type": "result",
+      "content": {
+        "status": "success",
+        "use_cases_count": 2,
+        "use_cases": [
+          {
+            "id": "UC-001",
+            "title": "Analyze Graph Structure",
+            "use_case_type": "pattern"
+          },
+          {
+            "id": "UC-R01",
+            "title": "Requirement: REQ-001",
+            "use_case_type": "centrality"
+          }
+        ]
+      },
+      "timestamp": "2025-12-12T18:31:57.539087",
+      "reply_to": "msg_1765589517.538845",
+      "message_id": "msg_1765589517.539093"
+    },
+    {
+      "from_agent": "Orchestrator",
+      "to_agent": "TemplateEngineer",
+      "message_type": "task",
+      "content": {
+        "step": "template_generation",
+        "instructions": "Execute template_generation"
+      },
+      "timestamp": "2025-12-12T18:31:57.539111",
+      "reply_to": null,
+      "message_id": "msg_1765589517.539113"
+    },
+    {
+      "from_agent": "TemplateEngineer",
+      "to_agent": "orchestrator",
+      "message_type": "result",
+      "content": {
+        "status": "success",
+        "templates_count": 2,
+        "templates": [
+          {
+            "name": "UC-001: Analyze Graph Structure",
+            "algorithm": "AlgorithmParameters(algorithm=<AlgorithmType.PAGERANK: 'pagerank'>, parameters={'threshold': 0.0001, 'max_iterations': 100, 'damping_factor': 0.85})",
+            "engine_size": "medium"
+          },
+          {
+            "name": "UC-R01: Requirement: REQ-001",
+            "algorithm": "AlgorithmParameters(algorithm=<AlgorithmType.PAGERANK: 'pagerank'>, parameters={'threshold': 0.0001, 'max_iterations': 100, 'damping_factor': 0.85})",
+            "engine_size": "medium"
+          }
+        ]
+      },
+      "timestamp": "2025-12-12T18:31:57.539280",
+      "reply_to": "msg_1765589517.539113",
+      "message_id": "msg_1765589517.539282"
+    },
+    {
+      "from_agent": "Orchestrator",
+      "to_agent": "ExecutionSpecialist",
+      "message_type": "task",
+      "content": {
+        "step": "execution",
+        "instructions": "Execute execution"
+      },
+      "timestamp": "2025-12-12T18:31:57.539290",
+      "reply_to": null,
+      "message_id": "msg_1765589517.539291"
+    },
+    {
+      "from_agent": "ExecutionSpecialist",
+      "to_agent": "orchestrator",
+      "message_type": "result",
+      "content": {
+        "status": "success",
+        "total": 2,
+        "successful": 2,
+        "failed": 0
+      },
+      "timestamp": "2025-12-12T18:32:01.957855",
+      "reply_to": "msg_1765589517.539291",
+      "message_id": "msg_1765589521.957871"
+    },
+    {
+      "from_agent": "Orchestrator",
+      "to_agent": "ReportingSpecialist",
+      "message_type": "task",
+      "content": {
+        "step": "reporting",
+        "instructions": "Execute reporting"
+      },
+      "timestamp": "2025-12-12T18:32:01.957890",
+      "reply_to": null,
+      "message_id": "msg_1765589521.957891"
+    },
+    {
+      "from_agent": "ReportingSpecialist",
+      "to_agent": "orchestrator",
+      "message_type": "result",
+      "content": {
+        "status": "success",
+        "reports_count": 2,
+        "total_insights": 2,
+        "total_recommendations": 2
+      },
+      "timestamp": "2025-12-12T18:32:01.958020",
+      "reply_to": "msg_1765589521.957891",
+      "message_id": "msg_1765589521.95802"
+    }
+  ],
+  "results": {
+    "use_cases": 2,
+    "templates": 2,
+    "executions": 2,
+    "reports": 2
+  }
+}
