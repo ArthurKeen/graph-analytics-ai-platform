@@ -4,13 +4,13 @@
 
 The **Workflow Tracing System** provides comprehensive observability for agentic workflows, allowing you to:
 
-- 📊 **Track every event** in your workflow execution
-- ⏱️ **Measure performance** of agents, LLM calls, and tools
-- 💰 **Estimate costs** of LLM usage
-- 🐛 **Debug issues** with detailed logging and state snapshots
-- 📈 **Visualize** agent interactions and timeline
-- 🔄 **Replay** past executions for analysis
-- 📉 **Compare** different workflow runs
+- **Track every event** in your workflow execution
+- ⏱ **Measure performance** of agents, LLM calls, and tools
+- **Estimate costs** of LLM usage
+- **Debug issues** with detailed logging and state snapshots
+- **Visualize** agent interactions and timeline
+- **Replay** past executions for analysis
+- **Compare** different workflow runs
 
 ---
 
@@ -23,8 +23,8 @@ from graph_analytics_ai.ai.agents import AgenticWorkflowRunner
 
 # Enable tracing (default: enabled)
 runner = AgenticWorkflowRunner(
-    graph_name="my_graph",
-    enable_tracing=True
+ graph_name="my_graph",
+ enable_tracing=True
 )
 
 state = runner.run()
@@ -130,9 +130,9 @@ Enable verbose logging and state snapshots:
 
 ```python
 runner = AgenticWorkflowRunner(
-    graph_name="my_graph",
-    enable_tracing=True,
-    enable_debug_mode=True  # Verbose logging
+ graph_name="my_graph",
+ enable_tracing=True,
+ enable_debug_mode=True # Verbose logging
 )
 
 state = runner.run()
@@ -161,12 +161,12 @@ replayer = TraceReplayer("./traces/trace_123.json")
 replayer.print_summary()
 
 # Replay events (with adjustable speed)
-replayer.replay_timeline(speed=2.0)  # 2x speed
+replayer.replay_timeline(speed=2.0) # 2x speed
 
 # Find bottlenecks
 bottlenecks = replayer.find_bottlenecks(threshold_ms=1000)
 for bottleneck in bottlenecks:
-    print(f"{bottleneck['agent']}: {bottleneck['duration_ms']}ms")
+ print(f"{bottleneck['agent']}: {bottleneck['duration_ms']}ms")
 
 # Analyze agent communication
 comm_analysis = replayer.analyze_agent_communication()
@@ -182,8 +182,8 @@ Compare two workflow runs:
 from graph_analytics_ai.ai.tracing.replay import compare_traces
 
 comparison = compare_traces(
-    "./traces/trace_old.json",
-    "./traces/trace_new.json"
+ "./traces/trace_old.json",
+ "./traces/trace_new.json"
 )
 
 print(f"Time difference: {comparison['performance']['total_time_ms']['diff']}ms")
@@ -217,10 +217,10 @@ state = runner.run()
 runner.export_trace("./workflow_traces")
 
 # Outputs:
-# - trace_{id}.json              (complete data)
-# - trace_{id}_timeline.html     (interactive timeline)
-# - trace_{id}_agents.svg        (interaction diagram)
-# - trace_{id}_report.md         (markdown report)
+# - trace_{id}.json (complete data)
+# - trace_{id}_timeline.html (interactive timeline)
+# - trace_{id}_agents.svg (interaction diagram)
+# - trace_{id}_report.md (markdown report)
 ```
 
 ### Pattern 3: Debug Mode
@@ -228,9 +228,9 @@ runner.export_trace("./workflow_traces")
 ```python
 # Enable debug mode for troubleshooting
 runner = AgenticWorkflowRunner(
-    graph_name="my_graph",
-    enable_tracing=True,
-    enable_debug_mode=True
+ graph_name="my_graph",
+ enable_tracing=True,
+ enable_debug_mode=True
 )
 
 state = runner.run()
@@ -239,7 +239,7 @@ state = runner.run()
 runner.export_trace("./debug_traces")
 
 # Additional output:
-# - debug_log_{trace_id}.json    (detailed debug log)
+# - debug_log_{trace_id}.json (detailed debug log)
 ```
 
 ### Pattern 4: Performance Analysis
@@ -254,17 +254,17 @@ trace = runner.get_trace()
 
 # Analyze performance
 if trace.performance:
-    perf = trace.performance
-    
-    print("Slowest Agents:")
-    for agent_info in perf.get_slowest_agents(5):
-        print(f"  {agent_info['agent']}: {agent_info['total_time_ms']}ms")
-    
-    print("\nTop LLM Consumers:")
-    for agent_info in perf.get_top_llm_consumers(5):
-        print(f"  {agent_info['agent']}: {agent_info['total_tokens']} tokens")
-    
-    print(f"\nEstimated Cost: ${perf.llm_cost_estimate_usd:.4f}")
+ perf = trace.performance
+ 
+ print("Slowest Agents:")
+ for agent_info in perf.get_slowest_agents(5):
+ print(f" {agent_info['agent']}: {agent_info['total_time_ms']}ms")
+ 
+ print("\nTop LLM Consumers:")
+ for agent_info in perf.get_top_llm_consumers(5):
+ print(f" {agent_info['agent']}: {agent_info['total_tokens']} tokens")
+ 
+ print(f"\nEstimated Cost: ${perf.llm_cost_estimate_usd:.4f}")
 ```
 
 ### Pattern 5: Replay and Investigation
@@ -278,15 +278,15 @@ replayer = TraceReplayer("./traces/trace_problematic_run.json")
 # Find what took too long
 bottlenecks = replayer.find_bottlenecks(threshold_ms=2000)
 for b in bottlenecks:
-    print(f"Slow operation: {b['agent']} - {b['event_type']}")
-    print(f"  Duration: {b['duration_ms']}ms")
-    print(f"  Data: {b['data']}")
+ print(f"Slow operation: {b['agent']} - {b['event_type']}")
+ print(f" Duration: {b['duration_ms']}ms")
+ print(f" Data: {b['data']}")
 
 # Analyze agent communication patterns
 comm = replayer.analyze_agent_communication()
 print(f"\nMost talkative agent pairs:")
 for pair, count in comm['most_active_pairs'][:5]:
-    print(f"  {pair}: {count} messages")
+ print(f" {pair}: {count} messages")
 ```
 
 ### Pattern 6: Continuous Monitoring
@@ -296,32 +296,32 @@ import os
 from datetime import datetime
 
 def run_monitored_workflow(graph_name: str):
-    """Run workflow with automatic trace export."""
-    
-    # Create timestamped trace directory
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    trace_dir = f"./traces/{graph_name}/{timestamp}"
-    
-    # Run workflow
-    runner = AgenticWorkflowRunner(
-        graph_name=graph_name,
-        enable_tracing=True
-    )
-    
-    state = runner.run()
-    
-    # Export trace
-    runner.export_trace(trace_dir, formats=['json', 'html', 'markdown'])
-    
-    # Print summary
-    runner.print_trace_summary()
-    
-    # Check for issues
-    trace = runner.get_trace()
-    if trace.performance and trace.performance.total_errors > 0:
-        print(f"\n⚠️  Warning: {trace.performance.total_errors} errors occurred")
-    
-    return state, trace_dir
+ """Run workflow with automatic trace export."""
+ 
+ # Create timestamped trace directory
+ timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+ trace_dir = f"./traces/{graph_name}/{timestamp}"
+ 
+ # Run workflow
+ runner = AgenticWorkflowRunner(
+ graph_name=graph_name,
+ enable_tracing=True
+ )
+ 
+ state = runner.run()
+ 
+ # Export trace
+ runner.export_trace(trace_dir, formats=['json', 'html', 'markdown'])
+ 
+ # Print summary
+ runner.print_trace_summary()
+ 
+ # Check for issues
+ trace = runner.get_trace()
+ if trace.performance and trace.performance.total_errors > 0:
+ print(f"\n Warning: {trace.performance.total_errors} errors occurred")
+ 
+ return state, trace_dir
 
 # Use it
 state, trace_dir = run_monitored_workflow("production_graph")
@@ -338,17 +338,17 @@ Every event contains:
 
 ```python
 {
-    "event_id": "evt-123",
-    "event_type": "agent_invoked",
-    "timestamp": "2025-12-18T10:30:45.123Z",
-    "agent_name": "SchemaAnalyst",
-    "duration_ms": 1234.56,
-    "data": {
-        "key": "value",
-        ...
-    },
-    "parent_event_id": "evt-122",  # For nested events
-    "metadata": {}
+ "event_id": "evt-123",
+ "event_type": "agent_invoked",
+ "timestamp": "2025-12-18T10:30:45.123Z",
+ "agent_name": "SchemaAnalyst",
+ "duration_ms": 1234.56,
+ "data": {
+ "key": "value",
+ ...
+ },
+ "parent_event_id": "evt-122", # For nested events
+ "metadata": {}
 }
 ```
 
@@ -367,29 +367,29 @@ Every event contains:
 
 ```python
 {
-    "workflow_id": "workflow-123",
-    "total_time_ms": 45000,
-    "steps_completed": 6,
-    "total_llm_calls": 24,
-    "total_llm_tokens": 125000,
-    "estimated_cost_usd": 3.75,
-    "total_messages": 18,
-    "total_errors": 0,
-    
-    "agent_metrics": {
-        "SchemaAnalyst": {
-            "invocation_count": 1,
-            "total_time_ms": 5000,
-            "avg_time_ms": 5000,
-            "llm_calls": 3,
-            "total_tokens": 15000,
-            ...
-        },
-        ...
-    },
-    
-    "slowest_agents": [...],
-    "top_llm_consumers": [...]
+ "workflow_id": "workflow-123",
+ "total_time_ms": 45000,
+ "steps_completed": 6,
+ "total_llm_calls": 24,
+ "total_llm_tokens": 125000,
+ "estimated_cost_usd": 3.75,
+ "total_messages": 18,
+ "total_errors": 0,
+ 
+ "agent_metrics": {
+ "SchemaAnalyst": {
+ "invocation_count": 1,
+ "total_time_ms": 5000,
+ "avg_time_ms": 5000,
+ "llm_calls": 3,
+ "total_tokens": 15000,
+ ...
+ },
+ ...
+ },
+ 
+ "slowest_agents": [...],
+ "top_llm_consumers": [...]
 }
 ```
 
@@ -402,8 +402,8 @@ Every event contains:
 ```python
 # Enable tracing by default
 runner = AgenticWorkflowRunner(
-    graph_name="production_graph",
-    enable_tracing=True  # Default, but explicit is better
+ graph_name="production_graph",
+ enable_tracing=True # Default, but explicit is better
 )
 ```
 
@@ -420,8 +420,8 @@ runner = AgenticWorkflowRunner(
 enable_debug = os.getenv("DEBUG_MODE", "false").lower() == "true"
 
 runner = AgenticWorkflowRunner(
-    graph_name="my_graph",
-    enable_debug_mode=enable_debug
+ graph_name="my_graph",
+ enable_debug_mode=enable_debug
 )
 ```
 
@@ -443,21 +443,21 @@ import json
 from pathlib import Path
 
 def collect_performance_metrics(traces_dir: str):
-    """Collect metrics from all traces."""
-    metrics = []
-    
-    for trace_file in Path(traces_dir).glob("**/trace_*.json"):
-        with open(trace_file) as f:
-            trace_data = json.load(f)
-            if trace_data.get('performance'):
-                metrics.append({
-                    'trace_id': trace_data['trace_id'],
-                    'total_time_ms': trace_data['performance']['total_time_ms'],
-                    'llm_cost': trace_data['performance']['estimated_cost_usd'],
-                    'errors': trace_data['performance']['total_errors']
-                })
-    
-    return metrics
+ """Collect metrics from all traces."""
+ metrics = []
+ 
+ for trace_file in Path(traces_dir).glob("**/trace_*.json"):
+ with open(trace_file) as f:
+ trace_data = json.load(f)
+ if trace_data.get('performance'):
+ metrics.append({
+ 'trace_id': trace_data['trace_id'],
+ 'total_time_ms': trace_data['performance']['total_time_ms'],
+ 'llm_cost': trace_data['performance']['estimated_cost_usd'],
+ 'errors': trace_data['performance']['total_errors']
+ })
+ 
+ return metrics
 
 # Analyze trends
 metrics = collect_performance_metrics("./traces")
@@ -469,33 +469,33 @@ print(f"Average workflow time: {avg_time/1000:.2f}s")
 
 ```python
 def check_trace_health(trace):
-    """Check if trace indicates issues."""
-    issues = []
-    
-    if trace.performance:
-        perf = trace.performance
-        
-        # Check for errors
-        if perf.total_errors > 0:
-            issues.append(f"Errors: {perf.total_errors}")
-        
-        # Check for slow execution
-        if perf.total_time_ms > 60000:  # > 1 minute
-            issues.append(f"Slow execution: {perf.total_time_ms/1000:.1f}s")
-        
-        # Check for high costs
-        if perf.llm_cost_estimate_usd > 1.0:
-            issues.append(f"High cost: ${perf.llm_cost_estimate_usd:.2f}")
-    
-    return issues
+ """Check if trace indicates issues."""
+ issues = []
+ 
+ if trace.performance:
+ perf = trace.performance
+ 
+ # Check for errors
+ if perf.total_errors > 0:
+ issues.append(f"Errors: {perf.total_errors}")
+ 
+ # Check for slow execution
+ if perf.total_time_ms > 60000: # > 1 minute
+ issues.append(f"Slow execution: {perf.total_time_ms/1000:.1f}s")
+ 
+ # Check for high costs
+ if perf.llm_cost_estimate_usd > 1.0:
+ issues.append(f"High cost: ${perf.llm_cost_estimate_usd:.2f}")
+ 
+ return issues
 
 # Use it
 trace = runner.get_trace()
 issues = check_trace_health(trace)
 if issues:
-    print("⚠️  Issues detected:")
-    for issue in issues:
-        print(f"  - {issue}")
+ print(" Issues detected:")
+ for issue in issues:
+ print(f" - {issue}")
 ```
 
 ---
@@ -506,13 +506,13 @@ if issues:
 
 ```python
 AgenticWorkflowRunner(
-    db_connection=None,
-    llm_provider=None,
-    graph_name: str = "graph",
-    core_collections: Optional[List[str]] = None,
-    satellite_collections: Optional[List[str]] = None,
-    enable_tracing: bool = True,        # NEW
-    enable_debug_mode: bool = False     # NEW
+ db_connection=None,
+ llm_provider=None,
+ graph_name: str = "graph",
+ core_collections: Optional[List[str]] = None,
+ satellite_collections: Optional[List[str]] = None,
+ enable_tracing: bool = True, # NEW
+ enable_debug_mode: bool = False # NEW
 )
 ```
 
@@ -648,12 +648,12 @@ Debug mode adds additional overhead:
 
 The tracing system provides comprehensive observability without significant overhead. Use it to:
 
-1. ✅ **Monitor** production workflows
-2. ✅ **Debug** issues with detailed logs
-3. ✅ **Optimize** performance bottlenecks
-4. ✅ **Track** LLM costs
-5. ✅ **Analyze** agent interactions
-6. ✅ **Compare** different runs
+1. **Monitor** production workflows
+2. **Debug** issues with detailed logs
+3. **Optimize** performance bottlenecks
+4. **Track** LLM costs
+5. **Analyze** agent interactions
+6. **Compare** different runs
 
 For questions or issues, see the [main documentation](../README.md) or [file an issue](https://github.com/ArthurKeen/graph-analytics-ai/issues).
 

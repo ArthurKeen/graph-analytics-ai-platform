@@ -1,12 +1,12 @@
 # Premion Household Identity Resolution - WCC Analysis Summary
 
-**Date**: December 17, 2025  
-**Database**: `sharded_premion_graph` on ArangoDB AMP  
+**Date**: December 17, 2025 
+**Database**: `sharded_premion_graph` on ArangoDB AMP 
 **Use Case**: Household Identity Resolution using Weakly Connected Components (WCC)
 
 ---
 
-## ✅ Successfully Completed
+## Successfully Completed
 
 ### 1. Database Connection & Analysis
 - **Connected to**: `sharded_premion_graph` database
@@ -14,9 +14,9 @@
 - **Graph**: `PremionIdentityGraph`
 - **Total Data**: 211,364 vertices, 264,836 edges
 - **Key Collections**:
-  - Device: 63,457 documents
-  - IP: 58,980 documents  
-  - SEEN_ON_IP edges: 59,772 connections
+ - Device: 63,457 documents
+ - IP: 58,980 documents 
+ - SEEN_ON_IP edges: 59,772 connections
 
 ### 2. Use Case Analysis & Template Generation
 Generated 5 GAE templates for all Premion use cases:
@@ -32,21 +32,21 @@ Generated 5 GAE templates for all Premion use cases:
 **Location**: `premion_gae_templates/`
 
 ### 3. GAE Engine Deployment
-- **Status**: ✅ Successfully deployed multiple times
+- **Status**: Successfully deployed multiple times
 - **Engine Size**: e8 (medium) - appropriate for ~200K nodes
 - **Deployment Time**: ~3-5 minutes per engine
 - **Engine ID (latest)**: `zy7zdl6yqlttrgd1cpcq`
 
 ### 4. Graph Loading
-- **Status**: ✅ Success
+- **Status**: Success
 - **Collections Loaded**: Device, IP
 - **Edge Collection**: SEEN_ON_IP
 - **Graph ID**: 1
 - **Load Time**: ~5 seconds
 
 ### 5. WCC Algorithm Execution
-- **Status**: ✅ Computation Complete
-- **Job ID**: 2  
+- **Status**: Computation Complete
+- **Job ID**: 2 
 - **Execution Time**: 0.3 seconds
 - **Progress**: 100% (1/1)
 - **Algorithm**: Weakly Connected Components
@@ -54,7 +54,7 @@ Generated 5 GAE templates for all Premion use cases:
 
 ---
 
-## ❌ Blocking Issue
+## Blocking Issue
 
 ### `store_results` API Failure with AMP Sharded Databases
 
@@ -70,10 +70,10 @@ Generated 5 GAE templates for all Premion use cases:
 **API Call Used**:
 ```python
 gae.store_results(
-    target_collection="household_components",
-    job_ids=["2"],
-    attribute_names=["component_id"],
-    database="sharded_premion_graph"
+ target_collection="household_components",
+ job_ids=["2"],
+ attribute_names=["component_id"],
+ database="sharded_premion_graph"
 )
 ```
 
@@ -90,7 +90,7 @@ gae.store_results(
 
 ---
 
-## 🔍 Root Cause Analysis
+## Root Cause Analysis
 
 ### Hypothesis 1: Async Write Not Completing
 The `store_results` API appears to be **asynchronous** - it accepts the request but actual database writes happen in background. The write may be failing silently or timing out for sharded databases.
@@ -106,50 +106,50 @@ GAE engines auto-shutdown after ~15-20 minutes of inactivity. If the background 
 
 ---
 
-## 🛠️ Technical Fixes Applied
+## Technical Fixes Applied
 
 ### 1. Fixed Job Status Detection
-**Issue**: Job status showed "unknown" continuously  
+**Issue**: Job status showed "unknown" continuously 
 **Fix**: Use `progress == total` as primary completion indicator (not `state` field)
 ```python
 if progress >= total and total > 0:
-    # Job is complete
+ # Job is complete
 ```
 
 ### 2. Added Result Verification
-**Issue**: API reported success but no data written  
+**Issue**: API reported success but no data written 
 **Fix**: Poll database to verify collection creation and data presence
 ```python
 while time.time() - start_wait < max_wait:
-    if db.has_collection(target_collection):
-        if collection.count() > 0:
-            # Verified!
+ if db.has_collection(target_collection):
+ if collection.count() > 0:
+ # Verified!
 ```
 
 ### 3. Proper Token Management
-**Issue**: Overnight token expiry  
+**Issue**: Overnight token expiry 
 **Fix**: Fresh token generated on each run
 
 ---
 
-## 📊 What Was Accomplished
+## What Was Accomplished
 
 Despite the storage issue, we successfully:
 
-1. ✅ Connected to Premion production database
-2. ✅ Analyzed graph schema (211K vertices, 264K edges)
-3. ✅ Parsed business use cases from `consumer_media_use_cases.md`
-4. ✅ Generated 5 production-ready GAE templates
-5. ✅ Deployed GAE engines on AMP
-6. ✅ Loaded full graph (60K devices + 60K IPs) into GAE
-7. ✅ Executed WCC algorithm successfully (0.3s)
-8. ✅ Identified household clusters in memory
+1. Connected to Premion production database
+2. Analyzed graph schema (211K vertices, 264K edges)
+3. Parsed business use cases from `consumer_media_use_cases.md`
+4. Generated 5 production-ready GAE templates
+5. Deployed GAE engines on AMP
+6. Loaded full graph (60K devices + 60K IPs) into GAE
+7. Executed WCC algorithm successfully (0.3s)
+8. Identified household clusters in memory
 
 **Missing**: Persisting results back to the database
 
 ---
 
-## 🎯 Recommended Next Steps
+## Recommended Next Steps
 
 ### Option 1: Contact ArangoDB Support (Recommended)
 **Issue**: `store_results` API not working with AMP sharded databases
@@ -188,7 +188,7 @@ If you have self-managed ArangoDB deployment:
 
 ---
 
-## 📁 Generated Artifacts
+## Generated Artifacts
 
 All files are in the project root directory:
 
@@ -211,7 +211,7 @@ All files are in the project root directory:
 
 ---
 
-## 💡 Value Delivered (When Storage Works)
+## Value Delivered (When Storage Works)
 
 Once the `store_results` issue is resolved, you will have:
 
@@ -224,19 +224,19 @@ Once the `store_results` issue is resolved, you will have:
 ```javascript
 // Find household for a device
 FOR doc IN household_components
-    FILTER doc._id == 'Device/YOUR_ID'
-    RETURN doc.component_id
+ FILTER doc._id == 'Device/YOUR_ID'
+ RETURN doc.component_id
 
 // Find all devices in same household
 FOR doc IN household_components
-    FILTER doc.component_id == 'HOUSEHOLD_ID'
-    FILTER doc._id LIKE 'Device/%'
-    RETURN doc
+ FILTER doc.component_id == 'HOUSEHOLD_ID'
+ FILTER doc._id LIKE 'Device/%'
+ RETURN doc
 
 // Count households by size
 FOR doc IN household_components
-    COLLECT household = doc.component_id WITH COUNT INTO size
-    RETURN {household, size}
+ COLLECT household = doc.component_id WITH COUNT INTO size
+ RETURN {household, size}
 ```
 
 ### Business Impact
@@ -248,17 +248,17 @@ FOR doc IN household_components
 
 ---
 
-## 🏁 Current Status
+## Current Status
 
-**WCC Computation**: ✅ Complete  
-**Results in GAE Memory**: ✅ Available (Job ID: 2)  
-**Results in Database**: ❌ **BLOCKED** - `store_results` API issue  
+**WCC Computation**: Complete 
+**Results in GAE Memory**: Available (Job ID: 2) 
+**Results in Database**: **BLOCKED** - `store_results` API issue 
 
 **Waiting on**: Resolution of `store_results` API limitation with AMP sharded databases
 
 ---
 
-## 📞 Support Information
+## Support Information
 
 **ArangoDB AMP Support**:
 - Submit ticket through ArangoDB Cloud Portal

@@ -1,7 +1,7 @@
 # Interactive Report Generation with Charts
 
-**Feature Status**: ✅ Implemented  
-**Version**: 1.1.0  
+**Feature Status**: Implemented 
+**Version**: 1.1.0 
 **Requirements**: `plotly` (optional, for charts)
 
 ---
@@ -10,11 +10,11 @@
 
 The Graph Analytics AI Platform now generates **beautiful, interactive HTML reports** with embedded Plotly charts. Reports include:
 
-- 📊 **Interactive visualizations** (hover, zoom, pan)
-- 💡 **AI-generated insights** with confidence scores
-- 🎯 **Actionable recommendations** prioritized by impact
-- 📈 **Algorithm-specific charts** tailored to each analysis type
-- 🎨 **Professional design** ready for stakeholder presentations
+- **Interactive visualizations** (hover, zoom, pan)
+- **AI-generated insights** with confidence scores
+- **Actionable recommendations** prioritized by impact
+- **Algorithm-specific charts** tailored to each analysis type
+- **Professional design** ready for stakeholder presentations
 
 ---
 
@@ -44,8 +44,8 @@ generator = ReportGenerator(enable_charts=True)
 
 # Generate report from execution results
 report = generator.generate_report(execution_result, context={
-    "use_case": {"title": "Household Identity Resolution"},
-    "requirements": {"domain": "advertising technology"}
+ "use_case": {"title": "Household Identity Resolution"},
+ "requirements": {"domain": "advertising technology"}
 })
 
 # Format as interactive HTML
@@ -55,13 +55,13 @@ html_content = html_formatter.format_report(report, charts=charts)
 
 # Save to file
 with open('report.html', 'w') as f:
-    f.write(html_content)
+ f.write(html_content)
 ```
 
 ### Result
-✅ Interactive HTML file with embedded Plotly charts  
-✅ No external dependencies (charts embedded in HTML)  
-✅ Works offline, shareable via email
+ Interactive HTML file with embedded Plotly charts 
+ No external dependencies (charts embedded in HTML) 
+ Works offline, shareable via email
 
 ---
 
@@ -73,19 +73,19 @@ Each algorithm gets tailored visualizations:
 
 **Charts Generated:**
 1. **Top Influencers Bar Chart**
-   - Shows top 20 nodes by PageRank score
-   - Hover to see exact scores
-   - Color-coded by influence level
+ - Shows top 20 nodes by PageRank score
+ - Hover to see exact scores
+ - Color-coded by influence level
 
 2. **Rank Distribution Histogram**
-   - Log-scale distribution of all ranks
-   - Identifies power-law patterns
-   - Highlights concentration
+ - Log-scale distribution of all ranks
+ - Identifies power-law patterns
+ - Highlights concentration
 
 3. **Cumulative Influence**
-   - Shows % of total influence by top N nodes
-   - "80/20 rule" visualization
-   - Helps identify critical nodes
+ - Shows % of total influence by top N nodes
+ - "80/20 rule" visualization
+ - Helps identify critical nodes
 
 **Example Output:**
 ```
@@ -96,19 +96,19 @@ Top 10 nodes control 82% of network influence
 
 **Charts Generated:**
 1. **Top 10 Largest Components**
-   - Bar chart of component sizes
-   - Shows node counts per component
-   - Identifies main cluster
+ - Bar chart of component sizes
+ - Shows node counts per component
+ - Identifies main cluster
 
 2. **Component Size Distribution**
-   - Histogram of all component sizes
-   - Log-scale for skewed distributions
-   - Reveals fragmentation patterns
+ - Histogram of all component sizes
+ - Log-scale for skewed distributions
+ - Reveals fragmentation patterns
 
 3. **Connectivity Overview (Pie Chart)**
-   - Donut chart showing cluster breakdown
-   - Main cluster vs. others
-   - Total component count in center
+ - Donut chart showing cluster breakdown
+ - Main cluster vs. others
+ - Total component count in center
 
 **Example Output:**
 ```
@@ -120,14 +120,14 @@ Main cluster: 155,131 nodes (97.43%)
 
 **Charts Generated:**
 1. **Top Bridge Nodes**
-   - Bar chart of highest betweenness scores
-   - Identifies critical connection points
-   - Highlights network bottlenecks
+ - Bar chart of highest betweenness scores
+ - Identifies critical connection points
+ - Highlights network bottlenecks
 
 2. **Betweenness Distribution**
-   - Histogram of all betweenness values
-   - Log-scale for highly skewed data
-   - Shows bridge node rarity
+ - Histogram of all betweenness values
+ - Log-scale for highly skewed data
+ - Shows bridge node rarity
 
 **Example Output:**
 ```
@@ -138,14 +138,14 @@ Main cluster: 155,131 nodes (97.43%)
 
 **Charts Generated:**
 1. **Top 10 Communities**
-   - Bar chart of largest communities
-   - Member counts per community
-   - Community distribution
+ - Bar chart of largest communities
+ - Member counts per community
+ - Community distribution
 
 2. **Community Size Distribution**
-   - Histogram of all community sizes
-   - Reveals clustering patterns
-   - Identifies dominant communities
+ - Histogram of all community sizes
+ - Reveals clustering patterns
+ - Identifies dominant communities
 
 **Example Output:**
 ```
@@ -220,7 +220,7 @@ from graph_analytics_ai.ai.reporting import ChartGenerator
 chart_gen = ChartGenerator(theme="plotly_dark")
 
 # Generate specific chart type
-charts = chart_gen.generate_wcc_charts(results, top_n=20)  # Show top 20 instead of 10
+charts = chart_gen.generate_wcc_charts(results, top_n=20) # Show top 20 instead of 10
 ```
 
 ### Disable Charts
@@ -243,16 +243,16 @@ from graph_analytics_ai.ai.agents import AgenticWorkflowRunner
 
 # Run workflow with chart generation enabled
 runner = AgenticWorkflowRunner(
-    db_connection=db,
-    llm_provider=llm,
-    core_collections=["Device", "IP", "AppProduct"],
-    satellite_collections=["Publisher", "Location"],
-    enable_tracing=True
+ db_connection=db,
+ llm_provider=llm,
+ core_collections=["Device", "IP", "AppProduct"],
+ satellite_collections=["Publisher", "Location"],
+ enable_tracing=True
 )
 
 result = runner.run(
-    use_case_file="use_cases.md",
-    output_dir="./workflow_output"
+ use_case_file="use_cases.md",
+ output_dir="./workflow_output"
 )
 
 # Reports automatically generated with charts
@@ -272,8 +272,8 @@ execution_result = executor.execute_template(template, wait=True)
 # Generate report with charts
 generator = ReportGenerator(enable_charts=True)
 report = generator.generate_report(execution_result, context={
-    "use_case": {"title": "My Analysis"},
-    "requirements": {"domain": "my domain"}
+ "use_case": {"title": "My Analysis"},
+ "requirements": {"domain": "my domain"}
 })
 
 # Save as HTML
@@ -282,7 +282,7 @@ charts = report.metadata.get('charts', {})
 html_content = html_formatter.format_report(report, charts=charts)
 
 with open('my_report.html', 'w') as f:
-    f.write(html_content)
+ f.write(html_content)
 ```
 
 ---
@@ -292,11 +292,11 @@ with open('my_report.html', 'w') as f:
 ### Interactive Features
 
 All charts include:
-- ✅ **Hover tooltips** - Detailed information on hover
-- ✅ **Zoom & Pan** - Explore data interactively
-- ✅ **Download** - Export as PNG (Plotly toolbar)
-- ✅ **Responsive** - Works on mobile/tablet/desktop
-- ✅ **Offline** - No internet required after generation
+- **Hover tooltips** - Detailed information on hover
+- **Zoom & Pan** - Explore data interactively
+- **Download** - Export as PNG (Plotly toolbar)
+- **Responsive** - Works on mobile/tablet/desktop
+- **Offline** - No internet required after generation
 
 ### Performance
 
@@ -315,23 +315,23 @@ from graph_analytics_ai.ai.reporting import ReportGenerator, HTMLReportFormatter
 generator = ReportGenerator(enable_charts=True, use_llm_interpretation=False)
 
 report = generator.generate_report(
-    wcc_execution_result,
-    context={
-        "use_case": {
-            "title": "Household Identity Resolution",
-            "objective": "Group 159K devices into distinct household clusters"
-        },
-        "requirements": {
-            "domain": "advertising technology",
-            "objectives": [{
-                "title": "Cross-Device Attribution",
-                "success_criteria": [
-                    "Identify 1000+ distinct household clusters",
-                    "Main cluster < 98% of total devices"
-                ]
-            }]
-        }
-    }
+ wcc_execution_result,
+ context={
+ "use_case": {
+ "title": "Household Identity Resolution",
+ "objective": "Group 159K devices into distinct household clusters"
+ },
+ "requirements": {
+ "domain": "advertising technology",
+ "objectives": [{
+ "title": "Cross-Device Attribution",
+ "success_criteria": [
+ "Identify 1000+ distinct household clusters",
+ "Main cluster < 98% of total devices"
+ ]
+ }]
+ }
+ }
 )
 
 # Format and save
@@ -340,11 +340,11 @@ charts = report.metadata.get('charts', {})
 html_content = html_formatter.format_report(report, charts=charts)
 
 with open('premion_household_report.html', 'w') as f:
-    f.write(html_content)
+ f.write(html_content)
 
-print(f"✅ Report generated: 4,534 households identified")
-print(f"📊 Charts: Component distribution, top clusters, connectivity")
-print(f"💡 Insights: {len(report.insights)} AI-generated findings")
+print(f" Report generated: 4,534 households identified")
+print(f" Charts: Component distribution, top clusters, connectivity")
+print(f" Insights: {len(report.insights)} AI-generated findings")
 ```
 
 **Output**: Interactive HTML report showing:
@@ -373,7 +373,7 @@ pip install plotly
 
 # Verify in code
 from graph_analytics_ai.ai.reporting import is_plotly_available
-print(is_plotly_available())  # Should print True
+print(is_plotly_available()) # Should print True
 ```
 
 ### Large File Size
@@ -417,35 +417,35 @@ start report.html
 
 ```python
 class ReportGenerator:
-    def __init__(
-        self,
-        llm_provider: Optional[LLMProvider] = None,
-        use_llm_interpretation: bool = True,
-        enable_charts: bool = True  # NEW: Enable chart generation
-    )
+ def __init__(
+ self,
+ llm_provider: Optional[LLMProvider] = None,
+ use_llm_interpretation: bool = True,
+ enable_charts: bool = True # NEW: Enable chart generation
+ )
 ```
 
 ### ChartGenerator
 
 ```python
 class ChartGenerator:
-    def generate_pagerank_charts(results, top_n=20) -> Dict[str, str]
-    def generate_wcc_charts(results, top_n=10) -> Dict[str, str]
-    def generate_betweenness_charts(results, top_n=20) -> Dict[str, str]
-    def generate_label_propagation_charts(results, top_n=10) -> Dict[str, str]
-    def generate_scc_charts(results, top_n=10) -> Dict[str, str]
+ def generate_pagerank_charts(results, top_n=20) -> Dict[str, str]
+ def generate_wcc_charts(results, top_n=10) -> Dict[str, str]
+ def generate_betweenness_charts(results, top_n=20) -> Dict[str, str]
+ def generate_label_propagation_charts(results, top_n=10) -> Dict[str, str]
+ def generate_scc_charts(results, top_n=10) -> Dict[str, str]
 ```
 
 ### HTMLReportFormatter
 
 ```python
 class HTMLReportFormatter:
-    def __init__(theme: str = "modern")
-    def format_report(
-        report: AnalysisReport,
-        charts: Optional[Dict[str, str]] = None,
-        include_raw_data: bool = False
-    ) -> str
+ def __init__(theme: str = "modern")
+ def format_report(
+ report: AnalysisReport,
+ charts: Optional[Dict[str, str]] = None,
+ include_raw_data: bool = False
+ ) -> str
 ```
 
 ---
@@ -475,7 +475,7 @@ Have suggestions for chart improvements? Let us know!
 
 ---
 
-**Generated**: December 22, 2025  
-**Version**: 1.1.0  
-**Status**: Production Ready ✅
+**Generated**: December 22, 2025 
+**Version**: 1.1.0 
+**Status**: Production Ready 
 

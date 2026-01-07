@@ -4,7 +4,7 @@
 
 ### 1. End-to-End Workflow Testing
 
-#### ✅ What IS Tested:
+#### What IS Tested:
 
 **Unit Tests (357 tests passing):**
 - Individual workflow steps (parse, extract, analyze, generate)
@@ -23,17 +23,17 @@
 - Step sequencing
 - Retry logic
 
-#### ❌ What is NOT Tested:
+#### What is NOT Tested:
 
 **Missing Integration/E2E Tests:**
 1. **No actual LLM integration test** - All tests use mocked LLM responses
 2. **No database integration test** - No test actually connects to ArangoDB and extracts real schema
 3. **No GAE execution test** - No test that runs actual algorithms on GAE
 4. **No complete pipeline test** - No test that goes from:
-   ```
-   Real text input → LLM processing → Schema extraction → 
-   Template generation → GAE execution → Result storage → Report generation
-   ```
+ ```
+ Real text input → LLM processing → Schema extraction → 
+ Template generation → GAE execution → Result storage → Report generation
+ ```
 
 **The `run_agentic_workflow.py` script** is the closest thing to an E2E test, but:
 - It's a manual script, not an automated test
@@ -48,32 +48,32 @@
 **Workflow Outputs (saved as markdown files):**
 
 1. **`product_requirements.md`** - Generated PRD
-   - Business requirements
-   - Stakeholder needs
-   - Technical requirements
-   - Success criteria
+ - Business requirements
+ - Stakeholder needs
+ - Technical requirements
+ - Success criteria
 
 2. **`use_cases.md`** - Generated use cases with:
-   - Use case ID, title, description
-   - Use case type (centrality, community, pathfinding, etc.)
-   - Priority and related requirements
-   - Data needs (vertex/edge collections)
-   - **NO execution metrics** - these are planning documents
+ - Use case ID, title, description
+ - Use case type (centrality, community, pathfinding, etc.)
+ - Priority and related requirements
+ - Data needs (vertex/edge collections)
+ - **NO execution metrics** - these are planning documents
 
 3. **`schema_analysis.md`** - Database schema analysis:
-   - Overview and domain
-   - Statistics (vertex/edge counts)
-   - Key entities and relationships
-   - Recommended analytics
-   - Complexity score
-   - **NO execution metrics**
+ - Overview and domain
+ - Statistics (vertex/edge counts)
+ - Key entities and relationships
+ - Recommended analytics
+ - Complexity score
+ - **NO execution metrics**
 
 4. **`requirements_summary.md`** - Extracted requirements:
-   - Domain and summary
-   - Requirements by type
-   - Stakeholders
-   - Constraints and risks
-   - **NO execution metrics**
+ - Domain and summary
+ - Requirements by type
+ - Stakeholders
+ - Constraints and risks
+ - **NO execution metrics**
 
 #### GAE Execution Tracking:
 
@@ -81,42 +81,42 @@
 ```python
 @dataclass
 class AnalysisResult:
-    # Timing
-    start_time: datetime
-    end_time: datetime
-    duration_seconds: float
-    
-    # Engine info
-    engine_id: str
-    engine_size: str
-    
-    # Graph info
-    graph_id: str
-    vertex_count: int
-    edge_count: int
-    
-    # Job info
-    job_id: str
-    algorithm: str
-    
-    # Results
-    results_stored: bool
-    documents_updated: int
-    
-    # Cost tracking ✅
-    estimated_cost_usd: float
-    engine_runtime_minutes: float
-    
-    # Error handling
-    error_message: str
-    retry_count: int
+ # Timing
+ start_time: datetime
+ end_time: datetime
+ duration_seconds: float
+ 
+ # Engine info
+ engine_id: str
+ engine_size: str
+ 
+ # Graph info
+ graph_id: str
+ vertex_count: int
+ edge_count: int
+ 
+ # Job info
+ job_id: str
+ algorithm: str
+ 
+ # Results
+ results_stored: bool
+ documents_updated: int
+ 
+ # Cost tracking 
+ estimated_cost_usd: float
+ engine_runtime_minutes: float
+ 
+ # Error handling
+ error_message: str
+ retry_count: int
 ```
 
 **Example output:**
 ```
-✓ Analysis completed successfully!
-  Duration: 45.3s (0.8 min)
-  Estimated cost: $0.0040
+ Analysis completed successfully!
+ Duration: 45.3s (0.8 min)
+ Estimated cost: $0.0040
 ```
 
 #### AI Reporting Module:
@@ -151,12 +151,12 @@ The `graph_analytics_ai/ai/reporting/` module exists but is focused on:
 Create `tests/integration/` directory with:
 ```
 tests/integration/
-  test_workflow_e2e.py       # Full workflow test
-  test_gae_execution_e2e.py  # GAE orchestrator test  
-  test_llm_integration.py    # LLM provider test
-  fixtures/
-    test_use_case.md         # Test input
-    test_database.json       # Test data setup
+ test_workflow_e2e.py # Full workflow test
+ test_gae_execution_e2e.py # GAE orchestrator test 
+ test_llm_integration.py # LLM provider test
+ fixtures/
+ test_use_case.md # Test input
+ test_database.json # Test data setup
 ```
 
 ### Gap 2: Execution Metrics Not Captured in Workflow Reports
@@ -166,13 +166,13 @@ tests/integration/
 **Current flow:**
 ```
 Business Requirements (text)
-  ↓ [WorkflowOrchestrator]
+ ↓ [WorkflowOrchestrator]
 PRD, Use Cases, Schema Analysis (markdown) ← You are here
-  ↓ [Manual step - user must run templates]
+ ↓ [Manual step - user must run templates]
 Templates
-  ↓ [GAEOrchestrator - tracks metrics but doesn't report them]
+ ↓ [GAEOrchestrator - tracks metrics but doesn't report them]
 Algorithm Results ← Metrics tracked but not saved
-  ↓ [No automatic reporting]
+ ↓ [No automatic reporting]
 ??? (user manually reviews logs)
 ```
 
@@ -198,35 +198,35 @@ Add execution reporting phase:
 # New class: ExecutionReport
 @dataclass
 class ExecutionReport:
-    """Comprehensive execution metrics report."""
-    
-    workflow_id: str
-    templates_executed: int
-    total_duration_seconds: float
-    
-    # Per-phase breakdown
-    graph_load_time_seconds: float
-    algorithm_execution_time_seconds: float
-    results_store_time_seconds: float
-    
-    # Cost breakdown (AMP)
-    engine_deployment_cost_usd: float
-    runtime_cost_usd: float
-    total_cost_usd: float
-    
-    # Resource info
-    engine_size: str
-    vertex_count: int
-    edge_count: int
-    
-    # Results
-    algorithms_run: List[str]
-    results_stored: Dict[str, int]  # collection -> doc count
-    
-    # Status
-    success_count: int
-    failure_count: int
-    retry_count: int
+ """Comprehensive execution metrics report."""
+ 
+ workflow_id: str
+ templates_executed: int
+ total_duration_seconds: float
+ 
+ # Per-phase breakdown
+ graph_load_time_seconds: float
+ algorithm_execution_time_seconds: float
+ results_store_time_seconds: float
+ 
+ # Cost breakdown (AMP)
+ engine_deployment_cost_usd: float
+ runtime_cost_usd: float
+ total_cost_usd: float
+ 
+ # Resource info
+ engine_size: str
+ vertex_count: int
+ edge_count: int
+ 
+ # Results
+ algorithms_run: List[str]
+ results_stored: Dict[str, int] # collection -> doc count
+ 
+ # Status
+ success_count: int
+ failure_count: int
+ retry_count: int
 ```
 
 ### Gap 3: Report Content is Not Configurable
@@ -250,23 +250,23 @@ Add report configuration:
 ```python
 @dataclass
 class ReportConfig:
-    """Configure what to include in reports."""
-    
-    include_sections: List[str] = field(default_factory=lambda: [
-        "executive_summary",
-        "timing_breakdown", 
-        "cost_analysis",
-        "performance_metrics",
-        "error_log",
-        "recommendations"
-    ])
-    
-    include_costs: bool = True
-    include_detailed_timing: bool = True
-    include_error_details: bool = True
-    include_raw_metrics: bool = False
-    
-    format: ReportFormat = ReportFormat.MARKDOWN
+ """Configure what to include in reports."""
+ 
+ include_sections: List[str] = field(default_factory=lambda: [
+ "executive_summary",
+ "timing_breakdown", 
+ "cost_analysis",
+ "performance_metrics",
+ "error_log",
+ "recommendations"
+ ])
+ 
+ include_costs: bool = True
+ include_detailed_timing: bool = True
+ include_error_details: bool = True
+ include_raw_metrics: bool = False
+ 
+ format: ReportFormat = ReportFormat.MARKDOWN
 ```
 
 ---
@@ -283,54 +283,54 @@ class ReportConfig:
 ```python
 @dataclass
 class WorkflowResult:
-    # ... existing fields ...
-    
-    # Add execution metrics
-    execution_summary: Optional[ExecutionSummary] = None
-    execution_report_path: Optional[str] = None
+ # ... existing fields ...
+ 
+ # Add execution metrics
+ execution_summary: Optional[ExecutionSummary] = None
+ execution_report_path: Optional[str] = None
 ```
 
 2. **Create new `ExecutionSummary` model:**
 ```python
 @dataclass
 class ExecutionSummary:
-    """Summary of template execution."""
-    
-    templates_generated: int
-    templates_executed: int
-    templates_failed: int
-    
-    total_execution_time_seconds: float
-    total_estimated_cost_usd: float
-    
-    algorithm_breakdown: Dict[str, AlgorithmExecutionStats]
-    timing_breakdown: TimingBreakdown
-    cost_breakdown: CostBreakdown
+ """Summary of template execution."""
+ 
+ templates_generated: int
+ templates_executed: int
+ templates_failed: int
+ 
+ total_execution_time_seconds: float
+ total_estimated_cost_usd: float
+ 
+ algorithm_breakdown: Dict[str, AlgorithmExecutionStats]
+ timing_breakdown: TimingBreakdown
+ cost_breakdown: CostBreakdown
 ```
 
 3. **Add reporting step to workflow:**
 ```python
 # In WorkflowOrchestrator
 def run_complete_workflow_with_execution(...):
-    # Steps 1-7: existing workflow
-    ...
-    
-    # Step 8: Execute templates (NEW)
-    execution_results = self._execute_templates(use_cases)
-    
-    # Step 9: Generate execution report (NEW)
-    execution_report = self._generate_execution_report(execution_results)
-    
-    # Save execution report
-    report_path = output_dir / "execution_report.md"
-    report_path.write_text(execution_report)
+ # Steps 1-7: existing workflow
+ ...
+ 
+ # Step 8: Execute templates (NEW)
+ execution_results = self._execute_templates(use_cases)
+ 
+ # Step 9: Generate execution report (NEW)
+ execution_report = self._generate_execution_report(execution_results)
+ 
+ # Save execution report
+ report_path = output_dir / "execution_report.md"
+ report_path.write_text(execution_report)
 ```
 
 4. **Add markdown formatter for execution metrics:**
 ```python
 def _format_execution_report(self, summary: ExecutionSummary) -> str:
-    """Format execution metrics as markdown."""
-    return f"""
+ """Format execution metrics as markdown."""
+ return f"""
 # Execution Report
 
 ## Summary
@@ -374,9 +374,9 @@ def _format_execution_report(self, summary: ExecutionSummary) -> str:
 ```python
 # tests/integration/fixtures/test_database_setup.py
 def setup_test_graph_db():
-    """Create a small test graph for E2E tests."""
-    # Create test collections with known data
-    # Return connection info
+ """Create a small test graph for E2E tests."""
+ # Create test collections with known data
+ # Return connection info
 ```
 
 2. **Add E2E workflow test:**
@@ -386,30 +386,30 @@ def setup_test_graph_db():
 @pytest.mark.requires_llm
 @pytest.mark.requires_db
 def test_complete_workflow_e2e(test_db_connection):
-    """Test complete workflow from text to report."""
-    
-    orchestrator = WorkflowOrchestrator(output_dir=tmp_path)
-    
-    result = orchestrator.run_complete_workflow(
-        business_requirements=["tests/fixtures/test_use_case.md"],
-        database_endpoint=test_db_connection.endpoint,
-        database_name=test_db_connection.name,
-        database_password=test_db_connection.password
-    )
-    
-    # Verify all outputs generated
-    assert result.status == WorkflowStatus.COMPLETED
-    assert Path(result.prd_path).exists()
-    assert Path(result.use_cases_path).exists()
-    assert Path(result.schema_path).exists()
-    
-    # Verify content quality
-    prd_content = Path(result.prd_path).read_text()
-    assert len(prd_content) > 1000  # Substantial content
-    assert "Requirements" in prd_content
-    
-    # Verify timing tracked
-    assert result.total_duration_seconds > 0
+ """Test complete workflow from text to report."""
+ 
+ orchestrator = WorkflowOrchestrator(output_dir=tmp_path)
+ 
+ result = orchestrator.run_complete_workflow(
+ business_requirements=["tests/fixtures/test_use_case.md"],
+ database_endpoint=test_db_connection.endpoint,
+ database_name=test_db_connection.name,
+ database_password=test_db_connection.password
+ )
+ 
+ # Verify all outputs generated
+ assert result.status == WorkflowStatus.COMPLETED
+ assert Path(result.prd_path).exists()
+ assert Path(result.use_cases_path).exists()
+ assert Path(result.schema_path).exists()
+ 
+ # Verify content quality
+ prd_content = Path(result.prd_path).read_text()
+ assert len(prd_content) > 1000 # Substantial content
+ assert "Requirements" in prd_content
+ 
+ # Verify timing tracked
+ assert result.total_duration_seconds > 0
 ```
 
 3. **Add GAE execution test:**
@@ -418,29 +418,29 @@ def test_complete_workflow_e2e(test_db_connection):
 @pytest.mark.integration
 @pytest.mark.requires_gae
 def test_gae_orchestrator_complete_analysis(test_db_connection):
-    """Test GAE orchestrator with real engine."""
-    
-    orchestrator = GAEOrchestrator()
-    
-    config = AnalysisConfig(
-        database="test_db",
-        vertex_collections=["users"],
-        edge_collections=["follows"],
-        algorithm="pagerank",
-        engine_size="e8"
-    )
-    
-    result = orchestrator.run_analysis(config)
-    
-    # Verify execution
-    assert result.status == AnalysisStatus.COMPLETED
-    assert result.job_id is not None
-    assert result.results_stored == True
-    
-    # Verify metrics captured
-    assert result.duration_seconds > 0
-    assert result.estimated_cost_usd > 0
-    assert result.vertex_count > 0
+ """Test GAE orchestrator with real engine."""
+ 
+ orchestrator = GAEOrchestrator()
+ 
+ config = AnalysisConfig(
+ database="test_db",
+ vertex_collections=["users"],
+ edge_collections=["follows"],
+ algorithm="pagerank",
+ engine_size="e8"
+ )
+ 
+ result = orchestrator.run_analysis(config)
+ 
+ # Verify execution
+ assert result.status == AnalysisStatus.COMPLETED
+ assert result.job_id is not None
+ assert result.results_stored == True
+ 
+ # Verify metrics captured
+ assert result.duration_seconds > 0
+ assert result.estimated_cost_usd > 0
+ assert result.vertex_count > 0
 ```
 
 ### Priority 3: Make Reports Configurable
@@ -452,30 +452,30 @@ def test_gae_orchestrator_complete_analysis(test_db_connection):
 ```python
 # Add to WorkflowOrchestrator.__init__
 def __init__(
-    self,
-    output_dir: str = "./workflow_output",
-    llm_provider: Optional[LLMProvider] = None,
-    enable_checkpoints: bool = True,
-    max_retries: int = 3,
-    report_config: Optional[ReportConfig] = None  # NEW
+ self,
+ output_dir: str = "./workflow_output",
+ llm_provider: Optional[LLMProvider] = None,
+ enable_checkpoints: bool = True,
+ max_retries: int = 3,
+ report_config: Optional[ReportConfig] = None # NEW
 ):
-    self.report_config = report_config or ReportConfig()
-    ...
+ self.report_config = report_config or ReportConfig()
+ ...
 
 # Use config when generating reports
 def _generate_execution_report(self, summary):
-    sections = []
-    
-    if "executive_summary" in self.report_config.include_sections:
-        sections.append(self._format_executive_summary(summary))
-    
-    if "timing_breakdown" in self.report_config.include_sections:
-        sections.append(self._format_timing_breakdown(summary))
-    
-    if "cost_analysis" in self.report_config.include_sections and self.report_config.include_costs:
-        sections.append(self._format_cost_breakdown(summary))
-    
-    return "\n\n".join(sections)
+ sections = []
+ 
+ if "executive_summary" in self.report_config.include_sections:
+ sections.append(self._format_executive_summary(summary))
+ 
+ if "timing_breakdown" in self.report_config.include_sections:
+ sections.append(self._format_timing_breakdown(summary))
+ 
+ if "cost_analysis" in self.report_config.include_sections and self.report_config.include_costs:
+ sections.append(self._format_cost_breakdown(summary))
+ 
+ return "\n\n".join(sections)
 ```
 
 ---
@@ -483,29 +483,29 @@ def _generate_execution_report(self, summary):
 ## Summary
 
 ### Current State:
-✅ Good unit test coverage (357 tests)  
-✅ Workflow generates planning documents (PRD, use cases, schema)  
-✅ GAE orchestrator tracks execution metrics internally  
-❌ No E2E testing with real services  
-❌ Execution metrics not saved/reported  
-❌ No timing/cost breakdown in output  
+ Good unit test coverage (357 tests) 
+ Workflow generates planning documents (PRD, use cases, schema) 
+ GAE orchestrator tracks execution metrics internally 
+ No E2E testing with real services 
+ Execution metrics not saved/reported 
+ No timing/cost breakdown in output 
 
 ### Recommended Additions:
 
 1. **Execution Reporting** (High Priority)
-   - Add execution metrics to workflow output
-   - Generate `execution_report.md` with timing/cost breakdowns
-   - Include per-algorithm statistics
+ - Add execution metrics to workflow output
+ - Generate `execution_report.md` with timing/cost breakdowns
+ - Include per-algorithm statistics
 
 2. **Integration Tests** (Medium Priority)
-   - Add `tests/integration/` directory
-   - Test complete workflow with real LLM/DB/GAE
-   - Use test environment, not production
+ - Add `tests/integration/` directory
+ - Test complete workflow with real LLM/DB/GAE
+ - Use test environment, not production
 
 3. **Configurable Reports** (Low Priority)
-   - Allow customization of report sections
-   - Support different stakeholder views
-   - Flexible format options
+ - Allow customization of report sections
+ - Support different stakeholder views
+ - Flexible format options
 
 ### Metrics to Track in Reports:
 
@@ -535,7 +535,7 @@ def _generate_execution_report(self, summary):
 
 ---
 
-**Date:** December 18, 2025  
-**Current Test Count:** 357 passing, 1 skipped  
+**Date:** December 18, 2025 
+**Current Test Count:** 357 passing, 1 skipped 
 **Recommendation:** Start with Priority 1 (Execution Reporting)
 

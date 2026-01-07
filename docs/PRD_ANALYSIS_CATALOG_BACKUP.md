@@ -1,8 +1,8 @@
 # Product Requirements Document: Analysis Catalog System
 
-**Version:** 1.0  
-**Date:** 2026-01-06  
-**Status:** Draft - Pending Review  
+**Version:** 1.0 
+**Date:** 2026-01-06 
+**Status:** Draft - Pending Review 
 **Target Release:** v3.2.0
 
 ---
@@ -77,9 +77,9 @@ Users should be able to:
 ### Goals
 1. **Comprehensive Tracking**: Record all analysis executions with complete metadata
 2. **Universal Workflow Support**: Work seamlessly with all three workflow modes:
-   - Traditional Orchestrator (step-by-step control)
-   - Agentic Workflow (autonomous AI agents)
-   - Parallel Agentic Workflow (fastest with parallel execution)
+ - Traditional Orchestrator (step-by-step control)
+ - Agentic Workflow (autonomous AI agents)
+ - Parallel Agentic Workflow (fastest with parallel execution)
 3. **Epoch Management**: Support grouping of analyses into logical time-based epochs
 4. **Time-Series Analysis**: Enable querying and comparing metrics across epochs
 5. **Catalog Management**: Provide CRUD operations for analysis records
@@ -98,19 +98,19 @@ Users should be able to:
 ## Use Cases
 
 ### UC-1: Track Analysis Executions
-**Actor:** Data Scientist  
+**Actor:** Data Scientist 
 **Goal:** Record every analysis execution for future reference
 
 **Scenario:**
 1. Data scientist runs PageRank on customer graph
 2. System automatically records:
-   - Execution timestamp
-   - Algorithm used (PageRank)
-   - Parameters (damping_factor=0.85, max_iterations=20)
-   - Graph configuration (vertex collections, edge collections)
-   - Template used
-   - Results location (collection name)
-   - Execution metrics (time, result count)
+ - Execution timestamp
+ - Algorithm used (PageRank)
+ - Parameters (damping_factor=0.85, max_iterations=20)
+ - Graph configuration (vertex collections, edge collections)
+ - Template used
+ - Results location (collection name)
+ - Execution metrics (time, result count)
 3. Record is stored in Analysis Catalog
 4. Data scientist can query this execution later
 
@@ -122,7 +122,7 @@ Users should be able to:
 ---
 
 ### UC-2: Create Analysis Epochs
-**Actor:** Analytics Engineer  
+**Actor:** Analytics Engineer 
 **Goal:** Group related analyses run at the same time
 
 **Scenario:**
@@ -140,7 +140,7 @@ Users should be able to:
 ---
 
 ### UC-3: Compare Metrics Across Epochs
-**Actor:** Data Scientist  
+**Actor:** Data Scientist 
 **Goal:** Analyze how graph metrics change over time
 
 **Scenario:**
@@ -158,7 +158,7 @@ Users should be able to:
 ---
 
 ### UC-4: Reset Catalog for Testing
-**Actor:** QA Engineer  
+**Actor:** QA Engineer 
 **Goal:** Clean catalog between test runs
 
 **Scenario:**
@@ -175,7 +175,7 @@ Users should be able to:
 ---
 
 ### UC-5: Multi-Epoch Testing
-**Actor:** Software Engineer  
+**Actor:** Software Engineer 
 **Goal:** Test algorithm behavior across graph evolution
 
 **Scenario:**
@@ -199,7 +199,7 @@ Users should be able to:
 ---
 
 ### UC-6: Detect Graph Anomalies
-**Actor:** Data Scientist  
+**Actor:** Data Scientist 
 **Goal:** Identify unusual changes in graph structure
 
 **Scenario:**
@@ -248,13 +248,13 @@ The system MUST automatically track the following for each analysis execution:
 **FR-1.1: Graph Configuration Structure**
 ```json
 {
-  "graph_name": "customer_network",
-  "graph_type": "named_graph",  // or "explicit_collections"
-  "vertex_collections": ["customers", "products"],
-  "edge_collections": ["purchases", "follows"],
-  "vertex_count": 10000,
-  "edge_count": 50000,
-  "graph_snapshot_hash": "abc123def456"  // Optional: hash of graph structure
+ "graph_name": "customer_network",
+ "graph_type": "named_graph", // or "explicit_collections"
+ "vertex_collections": ["customers", "products"],
+ "edge_collections": ["purchases", "follows"],
+ "vertex_count": 10000,
+ "edge_count": 50000,
+ "graph_snapshot_hash": "abc123def456" // Optional: hash of graph structure
 }
 ```
 
@@ -273,21 +273,21 @@ The system MUST support analysis epochs with the following capabilities:
 **FR-2.2: Epoch Structure**
 ```json
 {
-  "epoch_id": "660e8400-e29b-41d4-a716-446655440001",
-  "name": "2026-01-snapshot",
-  "description": "Monthly analysis for January 2026",
-  "timestamp": "2026-01-01T00:00:00Z",
-  "created_at": "2026-01-01T10:30:00Z",
-  "status": "active",  // active, completed, archived
-  "tags": ["monthly", "production"],
-  "metadata": {
-    "graph_vertex_count": 10000,
-    "graph_edge_count": 50000,
-    "data_source": "production_db"
-  },
-  "parent_epoch_id": null,  // For hierarchical epochs
-  "analysis_count": 5,  // Number of analyses in this epoch
-  "execution_ids": ["uuid1", "uuid2", "uuid3", "uuid4", "uuid5"]
+ "epoch_id": "660e8400-e29b-41d4-a716-446655440001",
+ "name": "2026-01-snapshot",
+ "description": "Monthly analysis for January 2026",
+ "timestamp": "2026-01-01T00:00:00Z",
+ "created_at": "2026-01-01T10:30:00Z",
+ "status": "active", // active, completed, archived
+ "tags": ["monthly", "production"],
+ "metadata": {
+ "graph_vertex_count": 10000,
+ "graph_edge_count": 50000,
+ "data_source": "production_db"
+ },
+ "parent_epoch_id": null, // For hierarchical epochs
+ "analysis_count": 5, // Number of analyses in this epoch
+ "execution_ids": ["uuid1", "uuid2", "uuid3", "uuid4", "uuid5"]
 }
 ```
 
@@ -361,9 +361,9 @@ The system MUST provide management operations:
 **FR-5.1: Storage Options**
 The system MUST support multiple storage backends:
 1. **ArangoDB** (default): Store catalog in ArangoDB collections
-   - Collection: `_analysis_executions`
-   - Collection: `_analysis_epochs`
-   - Benefits: Same database as graph, query with AQL
+ - Collection: `_analysis_executions`
+ - Collection: `_analysis_epochs`
+ - Benefits: Same database as graph, query with AQL
 2. **SQLite** (for testing): Lightweight file-based storage
 3. **PostgreSQL** (optional): For large-scale deployments
 
@@ -395,13 +395,13 @@ The Analysis Catalog MUST work seamlessly with all three workflow modes:
 Track workflow mode used for each execution:
 ```json
 {
-  "execution_id": "...",
-  "workflow_mode": "parallel_agentic",  // or "traditional", "agentic"
-  "workflow_metadata": {
-    "orchestrator_version": "3.1.0",
-    "parallelism_enabled": true,
-    "agent_name": "ExecutionSpecialist"  // For agentic workflows
-  }
+ "execution_id": "...",
+ "workflow_mode": "parallel_agentic", // or "traditional", "agentic"
+ "workflow_metadata": {
+ "orchestrator_version": "3.1.0",
+ "parallelism_enabled": true,
+ "agent_name": "ExecutionSpecialist" // For agentic workflows
+ }
 }
 ```
 
@@ -412,13 +412,13 @@ Track workflow mode used for each execution:
 from graph_analytics_ai.ai.workflow import WorkflowOrchestrator
 
 orchestrator = WorkflowOrchestrator(
-    graph_name="customer_graph",
-    catalog=catalog  # Optional: pass catalog
+ graph_name="customer_graph",
+ catalog=catalog # Optional: pass catalog
 )
 
 # Automatic tracking
 result = orchestrator.run_complete_workflow(
-    input_files=["requirements.pdf"]
+ input_files=["requirements.pdf"]
 )
 # All executions automatically tracked
 ```
@@ -428,8 +428,8 @@ result = orchestrator.run_complete_workflow(
 from graph_analytics_ai.ai.agents import AgenticWorkflowRunner
 
 runner = AgenticWorkflowRunner(
-    graph_name="customer_graph",
-    catalog=catalog  # Optional: pass catalog
+ graph_name="customer_graph",
+ catalog=catalog # Optional: pass catalog
 )
 
 # Create epoch for this workflow run
@@ -446,19 +446,19 @@ import asyncio
 from graph_analytics_ai.ai.agents import AgenticWorkflowRunner
 
 async def main():
-    runner = AgenticWorkflowRunner(
-        graph_name="customer_graph",
-        catalog=catalog
-    )
-    
-    epoch = catalog.create_epoch("2026-01-parallel")
-    
-    # Parallel execution with automatic tracking
-    state = await runner.run_async(
-        enable_parallelism=True,
-        epoch_id=epoch.epoch_id
-    )
-    # All parallel executions tracked with proper concurrency
+ runner = AgenticWorkflowRunner(
+ graph_name="customer_graph",
+ catalog=catalog
+ )
+ 
+ epoch = catalog.create_epoch("2026-01-parallel")
+ 
+ # Parallel execution with automatic tracking
+ state = await runner.run_async(
+ enable_parallelism=True,
+ epoch_id=epoch.epoch_id
+ )
+ # All parallel executions tracked with proper concurrency
 
 asyncio.run(main())
 ```
@@ -478,15 +478,15 @@ For agentic workflows, the system MUST track the complete lineage from requireme
 
 ```
 Requirements Document
-    ↓
+ ↓
 Extracted Requirements (RequirementsAgent)
-    ↓
+ ↓
 Use Cases (UseCaseAgent)
-    ↓
+ ↓
 Templates (TemplateAgent)
-    ↓
+ ↓
 Executions (ExecutionAgent)
-    ↓
+ ↓
 Reports (ReportingAgent)
 ```
 
@@ -494,28 +494,28 @@ Reports (ReportingAgent)
 Track extracted requirements with:
 ```json
 {
-  "requirements_id": "770e8400-e29b-41d4-a716-446655440002",
-  "epoch_id": "660e8400-e29b-41d4-a716-446655440001",
-  "timestamp": "2026-01-01T10:00:00Z",
-  "source_documents": ["requirements.pdf", "business_needs.docx"],
-  "domain": "e-commerce",
-  "summary": "Analyze customer purchase patterns",
-  "objectives": [
-    {
-      "id": "OBJ-001",
-      "title": "Identify influential customers",
-      "priority": "critical"
-    }
-  ],
-  "requirements": [
-    {
-      "id": "REQ-001", 
-      "title": "Track customer influence over time",
-      "type": "functional"
-    }
-  ],
-  "constraints": ["Must complete within 5 minutes"],
-  "metadata": {}
+ "requirements_id": "770e8400-e29b-41d4-a716-446655440002",
+ "epoch_id": "660e8400-e29b-41d4-a716-446655440001",
+ "timestamp": "2026-01-01T10:00:00Z",
+ "source_documents": ["requirements.pdf", "business_needs.docx"],
+ "domain": "e-commerce",
+ "summary": "Analyze customer purchase patterns",
+ "objectives": [
+ {
+ "id": "OBJ-001",
+ "title": "Identify influential customers",
+ "priority": "critical"
+ }
+ ],
+ "requirements": [
+ {
+ "id": "REQ-001", 
+ "title": "Track customer influence over time",
+ "type": "functional"
+ }
+ ],
+ "constraints": ["Must complete within 5 minutes"],
+ "metadata": {}
 }
 ```
 
@@ -523,18 +523,18 @@ Track extracted requirements with:
 Track generated use cases with:
 ```json
 {
-  "use_case_id": "880e8400-e29b-41d4-a716-446655440003",
-  "requirements_id": "770e8400-e29b-41d4-a716-446655440002",
-  "epoch_id": "660e8400-e29b-41d4-a716-446655440001",
-  "timestamp": "2026-01-01T10:05:00Z",
-  "title": "Customer Influence Analysis",
-  "description": "Identify top influencers using PageRank",
-  "algorithm": "pagerank",
-  "business_value": "high",
-  "priority": "critical",
-  "addresses_objectives": ["OBJ-001"],
-  "addresses_requirements": ["REQ-001"],
-  "metadata": {}
+ "use_case_id": "880e8400-e29b-41d4-a716-446655440003",
+ "requirements_id": "770e8400-e29b-41d4-a716-446655440002",
+ "epoch_id": "660e8400-e29b-41d4-a716-446655440001",
+ "timestamp": "2026-01-01T10:05:00Z",
+ "title": "Customer Influence Analysis",
+ "description": "Identify top influencers using PageRank",
+ "algorithm": "pagerank",
+ "business_value": "high",
+ "priority": "critical",
+ "addresses_objectives": ["OBJ-001"],
+ "addresses_requirements": ["REQ-001"],
+ "metadata": {}
 }
 ```
 
@@ -542,16 +542,16 @@ Track generated use cases with:
 Track template generation with:
 ```json
 {
-  "template_id": "template_001",
-  "use_case_id": "880e8400-e29b-41d4-a716-446655440003",
-  "requirements_id": "770e8400-e29b-41d4-a716-446655440002",
-  "epoch_id": "660e8400-e29b-41d4-a716-446655440001",
-  "timestamp": "2026-01-01T10:10:00Z",
-  "name": "Customer PageRank Analysis",
-  "algorithm": "pagerank",
-  "parameters": {"damping_factor": 0.85},
-  "graph_config": {...},
-  "metadata": {}
+ "template_id": "template_001",
+ "use_case_id": "880e8400-e29b-41d4-a716-446655440003",
+ "requirements_id": "770e8400-e29b-41d4-a716-446655440002",
+ "epoch_id": "660e8400-e29b-41d4-a716-446655440001",
+ "timestamp": "2026-01-01T10:10:00Z",
+ "name": "Customer PageRank Analysis",
+ "algorithm": "pagerank",
+ "parameters": {"damping_factor": 0.85},
+ "graph_config": {...},
+ "metadata": {}
 }
 ```
 
@@ -559,12 +559,12 @@ Track template generation with:
 Link executions back to their source:
 ```json
 {
-  "execution_id": "550e8400-e29b-41d4-a716-446655440000",
-  "template_id": "template_001",
-  "use_case_id": "880e8400-e29b-41d4-a716-446655440003",
-  "requirements_id": "770e8400-e29b-41d4-a716-446655440002",
-  "epoch_id": "660e8400-e29b-41d4-a716-446655440001",
-  ...
+ "execution_id": "550e8400-e29b-41d4-a716-446655440000",
+ "template_id": "template_001",
+ "use_case_id": "880e8400-e29b-41d4-a716-446655440003",
+ "requirements_id": "770e8400-e29b-41d4-a716-446655440002",
+ "epoch_id": "660e8400-e29b-41d4-a716-446655440001",
+ ...
 }
 ```
 
@@ -582,11 +582,11 @@ Support queries like:
 lineage = catalog.get_execution_lineage(execution_id)
 # Returns:
 # {
-#   "execution": {...},
-#   "template": {...},
-#   "use_case": {...},
-#   "requirements": {...},
-#   "epoch": {...}
+# "execution": {...},
+# "template": {...},
+# "use_case": {...},
+# "requirements": {...},
+# "epoch": {...}
 # }
 
 # Get all executions from a requirements document
@@ -594,8 +594,8 @@ executions = catalog.get_requirements_executions(requirements_id)
 
 # Trace requirement through pipeline
 trace = catalog.trace_requirement(
-    requirements_id="770e...",
-    requirement_id="REQ-001"
+ requirements_id="770e...",
+ requirement_id="REQ-001"
 )
 # Returns all use cases, templates, executions addressing REQ-001
 ```
@@ -604,17 +604,17 @@ trace = catalog.trace_requirement(
 **FR-7.1: Metric Extraction**
 - Extract specific metrics from result collections
 - Support for common metrics:
-  - PageRank: top N scores, score distribution
-  - WCC: component count, largest component size
-  - Betweenness: top N scores, score distribution
+ - PageRank: top N scores, score distribution
+ - WCC: component count, largest component size
+ - Betweenness: top N scores, score distribution
 
 **FR-7.2: Time-Series of Requirements**
 ```python
 # Compare how requirements changed over time
 requirements_history = catalog.get_requirements_history(
-    domain="e-commerce",
-    start_date="2026-01-01",
-    end_date="2026-06-30"
+ domain="e-commerce",
+ start_date="2026-01-01",
+ end_date="2026-06-30"
 )
 
 # Track which requirements appear consistently vs changing ones
@@ -626,9 +626,9 @@ evolving_requirements = find_evolving_requirements(requirements_history)
 ```python
 # Example API
 comparison = catalog.compare_epochs(
-    metric="pagerank.top_10",
-    epoch_ids=["epoch1", "epoch2", "epoch3"],
-    entity_id_field="customer_id"
+ metric="pagerank.top_10",
+ epoch_ids=["epoch1", "epoch2", "epoch3"],
+ entity_id_field="customer_id"
 )
 # Returns DataFrame with entities as rows, epochs as columns
 ```
@@ -637,10 +637,10 @@ comparison = catalog.compare_epochs(
 ```python
 # Get time-series data
 ts_data = catalog.get_time_series(
-    metric="wcc.component_count",
-    start_date="2026-01-01",
-    end_date="2026-06-30",
-    frequency="daily"
+ metric="wcc.component_count",
+ start_date="2026-01-01",
+ end_date="2026-06-30",
+ frequency="daily"
 )
 # Returns: {timestamp: value} dictionary or DataFrame
 ```
@@ -683,87 +683,87 @@ ts_data = catalog.get_time_series(
 ### Entity Relationship Diagram
 
 ```
-┌─────────────────────┐
-│  AnalysisEpoch      │
-│─────────────────────│
-│ epoch_id (PK)       │───┐
-│ name                │   │
-│ description         │   │ 1:N
-│ timestamp           │   │
-│ status              │   │
-│ tags[]              │   │
-│ metadata{}          │   │
-│ parent_epoch_id(FK) │   │
-└─────────────────────┘   │
-                          │
-                          ▼
-┌──────────────────────────────────┐
-│  ExtractedRequirements           │
-│──────────────────────────────────│
-│ requirements_id (PK)             │───┐
-│ epoch_id (FK) [optional]         │   │
-│ timestamp                        │   │
-│ source_documents[]               │   │ 1:N
-│ domain                           │   │
-│ summary                          │   │
-│ objectives[]                     │   │
-│ requirements[]                   │   │
-│ constraints[]                    │   │
-└──────────────────────────────────┘   │
-                                       │
-                                       ▼
-┌──────────────────────────────────┐
-│  GeneratedUseCase                │
-│──────────────────────────────────│
-│ use_case_id (PK)                 │───┐
-│ requirements_id (FK)             │   │
-│ epoch_id (FK) [optional]         │   │ 1:N
-│ timestamp                        │   │
-│ title                            │   │
-│ description                      │   │
-│ algorithm                        │   │
-│ business_value                   │   │
-│ addresses_objectives[]           │   │
-│ addresses_requirements[]         │   │
-└──────────────────────────────────┘   │
-                                       │
-                                       ▼
-┌──────────────────────────────────┐
-│  AnalysisTemplate                │
-│──────────────────────────────────│
-│ template_id (PK)                 │───┐
-│ use_case_id (FK)                 │   │
-│ requirements_id (FK)             │   │ 1:N
-│ epoch_id (FK) [optional]         │   │
-│ timestamp                        │   │
-│ name                             │   │
-│ algorithm                        │   │
-│ parameters{}                     │   │
-│ graph_config{}                   │   │
-└──────────────────────────────────┘   │
-                                       │
-                                       ▼
-┌─────────────────────────────────┐
-│  AnalysisExecution              │
-│─────────────────────────────────│
-│ execution_id (PK)               │
-│ template_id (FK)                │
-│ use_case_id (FK)                │
-│ requirements_id (FK)            │
-│ epoch_id (FK) [optional]        │
-│ timestamp                       │
-│ algorithm                       │
-│ algorithm_version               │
-│ parameters{}                    │
-│ template_name                   │
-│ graph_config{}                  │
-│ results_location                │
-│ result_count                    │
-│ execution_time_seconds          │
-│ status                          │
-│ error_message                   │
-│ metadata{}                      │
-└─────────────────────────────────┘
+
+ AnalysisEpoch 
+
+ epoch_id (PK) 
+ name 
+ description 1:N
+ timestamp 
+ status 
+ tags[] 
+ metadata{} 
+ parent_epoch_id(FK) 
+ 
+ 
+ 
+
+ ExtractedRequirements 
+
+ requirements_id (PK) 
+ epoch_id (FK) [optional] 
+ timestamp 
+ source_documents[] 1:N
+ domain 
+ summary 
+ objectives[] 
+ requirements[] 
+ constraints[] 
+ 
+ 
+ 
+
+ GeneratedUseCase 
+
+ use_case_id (PK) 
+ requirements_id (FK) 
+ epoch_id (FK) [optional] 1:N
+ timestamp 
+ title 
+ description 
+ algorithm 
+ business_value 
+ addresses_objectives[] 
+ addresses_requirements[] 
+ 
+ 
+ 
+
+ AnalysisTemplate 
+
+ template_id (PK) 
+ use_case_id (FK) 
+ requirements_id (FK) 1:N
+ epoch_id (FK) [optional] 
+ timestamp 
+ name 
+ algorithm 
+ parameters{} 
+ graph_config{} 
+ 
+ 
+ 
+
+ AnalysisExecution 
+
+ execution_id (PK) 
+ template_id (FK) 
+ use_case_id (FK) 
+ requirements_id (FK) 
+ epoch_id (FK) [optional] 
+ timestamp 
+ algorithm 
+ algorithm_version 
+ parameters{} 
+ template_name 
+ graph_config{} 
+ results_location 
+ result_count 
+ execution_time_seconds 
+ status 
+ error_message 
+ metadata{} 
+
 ```
 
 ### ArangoDB Collections
@@ -771,51 +771,51 @@ ts_data = catalog.get_time_series(
 **Collection: `_analysis_epochs`**
 - Type: Document collection
 - Indexes:
-  - Primary: `epoch_id`
-  - Hash: `name` (unique)
-  - Skiplist: `timestamp`
-  - Fulltext: `description`
-  - Array: `tags`
+ - Primary: `epoch_id`
+ - Hash: `name` (unique)
+ - Skiplist: `timestamp`
+ - Fulltext: `description`
+ - Array: `tags`
 
 **Collection: `_analysis_requirements`**
 - Type: Document collection
 - Indexes:
-  - Primary: `requirements_id`
-  - Hash: `epoch_id`
-  - Skiplist: `timestamp`
-  - Fulltext: `summary`, `domain`
+ - Primary: `requirements_id`
+ - Hash: `epoch_id`
+ - Skiplist: `timestamp`
+ - Fulltext: `summary`, `domain`
 
 **Collection: `_analysis_use_cases`**
 - Type: Document collection
 - Indexes:
-  - Primary: `use_case_id`
-  - Hash: `requirements_id`
-  - Hash: `epoch_id`
-  - Skiplist: `timestamp`
-  - Hash: `algorithm`
+ - Primary: `use_case_id`
+ - Hash: `requirements_id`
+ - Hash: `epoch_id`
+ - Skiplist: `timestamp`
+ - Hash: `algorithm`
 
 **Collection: `_analysis_templates`**
 - Type: Document collection
 - Indexes:
-  - Primary: `template_id`
-  - Hash: `use_case_id`
-  - Hash: `requirements_id`
-  - Hash: `epoch_id`
-  - Skiplist: `timestamp`
+ - Primary: `template_id`
+ - Hash: `use_case_id`
+ - Hash: `requirements_id`
+ - Hash: `epoch_id`
+ - Skiplist: `timestamp`
 
 **Collection: `_analysis_executions`**
 - Type: Document collection
 - Indexes:
-  - Primary: `execution_id`
-  - Hash: `epoch_id`
-  - Hash: `template_id`
-  - Hash: `use_case_id`
-  - Hash: `requirements_id`
-  - Skiplist: `timestamp`
-  - Hash: `algorithm`
-  - Hash: `status`
-  - Composite: `(epoch_id, algorithm, timestamp)`
-  - Composite: `(requirements_id, algorithm, timestamp)`
+ - Primary: `execution_id`
+ - Hash: `epoch_id`
+ - Hash: `template_id`
+ - Hash: `use_case_id`
+ - Hash: `requirements_id`
+ - Skiplist: `timestamp`
+ - Hash: `algorithm`
+ - Hash: `status`
+ - Composite: `(epoch_id, algorithm, timestamp)`
+ - Composite: `(requirements_id, algorithm, timestamp)`
 
 ---
 
@@ -827,340 +827,340 @@ ts_data = catalog.get_time_series(
 
 ```python
 class AnalysisCatalog:
-    """
-    Main interface for Analysis Catalog operations.
-    
-    Manages tracking, querying, and management of analysis executions
-    and epochs.
-    """
-    
-    def __init__(
-        self,
-        storage: StorageBackend,
-        auto_track: bool = True
-    ):
-        """
-        Initialize catalog.
-        
-        Args:
-            storage: Storage backend (ArangoDB, SQLite, etc.)
-            auto_track: Automatically track executions
-        """
-    
-    # === Lineage Tracking ===
-    
-    def track_requirements(
-        self,
-        requirements: ExtractedRequirements,
-        epoch_id: Optional[str] = None
-    ) -> str:
-        """
-        Track extracted requirements.
-        
-        Args:
-            requirements: Extracted requirements
-            epoch_id: Optional epoch to associate with
-            
-        Returns:
-            requirements_id: Unique identifier
-        """
-    
-    def track_use_case(
-        self,
-        use_case: GeneratedUseCase,
-        requirements_id: str,
-        epoch_id: Optional[str] = None
-    ) -> str:
-        """
-        Track generated use case.
-        
-        Args:
-            use_case: Generated use case
-            requirements_id: Source requirements
-            epoch_id: Optional epoch to associate with
-            
-        Returns:
-            use_case_id: Unique identifier
-        """
-    
-    def track_template(
-        self,
-        template: AnalysisTemplate,
-        use_case_id: str,
-        requirements_id: str,
-        epoch_id: Optional[str] = None
-    ) -> str:
-        """
-        Track generated template.
-        
-        Args:
-            template: Analysis template
-            use_case_id: Source use case
-            requirements_id: Source requirements
-            epoch_id: Optional epoch to associate with
-            
-        Returns:
-            template_id: Unique identifier
-        """
-    
-    def get_execution_lineage(
-        self,
-        execution_id: str
-    ) -> ExecutionLineage:
-        """
-        Get complete lineage for an execution.
-        
-        Args:
-            execution_id: Execution to trace
-            
-        Returns:
-            Complete lineage from requirements to execution
-        """
-    
-    def get_requirements_executions(
-        self,
-        requirements_id: str
-    ) -> List[AnalysisExecution]:
-        """
-        Get all executions that came from specific requirements.
-        
-        Args:
-            requirements_id: Requirements to trace
-            
-        Returns:
-            List of all executions
-        """
-    
-    def trace_requirement(
-        self,
-        requirements_id: str,
-        requirement_id: str
-    ) -> RequirementTrace:
-        """
-        Trace a specific requirement through the pipeline.
-        
-        Args:
-            requirements_id: Requirements document
-            requirement_id: Specific requirement (e.g., "REQ-001")
-            
-        Returns:
-            Trace showing all use cases, templates, executions
-        """
-    
-    # === Execution Tracking ===
-    
-    def track_execution(
-        self,
-        execution: AnalysisExecution
-    ) -> str:
-        """
-        Record an analysis execution.
-        
-        Args:
-            execution: Execution details
-            
-        Returns:
-            execution_id: Unique identifier
-        """
-    
-    def get_execution(
-        self,
-        execution_id: str
-    ) -> AnalysisExecution:
-        """Get execution by ID."""
-    
-    def query_executions(
-        self,
-        filter: ExecutionFilter,
-        limit: int = 100,
-        offset: int = 0
-    ) -> List[AnalysisExecution]:
-        """
-        Query executions with filters.
-        
-        Args:
-            filter: Filter criteria
-            limit: Max results to return
-            offset: Pagination offset
-            
-        Returns:
-            List of matching executions
-        """
-    
-    def delete_execution(
-        self,
-        execution_id: str
-    ) -> bool:
-        """Delete execution by ID."""
-    
-    # === Epoch Management ===
-    
-    def create_epoch(
-        self,
-        name: str,
-        description: str = "",
-        timestamp: Optional[datetime] = None,
-        tags: List[str] = None,
-        metadata: Dict[str, Any] = None
-    ) -> AnalysisEpoch:
-        """
-        Create new analysis epoch.
-        
-        Args:
-            name: Epoch name (must be unique)
-            description: Epoch description
-            timestamp: Epoch timestamp (defaults to now)
-            tags: Optional tags for categorization
-            metadata: Optional custom metadata
-            
-        Returns:
-            Created epoch
-        """
-    
-    def get_epoch(
-        self,
-        epoch_id: str
-    ) -> AnalysisEpoch:
-        """Get epoch by ID."""
-    
-    def list_epochs(
-        self,
-        filter: EpochFilter = None,
-        sort_by: str = "timestamp",
-        limit: int = 100,
-        offset: int = 0
-    ) -> List[AnalysisEpoch]:
-        """
-        List epochs with optional filtering.
-        
-        Args:
-            filter: Optional filter criteria
-            sort_by: Sort field (timestamp, name, analysis_count)
-            limit: Max results
-            offset: Pagination offset
-            
-        Returns:
-            List of epochs
-        """
-    
-    def delete_epoch(
-        self,
-        epoch_id: str,
-        cascade: bool = False
-    ) -> bool:
-        """
-        Delete epoch.
-        
-        Args:
-            epoch_id: Epoch to delete
-            cascade: If True, delete associated executions.
-                    If False, set executions' epoch_id to null.
-        """
-    
-    def get_epoch_executions(
-        self,
-        epoch_id: str
-    ) -> List[AnalysisExecution]:
-        """Get all executions in an epoch."""
-    
-    # === Time-Series Analysis ===
-    
-    def get_time_series(
-        self,
-        metric: str,
-        algorithm: str,
-        start_date: datetime,
-        end_date: datetime,
-        frequency: str = "daily",
-        aggregation: str = "mean"
-    ) -> pd.DataFrame:
-        """
-        Get time-series data for a metric.
-        
-        Args:
-            metric: Metric name (e.g., "component_count", "avg_score")
-            algorithm: Algorithm name
-            start_date: Start of time range
-            end_date: End of time range
-            frequency: Sampling frequency (daily, weekly, monthly)
-            aggregation: How to aggregate multiple executions per period
-            
-        Returns:
-            DataFrame with timestamp index and metric values
-        """
-    
-    def compare_epochs(
-        self,
-        metric: str,
-        epoch_ids: List[str],
-        top_n: int = 10,
-        entity_id_field: str = "_key"
-    ) -> pd.DataFrame:
-        """
-        Compare metric across multiple epochs.
-        
-        Args:
-            metric: Metric to compare (e.g., "pagerank.score")
-            epoch_ids: Epochs to compare
-            top_n: Number of top entities to include
-            entity_id_field: Field identifying entities
-            
-        Returns:
-            DataFrame with entities as rows, epochs as columns
-        """
-    
-    # === Management Operations ===
-    
-    def reset(
-        self,
-        confirm: str
-    ) -> bool:
-        """
-        Delete all catalog records.
-        
-        Args:
-            confirm: Must be "DELETE_ALL" to confirm
-            
-        Returns:
-            True if successful
-        """
-    
-    def export_catalog(
-        self,
-        output_path: str,
-        format: str = "json"
-    ) -> None:
-        """
-        Export catalog to file.
-        
-        Args:
-            output_path: Output file path
-            format: Export format (json, csv)
-        """
-    
-    def import_catalog(
-        self,
-        input_path: str,
-        merge: bool = False
-    ) -> int:
-        """
-        Import catalog from file.
-        
-        Args:
-            input_path: Input file path
-            merge: If True, merge with existing. If False, replace.
-            
-        Returns:
-            Number of records imported
-        """
-    
-    def get_statistics(self) -> CatalogStatistics:
-        """
-        Get catalog statistics.
-        
-        Returns:
-            Statistics object with counts, date ranges, etc.
-        """
+ """
+ Main interface for Analysis Catalog operations.
+ 
+ Manages tracking, querying, and management of analysis executions
+ and epochs.
+ """
+ 
+ def __init__(
+ self,
+ storage: StorageBackend,
+ auto_track: bool = True
+ ):
+ """
+ Initialize catalog.
+ 
+ Args:
+ storage: Storage backend (ArangoDB, SQLite, etc.)
+ auto_track: Automatically track executions
+ """
+ 
+ # === Lineage Tracking ===
+ 
+ def track_requirements(
+ self,
+ requirements: ExtractedRequirements,
+ epoch_id: Optional[str] = None
+ ) -> str:
+ """
+ Track extracted requirements.
+ 
+ Args:
+ requirements: Extracted requirements
+ epoch_id: Optional epoch to associate with
+ 
+ Returns:
+ requirements_id: Unique identifier
+ """
+ 
+ def track_use_case(
+ self,
+ use_case: GeneratedUseCase,
+ requirements_id: str,
+ epoch_id: Optional[str] = None
+ ) -> str:
+ """
+ Track generated use case.
+ 
+ Args:
+ use_case: Generated use case
+ requirements_id: Source requirements
+ epoch_id: Optional epoch to associate with
+ 
+ Returns:
+ use_case_id: Unique identifier
+ """
+ 
+ def track_template(
+ self,
+ template: AnalysisTemplate,
+ use_case_id: str,
+ requirements_id: str,
+ epoch_id: Optional[str] = None
+ ) -> str:
+ """
+ Track generated template.
+ 
+ Args:
+ template: Analysis template
+ use_case_id: Source use case
+ requirements_id: Source requirements
+ epoch_id: Optional epoch to associate with
+ 
+ Returns:
+ template_id: Unique identifier
+ """
+ 
+ def get_execution_lineage(
+ self,
+ execution_id: str
+ ) -> ExecutionLineage:
+ """
+ Get complete lineage for an execution.
+ 
+ Args:
+ execution_id: Execution to trace
+ 
+ Returns:
+ Complete lineage from requirements to execution
+ """
+ 
+ def get_requirements_executions(
+ self,
+ requirements_id: str
+ ) -> List[AnalysisExecution]:
+ """
+ Get all executions that came from specific requirements.
+ 
+ Args:
+ requirements_id: Requirements to trace
+ 
+ Returns:
+ List of all executions
+ """
+ 
+ def trace_requirement(
+ self,
+ requirements_id: str,
+ requirement_id: str
+ ) -> RequirementTrace:
+ """
+ Trace a specific requirement through the pipeline.
+ 
+ Args:
+ requirements_id: Requirements document
+ requirement_id: Specific requirement (e.g., "REQ-001")
+ 
+ Returns:
+ Trace showing all use cases, templates, executions
+ """
+ 
+ # === Execution Tracking ===
+ 
+ def track_execution(
+ self,
+ execution: AnalysisExecution
+ ) -> str:
+ """
+ Record an analysis execution.
+ 
+ Args:
+ execution: Execution details
+ 
+ Returns:
+ execution_id: Unique identifier
+ """
+ 
+ def get_execution(
+ self,
+ execution_id: str
+ ) -> AnalysisExecution:
+ """Get execution by ID."""
+ 
+ def query_executions(
+ self,
+ filter: ExecutionFilter,
+ limit: int = 100,
+ offset: int = 0
+ ) -> List[AnalysisExecution]:
+ """
+ Query executions with filters.
+ 
+ Args:
+ filter: Filter criteria
+ limit: Max results to return
+ offset: Pagination offset
+ 
+ Returns:
+ List of matching executions
+ """
+ 
+ def delete_execution(
+ self,
+ execution_id: str
+ ) -> bool:
+ """Delete execution by ID."""
+ 
+ # === Epoch Management ===
+ 
+ def create_epoch(
+ self,
+ name: str,
+ description: str = "",
+ timestamp: Optional[datetime] = None,
+ tags: List[str] = None,
+ metadata: Dict[str, Any] = None
+ ) -> AnalysisEpoch:
+ """
+ Create new analysis epoch.
+ 
+ Args:
+ name: Epoch name (must be unique)
+ description: Epoch description
+ timestamp: Epoch timestamp (defaults to now)
+ tags: Optional tags for categorization
+ metadata: Optional custom metadata
+ 
+ Returns:
+ Created epoch
+ """
+ 
+ def get_epoch(
+ self,
+ epoch_id: str
+ ) -> AnalysisEpoch:
+ """Get epoch by ID."""
+ 
+ def list_epochs(
+ self,
+ filter: EpochFilter = None,
+ sort_by: str = "timestamp",
+ limit: int = 100,
+ offset: int = 0
+ ) -> List[AnalysisEpoch]:
+ """
+ List epochs with optional filtering.
+ 
+ Args:
+ filter: Optional filter criteria
+ sort_by: Sort field (timestamp, name, analysis_count)
+ limit: Max results
+ offset: Pagination offset
+ 
+ Returns:
+ List of epochs
+ """
+ 
+ def delete_epoch(
+ self,
+ epoch_id: str,
+ cascade: bool = False
+ ) -> bool:
+ """
+ Delete epoch.
+ 
+ Args:
+ epoch_id: Epoch to delete
+ cascade: If True, delete associated executions.
+ If False, set executions' epoch_id to null.
+ """
+ 
+ def get_epoch_executions(
+ self,
+ epoch_id: str
+ ) -> List[AnalysisExecution]:
+ """Get all executions in an epoch."""
+ 
+ # === Time-Series Analysis ===
+ 
+ def get_time_series(
+ self,
+ metric: str,
+ algorithm: str,
+ start_date: datetime,
+ end_date: datetime,
+ frequency: str = "daily",
+ aggregation: str = "mean"
+ ) -> pd.DataFrame:
+ """
+ Get time-series data for a metric.
+ 
+ Args:
+ metric: Metric name (e.g., "component_count", "avg_score")
+ algorithm: Algorithm name
+ start_date: Start of time range
+ end_date: End of time range
+ frequency: Sampling frequency (daily, weekly, monthly)
+ aggregation: How to aggregate multiple executions per period
+ 
+ Returns:
+ DataFrame with timestamp index and metric values
+ """
+ 
+ def compare_epochs(
+ self,
+ metric: str,
+ epoch_ids: List[str],
+ top_n: int = 10,
+ entity_id_field: str = "_key"
+ ) -> pd.DataFrame:
+ """
+ Compare metric across multiple epochs.
+ 
+ Args:
+ metric: Metric to compare (e.g., "pagerank.score")
+ epoch_ids: Epochs to compare
+ top_n: Number of top entities to include
+ entity_id_field: Field identifying entities
+ 
+ Returns:
+ DataFrame with entities as rows, epochs as columns
+ """
+ 
+ # === Management Operations ===
+ 
+ def reset(
+ self,
+ confirm: str
+ ) -> bool:
+ """
+ Delete all catalog records.
+ 
+ Args:
+ confirm: Must be "DELETE_ALL" to confirm
+ 
+ Returns:
+ True if successful
+ """
+ 
+ def export_catalog(
+ self,
+ output_path: str,
+ format: str = "json"
+ ) -> None:
+ """
+ Export catalog to file.
+ 
+ Args:
+ output_path: Output file path
+ format: Export format (json, csv)
+ """
+ 
+ def import_catalog(
+ self,
+ input_path: str,
+ merge: bool = False
+ ) -> int:
+ """
+ Import catalog from file.
+ 
+ Args:
+ input_path: Input file path
+ merge: If True, merge with existing. If False, replace.
+ 
+ Returns:
+ Number of records imported
+ """
+ 
+ def get_statistics(self) -> CatalogStatistics:
+ """
+ Get catalog statistics.
+ 
+ Returns:
+ Statistics object with counts, date ranges, etc.
+ """
 ```
 
 #### Data Classes
@@ -1168,194 +1168,194 @@ class AnalysisCatalog:
 ```python
 @dataclass
 class AnalysisExecution:
-    """Record of a single analysis execution."""
-    
-    execution_id: str
-    timestamp: datetime
-    algorithm: str
-    algorithm_version: str
-    parameters: Dict[str, Any]
-    template_id: str
-    template_name: str
-    graph_config: GraphConfig
-    results_location: str
-    result_count: int
-    execution_time_seconds: float
-    status: ExecutionStatus
-    error_message: Optional[str] = None
-    epoch_id: Optional[str] = None
-    # Lineage fields
-    requirements_id: Optional[str] = None
-    use_case_id: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary."""
-    
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "AnalysisExecution":
-        """Create from dictionary."""
+ """Record of a single analysis execution."""
+ 
+ execution_id: str
+ timestamp: datetime
+ algorithm: str
+ algorithm_version: str
+ parameters: Dict[str, Any]
+ template_id: str
+ template_name: str
+ graph_config: GraphConfig
+ results_location: str
+ result_count: int
+ execution_time_seconds: float
+ status: ExecutionStatus
+ error_message: Optional[str] = None
+ epoch_id: Optional[str] = None
+ # Lineage fields
+ requirements_id: Optional[str] = None
+ use_case_id: Optional[str] = None
+ metadata: Dict[str, Any] = field(default_factory=dict)
+ 
+ def to_dict(self) -> Dict[str, Any]:
+ """Convert to dictionary."""
+ 
+ @classmethod
+ def from_dict(cls, data: Dict[str, Any]) -> "AnalysisExecution":
+ """Create from dictionary."""
 
 
 @dataclass
 class ExtractedRequirements:
-    """Extracted requirements from agentic workflow."""
-    
-    requirements_id: str
-    timestamp: datetime
-    source_documents: List[str]
-    domain: str
-    summary: str
-    objectives: List[Dict[str, Any]]
-    requirements: List[Dict[str, Any]]
-    constraints: List[str]
-    epoch_id: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+ """Extracted requirements from agentic workflow."""
+ 
+ requirements_id: str
+ timestamp: datetime
+ source_documents: List[str]
+ domain: str
+ summary: str
+ objectives: List[Dict[str, Any]]
+ requirements: List[Dict[str, Any]]
+ constraints: List[str]
+ epoch_id: Optional[str] = None
+ metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class GeneratedUseCase:
-    """Generated use case from agentic workflow."""
-    
-    use_case_id: str
-    requirements_id: str
-    timestamp: datetime
-    title: str
-    description: str
-    algorithm: str
-    business_value: str
-    priority: str
-    addresses_objectives: List[str]
-    addresses_requirements: List[str]
-    epoch_id: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+ """Generated use case from agentic workflow."""
+ 
+ use_case_id: str
+ requirements_id: str
+ timestamp: datetime
+ title: str
+ description: str
+ algorithm: str
+ business_value: str
+ priority: str
+ addresses_objectives: List[str]
+ addresses_requirements: List[str]
+ epoch_id: Optional[str] = None
+ metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class AnalysisTemplate:
-    """Analysis template record."""
-    
-    template_id: str
-    use_case_id: str
-    requirements_id: str
-    timestamp: datetime
-    name: str
-    algorithm: str
-    parameters: Dict[str, Any]
-    graph_config: GraphConfig
-    epoch_id: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+ """Analysis template record."""
+ 
+ template_id: str
+ use_case_id: str
+ requirements_id: str
+ timestamp: datetime
+ name: str
+ algorithm: str
+ parameters: Dict[str, Any]
+ graph_config: GraphConfig
+ epoch_id: Optional[str] = None
+ metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class ExecutionLineage:
-    """Complete lineage from requirements to execution."""
-    
-    execution: AnalysisExecution
-    template: Optional[AnalysisTemplate]
-    use_case: Optional[GeneratedUseCase]
-    requirements: Optional[ExtractedRequirements]
-    epoch: Optional[AnalysisEpoch]
+ """Complete lineage from requirements to execution."""
+ 
+ execution: AnalysisExecution
+ template: Optional[AnalysisTemplate]
+ use_case: Optional[GeneratedUseCase]
+ requirements: Optional[ExtractedRequirements]
+ epoch: Optional[AnalysisEpoch]
 
 
 @dataclass
 class RequirementTrace:
-    """Trace of a specific requirement through pipeline."""
-    
-    requirement_id: str
-    requirements: ExtractedRequirements
-    use_cases: List[GeneratedUseCase]
-    templates: List[AnalysisTemplate]
-    executions: List[AnalysisExecution]
+ """Trace of a specific requirement through pipeline."""
+ 
+ requirement_id: str
+ requirements: ExtractedRequirements
+ use_cases: List[GeneratedUseCase]
+ templates: List[AnalysisTemplate]
+ executions: List[AnalysisExecution]
 
 
 @dataclass
 class AnalysisEpoch:
-    """Group of related analyses run at a specific time."""
-    
-    epoch_id: str
-    name: str
-    description: str
-    timestamp: datetime
-    created_at: datetime
-    status: EpochStatus
-    tags: List[str]
-    metadata: Dict[str, Any]
-    parent_epoch_id: Optional[str] = None
-    analysis_count: int = 0
-    execution_ids: List[str] = field(default_factory=list)
-    
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary."""
-    
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "AnalysisEpoch":
-        """Create from dictionary."""
+ """Group of related analyses run at a specific time."""
+ 
+ epoch_id: str
+ name: str
+ description: str
+ timestamp: datetime
+ created_at: datetime
+ status: EpochStatus
+ tags: List[str]
+ metadata: Dict[str, Any]
+ parent_epoch_id: Optional[str] = None
+ analysis_count: int = 0
+ execution_ids: List[str] = field(default_factory=list)
+ 
+ def to_dict(self) -> Dict[str, Any]:
+ """Convert to dictionary."""
+ 
+ @classmethod
+ def from_dict(cls, data: Dict[str, Any]) -> "AnalysisEpoch":
+ """Create from dictionary."""
 
 
 @dataclass
 class GraphConfig:
-    """Graph configuration for an analysis."""
-    
-    graph_name: str
-    graph_type: str  # "named_graph" or "explicit_collections"
-    vertex_collections: List[str]
-    edge_collections: List[str]
-    vertex_count: int
-    edge_count: int
-    graph_snapshot_hash: Optional[str] = None
+ """Graph configuration for an analysis."""
+ 
+ graph_name: str
+ graph_type: str # "named_graph" or "explicit_collections"
+ vertex_collections: List[str]
+ edge_collections: List[str]
+ vertex_count: int
+ edge_count: int
+ graph_snapshot_hash: Optional[str] = None
 
 
 class ExecutionStatus(Enum):
-    """Status of an analysis execution."""
-    COMPLETED = "completed"
-    FAILED = "failed"
-    PARTIAL = "partial"
+ """Status of an analysis execution."""
+ COMPLETED = "completed"
+ FAILED = "failed"
+ PARTIAL = "partial"
 
 
 class EpochStatus(Enum):
-    """Status of an analysis epoch."""
-    ACTIVE = "active"
-    COMPLETED = "completed"
-    ARCHIVED = "archived"
+ """Status of an analysis epoch."""
+ ACTIVE = "active"
+ COMPLETED = "completed"
+ ARCHIVED = "archived"
 
 
 @dataclass
 class ExecutionFilter:
-    """Filter criteria for querying executions."""
-    
-    epoch_id: Optional[str] = None
-    algorithm: Optional[str] = None
-    status: Optional[ExecutionStatus] = None
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
-    graph_name: Optional[str] = None
-    tags: Optional[List[str]] = None
+ """Filter criteria for querying executions."""
+ 
+ epoch_id: Optional[str] = None
+ algorithm: Optional[str] = None
+ status: Optional[ExecutionStatus] = None
+ start_date: Optional[datetime] = None
+ end_date: Optional[datetime] = None
+ graph_name: Optional[str] = None
+ tags: Optional[List[str]] = None
 
 
 @dataclass
 class EpochFilter:
-    """Filter criteria for querying epochs."""
-    
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
-    tags: Optional[List[str]] = None
-    status: Optional[EpochStatus] = None
-    name_pattern: Optional[str] = None
+ """Filter criteria for querying epochs."""
+ 
+ start_date: Optional[datetime] = None
+ end_date: Optional[datetime] = None
+ tags: Optional[List[str]] = None
+ status: Optional[EpochStatus] = None
+ name_pattern: Optional[str] = None
 
 
 @dataclass
 class CatalogStatistics:
-    """Statistics about the catalog."""
-    
-    total_executions: int
-    total_epochs: int
-    earliest_execution: datetime
-    latest_execution: datetime
-    algorithms_used: List[str]
-    execution_count_by_algorithm: Dict[str, int]
-    execution_count_by_status: Dict[str, int]
-    total_execution_time_hours: float
+ """Statistics about the catalog."""
+ 
+ total_executions: int
+ total_epochs: int
+ earliest_execution: datetime
+ latest_execution: datetime
+ algorithms_used: List[str]
+ execution_count_by_algorithm: Dict[str, int]
+ execution_count_by_status: Dict[str, int]
+ total_execution_time_hours: float
 ```
 
 ### Integration with Existing Code
@@ -1364,274 +1364,274 @@ class CatalogStatistics:
 
 ```python
 class AnalysisExecutor:
-    """Executes graph analytics templates."""
-    
-    def __init__(
-        self,
-        catalog: Optional[AnalysisCatalog] = None,
-        auto_track: bool = True
-    ):
-        """
-        Initialize executor.
-        
-        Args:
-            catalog: Analysis catalog for tracking
-            auto_track: Automatically track executions
-        """
-        self.catalog = catalog
-        self.auto_track = auto_track
-    
-    def execute_template(
-        self,
-        template: AnalysisTemplate,
-        epoch_id: Optional[str] = None,
-        workflow_mode: str = "traditional",
-        wait: bool = True
-    ) -> AnalysisResult:
-        """
-        Execute analysis template.
-        
-        Args:
-            template: Template to execute
-            epoch_id: Optional epoch to associate with
-            workflow_mode: Workflow mode used (traditional, agentic, parallel_agentic)
-            wait: Wait for completion
-            
-        Returns:
-            Analysis result
-        """
-        # Execute analysis
-        result = self._execute(template, wait)
-        
-        # Track execution if catalog is available
-        if self.catalog and self.auto_track:
-            execution = AnalysisExecution(
-                execution_id=str(uuid.uuid4()),
-                timestamp=datetime.now(timezone.utc),
-                algorithm=template.algorithm,
-                algorithm_version=template.algorithm_version,
-                parameters=template.parameters,
-                template_id=template.id,
-                template_name=template.name,
-                graph_config=self._extract_graph_config(template),
-                results_location=result.result_collection,
-                result_count=result.result_count,
-                execution_time_seconds=result.execution_time,
-                status=ExecutionStatus.COMPLETED if result.success else ExecutionStatus.FAILED,
-                error_message=result.error if not result.success else None,
-                epoch_id=epoch_id,
-                metadata={
-                    "workflow_mode": workflow_mode,
-                    "template_version": template.version
-                }
-            )
-            self.catalog.track_execution(execution)
-        
-        return result
+ """Executes graph analytics templates."""
+ 
+ def __init__(
+ self,
+ catalog: Optional[AnalysisCatalog] = None,
+ auto_track: bool = True
+ ):
+ """
+ Initialize executor.
+ 
+ Args:
+ catalog: Analysis catalog for tracking
+ auto_track: Automatically track executions
+ """
+ self.catalog = catalog
+ self.auto_track = auto_track
+ 
+ def execute_template(
+ self,
+ template: AnalysisTemplate,
+ epoch_id: Optional[str] = None,
+ workflow_mode: str = "traditional",
+ wait: bool = True
+ ) -> AnalysisResult:
+ """
+ Execute analysis template.
+ 
+ Args:
+ template: Template to execute
+ epoch_id: Optional epoch to associate with
+ workflow_mode: Workflow mode used (traditional, agentic, parallel_agentic)
+ wait: Wait for completion
+ 
+ Returns:
+ Analysis result
+ """
+ # Execute analysis
+ result = self._execute(template, wait)
+ 
+ # Track execution if catalog is available
+ if self.catalog and self.auto_track:
+ execution = AnalysisExecution(
+ execution_id=str(uuid.uuid4()),
+ timestamp=datetime.now(timezone.utc),
+ algorithm=template.algorithm,
+ algorithm_version=template.algorithm_version,
+ parameters=template.parameters,
+ template_id=template.id,
+ template_name=template.name,
+ graph_config=self._extract_graph_config(template),
+ results_location=result.result_collection,
+ result_count=result.result_count,
+ execution_time_seconds=result.execution_time,
+ status=ExecutionStatus.COMPLETED if result.success else ExecutionStatus.FAILED,
+ error_message=result.error if not result.success else None,
+ epoch_id=epoch_id,
+ metadata={
+ "workflow_mode": workflow_mode,
+ "template_version": template.version
+ }
+ )
+ self.catalog.track_execution(execution)
+ 
+ return result
 ```
 
 #### Integration with WorkflowOrchestrator
 
 ```python
 class WorkflowOrchestrator:
-    """Traditional workflow orchestrator with catalog integration."""
-    
-    def __init__(
-        self,
-        graph_name: str,
-        catalog: Optional[AnalysisCatalog] = None,
-        **kwargs
-    ):
-        """
-        Initialize orchestrator.
-        
-        Args:
-            graph_name: Name of graph to analyze
-            catalog: Optional analysis catalog
-        """
-        self.catalog = catalog
-        self.executor = AnalysisExecutor(catalog=catalog)
-    
-    def run_complete_workflow(
-        self,
-        input_files: List[str],
-        epoch_id: Optional[str] = None
-    ) -> WorkflowResult:
-        """
-        Run complete workflow with catalog tracking.
-        
-        Args:
-            input_files: Input requirement files
-            epoch_id: Optional epoch to associate analyses with
-        """
-        # Run workflow steps
-        templates = self._generate_templates(input_files)
-        
-        # Execute with tracking
-        for template in templates:
-            result = self.executor.execute_template(
-                template,
-                epoch_id=epoch_id,
-                workflow_mode="traditional"
-            )
+ """Traditional workflow orchestrator with catalog integration."""
+ 
+ def __init__(
+ self,
+ graph_name: str,
+ catalog: Optional[AnalysisCatalog] = None,
+ **kwargs
+ ):
+ """
+ Initialize orchestrator.
+ 
+ Args:
+ graph_name: Name of graph to analyze
+ catalog: Optional analysis catalog
+ """
+ self.catalog = catalog
+ self.executor = AnalysisExecutor(catalog=catalog)
+ 
+ def run_complete_workflow(
+ self,
+ input_files: List[str],
+ epoch_id: Optional[str] = None
+ ) -> WorkflowResult:
+ """
+ Run complete workflow with catalog tracking.
+ 
+ Args:
+ input_files: Input requirement files
+ epoch_id: Optional epoch to associate analyses with
+ """
+ # Run workflow steps
+ templates = self._generate_templates(input_files)
+ 
+ # Execute with tracking
+ for template in templates:
+ result = self.executor.execute_template(
+ template,
+ epoch_id=epoch_id,
+ workflow_mode="traditional"
+ )
 ```
 
 #### Integration with AgenticWorkflowRunner
 
 ```python
 class AgenticWorkflowRunner:
-    """Agentic workflow runner with catalog integration."""
-    
-    def __init__(
-        self,
-        graph_name: str,
-        catalog: Optional[AnalysisCatalog] = None,
-        **kwargs
-    ):
-        """
-        Initialize agentic runner.
-        
-        Args:
-            graph_name: Name of graph to analyze
-            catalog: Optional analysis catalog
-        """
-        self.catalog = catalog
-        # Pass catalog to all agents
-        self.requirements_agent = RequirementsAgent(catalog=catalog)
-        self.use_case_agent = UseCaseAgent(catalog=catalog)
-        self.template_agent = TemplateAgent(catalog=catalog)
-        self.execution_agent = ExecutionAgent(catalog=catalog)
-    
-    def run(
-        self,
-        epoch_id: Optional[str] = None
-    ) -> AgentState:
-        """
-        Run agentic workflow with full lineage tracking.
-        
-        Args:
-            epoch_id: Optional epoch to associate analyses with
-        """
-        state = AgentState()
-        state.metadata["epoch_id"] = epoch_id
-        state.metadata["workflow_mode"] = "agentic"
-        
-        # Requirements Agent - track requirements
-        requirements_result = self.requirements_agent.process(message, state)
-        if self.catalog and state.requirements:
-            requirements_id = self.catalog.track_requirements(
-                state.requirements,
-                epoch_id=epoch_id
-            )
-            state.metadata["requirements_id"] = requirements_id
-        
-        # Use Case Agent - track use cases
-        use_case_result = self.use_case_agent.process(message, state)
-        if self.catalog and state.use_cases:
-            for use_case in state.use_cases:
-                use_case_id = self.catalog.track_use_case(
-                    use_case,
-                    requirements_id=state.metadata["requirements_id"],
-                    epoch_id=epoch_id
-                )
-                use_case.use_case_id = use_case_id
-        
-        # Template Agent - track templates
-        template_result = self.template_agent.process(message, state)
-        if self.catalog and state.templates:
-            for i, template in enumerate(state.templates):
-                use_case = state.use_cases[i] if i < len(state.use_cases) else None
-                template_id = self.catalog.track_template(
-                    template,
-                    use_case_id=use_case.use_case_id if use_case else None,
-                    requirements_id=state.metadata["requirements_id"],
-                    epoch_id=epoch_id
-                )
-                template.template_id = template_id
-        
-        # Execution Agent - track executions with full lineage
-        execution_result = self.execution_agent.process(message, state)
-        # Executions automatically tracked with lineage IDs
-        
-        return state
-    
-    async def run_async(
-        self,
-        enable_parallelism: bool = True,
-        epoch_id: Optional[str] = None
-    ) -> AgentState:
-        """
-        Run parallel agentic workflow with lineage tracking.
-        
-        Lineage tracking works the same in parallel mode,
-        with thread-safe catalog operations.
-        """
-        # Similar to run() but with async operations
-        pass
+ """Agentic workflow runner with catalog integration."""
+ 
+ def __init__(
+ self,
+ graph_name: str,
+ catalog: Optional[AnalysisCatalog] = None,
+ **kwargs
+ ):
+ """
+ Initialize agentic runner.
+ 
+ Args:
+ graph_name: Name of graph to analyze
+ catalog: Optional analysis catalog
+ """
+ self.catalog = catalog
+ # Pass catalog to all agents
+ self.requirements_agent = RequirementsAgent(catalog=catalog)
+ self.use_case_agent = UseCaseAgent(catalog=catalog)
+ self.template_agent = TemplateAgent(catalog=catalog)
+ self.execution_agent = ExecutionAgent(catalog=catalog)
+ 
+ def run(
+ self,
+ epoch_id: Optional[str] = None
+ ) -> AgentState:
+ """
+ Run agentic workflow with full lineage tracking.
+ 
+ Args:
+ epoch_id: Optional epoch to associate analyses with
+ """
+ state = AgentState()
+ state.metadata["epoch_id"] = epoch_id
+ state.metadata["workflow_mode"] = "agentic"
+ 
+ # Requirements Agent - track requirements
+ requirements_result = self.requirements_agent.process(message, state)
+ if self.catalog and state.requirements:
+ requirements_id = self.catalog.track_requirements(
+ state.requirements,
+ epoch_id=epoch_id
+ )
+ state.metadata["requirements_id"] = requirements_id
+ 
+ # Use Case Agent - track use cases
+ use_case_result = self.use_case_agent.process(message, state)
+ if self.catalog and state.use_cases:
+ for use_case in state.use_cases:
+ use_case_id = self.catalog.track_use_case(
+ use_case,
+ requirements_id=state.metadata["requirements_id"],
+ epoch_id=epoch_id
+ )
+ use_case.use_case_id = use_case_id
+ 
+ # Template Agent - track templates
+ template_result = self.template_agent.process(message, state)
+ if self.catalog and state.templates:
+ for i, template in enumerate(state.templates):
+ use_case = state.use_cases[i] if i < len(state.use_cases) else None
+ template_id = self.catalog.track_template(
+ template,
+ use_case_id=use_case.use_case_id if use_case else None,
+ requirements_id=state.metadata["requirements_id"],
+ epoch_id=epoch_id
+ )
+ template.template_id = template_id
+ 
+ # Execution Agent - track executions with full lineage
+ execution_result = self.execution_agent.process(message, state)
+ # Executions automatically tracked with lineage IDs
+ 
+ return state
+ 
+ async def run_async(
+ self,
+ enable_parallelism: bool = True,
+ epoch_id: Optional[str] = None
+ ) -> AgentState:
+ """
+ Run parallel agentic workflow with lineage tracking.
+ 
+ Lineage tracking works the same in parallel mode,
+ with thread-safe catalog operations.
+ """
+ # Similar to run() but with async operations
+ pass
 ```
 
 #### Lineage-Aware Agents
 
 ```python
 class RequirementsAgent(SpecializedAgent):
-    """Requirements agent with catalog integration."""
-    
-    def __init__(
-        self,
-        llm_provider: LLMProvider,
-        catalog: Optional[AnalysisCatalog] = None
-    ):
-        super().__init__(...)
-        self.catalog = catalog
-    
-    def process(self, message: AgentMessage, state: AgentState) -> AgentMessage:
-        """Extract requirements and track in catalog."""
-        # Extract requirements
-        requirements = self.extractor.extract(documents)
-        state.requirements = requirements
-        
-        # Track in catalog if available
-        if self.catalog:
-            epoch_id = state.metadata.get("epoch_id")
-            requirements_id = self.catalog.track_requirements(
-                requirements,
-                epoch_id=epoch_id
-            )
-            state.metadata["requirements_id"] = requirements_id
-            self.log(f"Tracked requirements: {requirements_id}")
-        
-        return self.create_success_message(...)
+ """Requirements agent with catalog integration."""
+ 
+ def __init__(
+ self,
+ llm_provider: LLMProvider,
+ catalog: Optional[AnalysisCatalog] = None
+ ):
+ super().__init__(...)
+ self.catalog = catalog
+ 
+ def process(self, message: AgentMessage, state: AgentState) -> AgentMessage:
+ """Extract requirements and track in catalog."""
+ # Extract requirements
+ requirements = self.extractor.extract(documents)
+ state.requirements = requirements
+ 
+ # Track in catalog if available
+ if self.catalog:
+ epoch_id = state.metadata.get("epoch_id")
+ requirements_id = self.catalog.track_requirements(
+ requirements,
+ epoch_id=epoch_id
+ )
+ state.metadata["requirements_id"] = requirements_id
+ self.log(f"Tracked requirements: {requirements_id}")
+ 
+ return self.create_success_message(...)
 
 
 class ExecutionAgent(SpecializedAgent):
-    """Execution agent with lineage tracking."""
-    
-    def __init__(
-        self,
-        llm_provider: LLMProvider,
-        catalog: Optional[AnalysisCatalog] = None
-    ):
-        super().__init__(...)
-        self.catalog = catalog
-        self.executor = AnalysisExecutor(catalog=catalog)
-    
-    def process(self, message: AgentMessage, state: AgentState) -> AgentMessage:
-        """Execute templates with full lineage."""
-        epoch_id = state.metadata.get("epoch_id")
-        requirements_id = state.metadata.get("requirements_id")
-        
-        for template in state.templates:
-            # Execute with lineage information
-            result = self.executor.execute_template(
-                template,
-                epoch_id=epoch_id,
-                requirements_id=requirements_id,
-                use_case_id=template.use_case_id,
-                workflow_mode="agentic"
-            )
-            state.execution_results.append(result)
-        
-        return self.create_success_message(...)
+ """Execution agent with lineage tracking."""
+ 
+ def __init__(
+ self,
+ llm_provider: LLMProvider,
+ catalog: Optional[AnalysisCatalog] = None
+ ):
+ super().__init__(...)
+ self.catalog = catalog
+ self.executor = AnalysisExecutor(catalog=catalog)
+ 
+ def process(self, message: AgentMessage, state: AgentState) -> AgentMessage:
+ """Execute templates with full lineage."""
+ epoch_id = state.metadata.get("epoch_id")
+ requirements_id = state.metadata.get("requirements_id")
+ 
+ for template in state.templates:
+ # Execute with lineage information
+ result = self.executor.execute_template(
+ template,
+ epoch_id=epoch_id,
+ requirements_id=requirements_id,
+ use_case_id=template.use_case_id,
+ workflow_mode="agentic"
+ )
+ state.execution_results.append(result)
+ 
+ return self.create_success_message(...)
 ```
 
 #### Thread-Safe Catalog Operations
@@ -1641,25 +1641,25 @@ import asyncio
 from threading import Lock
 
 class AnalysisCatalog:
-    """Thread-safe analysis catalog."""
-    
-    def __init__(self, storage: StorageBackend):
-        self.storage = storage
-        self._lock = Lock()
-        self._async_lock = asyncio.Lock()
-    
-    def track_execution(self, execution: AnalysisExecution) -> str:
-        """Thread-safe execution tracking."""
-        with self._lock:
-            return self.storage.insert_execution(execution)
-    
-    async def track_execution_async(
-        self,
-        execution: AnalysisExecution
-    ) -> str:
-        """Async thread-safe execution tracking."""
-        async with self._async_lock:
-            return await self.storage.insert_execution_async(execution)
+ """Thread-safe analysis catalog."""
+ 
+ def __init__(self, storage: StorageBackend):
+ self.storage = storage
+ self._lock = Lock()
+ self._async_lock = asyncio.Lock()
+ 
+ def track_execution(self, execution: AnalysisExecution) -> str:
+ """Thread-safe execution tracking."""
+ with self._lock:
+ return self.storage.insert_execution(execution)
+ 
+ async def track_execution_async(
+ self,
+ execution: AnalysisExecution
+ ) -> str:
+ """Async thread-safe execution tracking."""
+ async with self._async_lock:
+ return await self.storage.insert_execution_async(execution)
 ```
 
 ---
@@ -1670,21 +1670,21 @@ class AnalysisCatalog:
 
 #### Test Coverage Areas:
 1. **Catalog Operations**
-   - Create/read/update/delete executions
-   - Create/read/update/delete epochs
-   - Query operations with various filters
-   - Edge cases (empty catalog, missing IDs, etc.)
+ - Create/read/update/delete executions
+ - Create/read/update/delete epochs
+ - Query operations with various filters
+ - Edge cases (empty catalog, missing IDs, etc.)
 
 2. **Storage Backends**
-   - Each backend (ArangoDB, SQLite, PostgreSQL)
-   - Consistency and atomicity
-   - Error handling
+ - Each backend (ArangoDB, SQLite, PostgreSQL)
+ - Consistency and atomicity
+ - Error handling
 
 3. **Time-Series Queries**
-   - Metric extraction
-   - Cross-epoch comparison
-   - Date range handling
-   - Aggregation logic
+ - Metric extraction
+ - Cross-epoch comparison
+ - Date range handling
+ - Aggregation logic
 
 ### Integration Tests
 
@@ -1693,127 +1693,127 @@ class AnalysisCatalog:
 **IT-1: Single Epoch Analysis**
 ```python
 def test_single_epoch_analysis():
-    """Test complete flow for single epoch."""
-    # 1. Create test graph
-    graph = create_test_graph(nodes=100, edges=500)
-    
-    # 2. Create epoch
-    catalog = AnalysisCatalog(storage)
-    epoch = catalog.create_epoch("test-epoch-1")
-    
-    # 3. Run analyses
-    executor = AnalysisExecutor(catalog=catalog)
-    pagerank_result = executor.execute_template(
-        pagerank_template,
-        epoch_id=epoch.epoch_id
-    )
-    wcc_result = executor.execute_template(
-        wcc_template,
-        epoch_id=epoch.epoch_id
-    )
-    
-    # 4. Verify tracking
-    executions = catalog.get_epoch_executions(epoch.epoch_id)
-    assert len(executions) == 2
-    assert {e.algorithm for e in executions} == {"pagerank", "wcc"}
-    
-    # 5. Query results
-    pagerank_exec = [e for e in executions if e.algorithm == "pagerank"][0]
-    assert pagerank_exec.status == ExecutionStatus.COMPLETED
-    assert pagerank_exec.result_count > 0
+ """Test complete flow for single epoch."""
+ # 1. Create test graph
+ graph = create_test_graph(nodes=100, edges=500)
+ 
+ # 2. Create epoch
+ catalog = AnalysisCatalog(storage)
+ epoch = catalog.create_epoch("test-epoch-1")
+ 
+ # 3. Run analyses
+ executor = AnalysisExecutor(catalog=catalog)
+ pagerank_result = executor.execute_template(
+ pagerank_template,
+ epoch_id=epoch.epoch_id
+ )
+ wcc_result = executor.execute_template(
+ wcc_template,
+ epoch_id=epoch.epoch_id
+ )
+ 
+ # 4. Verify tracking
+ executions = catalog.get_epoch_executions(epoch.epoch_id)
+ assert len(executions) == 2
+ assert {e.algorithm for e in executions} == {"pagerank", "wcc"}
+ 
+ # 5. Query results
+ pagerank_exec = [e for e in executions if e.algorithm == "pagerank"][0]
+ assert pagerank_exec.status == ExecutionStatus.COMPLETED
+ assert pagerank_exec.result_count > 0
 ```
 
 **IT-2: Multi-Epoch Time Series**
 ```python
 def test_multi_epoch_time_series():
-    """Test analysis across multiple epochs."""
-    catalog = AnalysisCatalog(storage)
-    executor = AnalysisExecutor(catalog=catalog)
-    
-    # Create initial graph
-    graph = create_test_graph(nodes=100, edges=500)
-    
-    # Epoch 1: Baseline
-    epoch1 = catalog.create_epoch("epoch-1-baseline")
-    result1 = executor.execute_template(
-        pagerank_template,
-        epoch_id=epoch1.epoch_id
-    )
-    top_nodes_1 = get_top_n(result1, n=10)
-    
-    # Evolve graph: Add 50 nodes
-    extend_test_graph(graph, additional_nodes=50)
-    
-    # Epoch 2: After growth
-    epoch2 = catalog.create_epoch("epoch-2-growth")
-    result2 = executor.execute_template(
-        pagerank_template,
-        epoch_id=epoch2.epoch_id
-    )
-    top_nodes_2 = get_top_n(result2, n=10)
-    
-    # Evolve graph: Add high-degree hub
-    add_hub_node(graph, connections=30)
-    
-    # Epoch 3: After hub addition
-    epoch3 = catalog.create_epoch("epoch-3-hub")
-    result3 = executor.execute_template(
-        pagerank_template,
-        epoch_id=epoch3.epoch_id
-    )
-    top_nodes_3 = get_top_n(result3, n=10)
-    
-    # Compare epochs
-    comparison = catalog.compare_epochs(
-        metric="pagerank.score",
-        epoch_ids=[epoch1.epoch_id, epoch2.epoch_id, epoch3.epoch_id],
-        top_n=10
-    )
-    
-    # Verify metrics changed
-    assert comparison is not None
-    assert len(comparison) == 10
-    
-    # Verify hub node appears in epoch 3
-    hub_node_id = get_hub_node_id(graph)
-    assert hub_node_id in comparison.index
-    
-    # Get time series
-    ts_data = catalog.get_time_series(
-        metric="avg_pagerank_score",
-        algorithm="pagerank",
-        start_date=epoch1.timestamp,
-        end_date=epoch3.timestamp
-    )
-    
-    assert len(ts_data) == 3
+ """Test analysis across multiple epochs."""
+ catalog = AnalysisCatalog(storage)
+ executor = AnalysisExecutor(catalog=catalog)
+ 
+ # Create initial graph
+ graph = create_test_graph(nodes=100, edges=500)
+ 
+ # Epoch 1: Baseline
+ epoch1 = catalog.create_epoch("epoch-1-baseline")
+ result1 = executor.execute_template(
+ pagerank_template,
+ epoch_id=epoch1.epoch_id
+ )
+ top_nodes_1 = get_top_n(result1, n=10)
+ 
+ # Evolve graph: Add 50 nodes
+ extend_test_graph(graph, additional_nodes=50)
+ 
+ # Epoch 2: After growth
+ epoch2 = catalog.create_epoch("epoch-2-growth")
+ result2 = executor.execute_template(
+ pagerank_template,
+ epoch_id=epoch2.epoch_id
+ )
+ top_nodes_2 = get_top_n(result2, n=10)
+ 
+ # Evolve graph: Add high-degree hub
+ add_hub_node(graph, connections=30)
+ 
+ # Epoch 3: After hub addition
+ epoch3 = catalog.create_epoch("epoch-3-hub")
+ result3 = executor.execute_template(
+ pagerank_template,
+ epoch_id=epoch3.epoch_id
+ )
+ top_nodes_3 = get_top_n(result3, n=10)
+ 
+ # Compare epochs
+ comparison = catalog.compare_epochs(
+ metric="pagerank.score",
+ epoch_ids=[epoch1.epoch_id, epoch2.epoch_id, epoch3.epoch_id],
+ top_n=10
+ )
+ 
+ # Verify metrics changed
+ assert comparison is not None
+ assert len(comparison) == 10
+ 
+ # Verify hub node appears in epoch 3
+ hub_node_id = get_hub_node_id(graph)
+ assert hub_node_id in comparison.index
+ 
+ # Get time series
+ ts_data = catalog.get_time_series(
+ metric="avg_pagerank_score",
+ algorithm="pagerank",
+ start_date=epoch1.timestamp,
+ end_date=epoch3.timestamp
+ )
+ 
+ assert len(ts_data) == 3
 ```
 
 **IT-3: Catalog Management**
 ```python
 def test_catalog_management():
-    """Test catalog reset and cleanup operations."""
-    catalog = AnalysisCatalog(storage)
-    
-    # Create test data
-    create_test_epochs(catalog, count=5)
-    
-    # Verify data exists
-    epochs = catalog.list_epochs()
-    assert len(epochs) == 5
-    
-    # Delete specific epoch
-    epoch_to_delete = epochs[0]
-    catalog.delete_epoch(epoch_to_delete.epoch_id, cascade=True)
-    
-    remaining_epochs = catalog.list_epochs()
-    assert len(remaining_epochs) == 4
-    
-    # Reset catalog
-    catalog.reset(confirm="DELETE_ALL")
-    
-    all_epochs = catalog.list_epochs()
-    assert len(all_epochs) == 0
+ """Test catalog reset and cleanup operations."""
+ catalog = AnalysisCatalog(storage)
+ 
+ # Create test data
+ create_test_epochs(catalog, count=5)
+ 
+ # Verify data exists
+ epochs = catalog.list_epochs()
+ assert len(epochs) == 5
+ 
+ # Delete specific epoch
+ epoch_to_delete = epochs[0]
+ catalog.delete_epoch(epoch_to_delete.epoch_id, cascade=True)
+ 
+ remaining_epochs = catalog.list_epochs()
+ assert len(remaining_epochs) == 4
+ 
+ # Reset catalog
+ catalog.reset(confirm="DELETE_ALL")
+ 
+ all_epochs = catalog.list_epochs()
+ assert len(all_epochs) == 0
 ```
 
 ### Test Fixtures
@@ -1821,70 +1821,70 @@ def test_catalog_management():
 ```python
 @pytest.fixture
 def analysis_catalog(test_db):
-    """Provide clean analysis catalog for testing."""
-    storage = ArangoDBStorage(test_db)
-    catalog = AnalysisCatalog(storage)
-    yield catalog
-    catalog.reset(confirm="DELETE_ALL")
+ """Provide clean analysis catalog for testing."""
+ storage = ArangoDBStorage(test_db)
+ catalog = AnalysisCatalog(storage)
+ yield catalog
+ catalog.reset(confirm="DELETE_ALL")
 
 
 @pytest.fixture
 def evolving_test_graph(test_db):
-    """Provide test graph that can be evolved."""
-    graph = TestGraph(
-        db=test_db,
-        name="test_evolving_graph"
-    )
-    graph.create_initial_state(nodes=100, edges=500)
-    yield graph
-    graph.cleanup()
+ """Provide test graph that can be evolved."""
+ graph = TestGraph(
+ db=test_db,
+ name="test_evolving_graph"
+ )
+ graph.create_initial_state(nodes=100, edges=500)
+ yield graph
+ graph.cleanup()
 
 
 def create_test_epochs(
-    catalog: AnalysisCatalog,
-    count: int = 3,
-    algorithms: List[str] = None
+ catalog: AnalysisCatalog,
+ count: int = 3,
+ algorithms: List[str] = None
 ) -> List[AnalysisEpoch]:
-    """Create test epochs with sample executions."""
-    if algorithms is None:
-        algorithms = ["pagerank", "wcc"]
-    
-    epochs = []
-    for i in range(count):
-        epoch = catalog.create_epoch(
-            name=f"test-epoch-{i}",
-            description=f"Test epoch {i}"
-        )
-        
-        # Add sample executions
-        for alg in algorithms:
-            execution = AnalysisExecution(
-                execution_id=str(uuid.uuid4()),
-                timestamp=datetime.now(timezone.utc),
-                algorithm=alg,
-                algorithm_version="1.0",
-                parameters={},
-                template_id=f"template-{alg}",
-                template_name=f"{alg} template",
-                graph_config=GraphConfig(
-                    graph_name="test_graph",
-                    graph_type="explicit_collections",
-                    vertex_collections=["nodes"],
-                    edge_collections=["edges"],
-                    vertex_count=100,
-                    edge_count=500
-                ),
-                results_location=f"results_{alg}_{i}",
-                result_count=100,
-                execution_time_seconds=10.0,
-                status=ExecutionStatus.COMPLETED,
-                epoch_id=epoch.epoch_id
-            )
-            catalog.track_execution(execution)
-        
-        epochs.append(epoch)
-    
-    return epochs
+ """Create test epochs with sample executions."""
+ if algorithms is None:
+ algorithms = ["pagerank", "wcc"]
+ 
+ epochs = []
+ for i in range(count):
+ epoch = catalog.create_epoch(
+ name=f"test-epoch-{i}",
+ description=f"Test epoch {i}"
+ )
+ 
+ # Add sample executions
+ for alg in algorithms:
+ execution = AnalysisExecution(
+ execution_id=str(uuid.uuid4()),
+ timestamp=datetime.now(timezone.utc),
+ algorithm=alg,
+ algorithm_version="1.0",
+ parameters={},
+ template_id=f"template-{alg}",
+ template_name=f"{alg} template",
+ graph_config=GraphConfig(
+ graph_name="test_graph",
+ graph_type="explicit_collections",
+ vertex_collections=["nodes"],
+ edge_collections=["edges"],
+ vertex_count=100,
+ edge_count=500
+ ),
+ results_location=f"results_{alg}_{i}",
+ result_count=100,
+ execution_time_seconds=10.0,
+ status=ExecutionStatus.COMPLETED,
+ epoch_id=epoch.epoch_id
+ )
+ catalog.track_execution(execution)
+ 
+ epochs.append(epoch)
+ 
+ return epochs
 ```
 
 ---
@@ -1900,9 +1900,9 @@ def create_test_epochs(
 - [ ] Basic CRUD operations for executions and epochs
 - [ ] Integration with `AnalysisExecutor` for automatic tracking
 - [ ] Integration with all three workflow modes:
-  - [ ] Traditional Orchestrator
-  - [ ] Agentic Workflow
-  - [ ] Parallel Agentic Workflow
+ - [ ] Traditional Orchestrator
+ - [ ] Agentic Workflow
+ - [ ] Parallel Agentic Workflow
 - [ ] Thread-safe and async-safe catalog operations
 - [ ] Unit tests for data model and storage
 
@@ -2024,9 +2024,9 @@ C. Configurable
 
 **Example:** 
 - Parent: "2026-Q1" 
-  - Child: "2026-01"
-  - Child: "2026-02"
-  - Child: "2026-03"
+ - Child: "2026-01"
+ - Child: "2026-02"
+ - Child: "2026-03"
 
 **Recommendation:** Include `parent_epoch_id` field, but don't enforce hierarchy in v1. Add hierarchy queries in v2 if needed.
 
@@ -2084,17 +2084,17 @@ executor = AnalysisExecutor(catalog=catalog)
 # Create daily epoch
 today = datetime.now().date()
 epoch = catalog.create_epoch(
-    name=f"daily-{today}",
-    description=f"Daily analysis for {today}",
-    tags=["daily", "production"]
+ name=f"daily-{today}",
+ description=f"Daily analysis for {today}",
+ tags=["daily", "production"]
 )
 
 # Run standard analyses
 for template in standard_templates:
-    executor.execute_template(
-        template,
-        epoch_id=epoch.epoch_id
-    )
+ executor.execute_template(
+ template,
+ epoch_id=epoch.epoch_id
+ )
 
 # Mark epoch as completed
 catalog.update_epoch(epoch.epoch_id, status="completed")
@@ -2109,11 +2109,11 @@ start_date = end_date - timedelta(days=30)
 
 # Get time-series of top influencer scores
 top_influencers = catalog.compare_epochs(
-    metric="pagerank.score",
-    algorithm="pagerank",
-    start_date=start_date,
-    end_date=end_date,
-    top_n=20
+ metric="pagerank.score",
+ algorithm="pagerank",
+ start_date=start_date,
+ end_date=end_date,
+ top_n=20
 )
 
 # Analyze changes
@@ -2146,39 +2146,39 @@ from graph_analytics_ai.catalog import AnalysisCatalog
 from graph_analytics_ai.testing import EpochTestCase
 
 class TestGraphEvolution(EpochTestCase):
-    """Test graph metric changes over time."""
-    
-    def test_hub_addition_increases_centralization(self):
-        """Adding a hub node should increase graph centralization."""
-        catalog = self.get_catalog()
-        graph = self.get_test_graph()
-        executor = self.get_executor()
-        
-        # Epoch 1: Baseline
-        epoch1 = self.create_epoch("baseline")
-        result1 = executor.execute_template(
-            self.pagerank_template,
-            epoch_id=epoch1.epoch_id
-        )
-        centralization1 = self.calculate_centralization(result1)
-        
-        # Add hub node with 30 connections
-        hub_id = graph.add_hub_node(degree=30)
-        
-        # Epoch 2: After hub
-        epoch2 = self.create_epoch("after-hub")
-        result2 = executor.execute_template(
-            self.pagerank_template,
-            epoch_id=epoch2.epoch_id
-        )
-        centralization2 = self.calculate_centralization(result2)
-        
-        # Assert centralization increased
-        assert centralization2 > centralization1
-        
-        # Assert hub is now top influencer
-        top_node = self.get_top_node(result2)
-        assert top_node == hub_id
+ """Test graph metric changes over time."""
+ 
+ def test_hub_addition_increases_centralization(self):
+ """Adding a hub node should increase graph centralization."""
+ catalog = self.get_catalog()
+ graph = self.get_test_graph()
+ executor = self.get_executor()
+ 
+ # Epoch 1: Baseline
+ epoch1 = self.create_epoch("baseline")
+ result1 = executor.execute_template(
+ self.pagerank_template,
+ epoch_id=epoch1.epoch_id
+ )
+ centralization1 = self.calculate_centralization(result1)
+ 
+ # Add hub node with 30 connections
+ hub_id = graph.add_hub_node(degree=30)
+ 
+ # Epoch 2: After hub
+ epoch2 = self.create_epoch("after-hub")
+ result2 = executor.execute_template(
+ self.pagerank_template,
+ epoch_id=epoch2.epoch_id
+ )
+ centralization2 = self.calculate_centralization(result2)
+ 
+ # Assert centralization increased
+ assert centralization2 > centralization1
+ 
+ # Assert hub is now top influencer
+ top_node = self.get_top_node(result2)
+ assert top_node == hub_id
 ```
 
 ### Scenario 4: Catalog Management
@@ -2186,8 +2186,8 @@ class TestGraphEvolution(EpochTestCase):
 ```python
 # Export catalog for backup
 catalog.export_catalog(
-    output_path="catalog_backup_2026_01_06.json",
-    format="json"
+ output_path="catalog_backup_2026_01_06.json",
+ format="json"
 )
 
 # Get catalog statistics
@@ -2199,22 +2199,22 @@ print(f"Algorithms Used: {stats.algorithms_used}")
 
 # Clean up old test data
 test_epochs = catalog.list_epochs(
-    filter=EpochFilter(tags=["test"])
+ filter=EpochFilter(tags=["test"])
 )
 for epoch in test_epochs:
-    catalog.delete_epoch(epoch.epoch_id, cascade=True)
+ catalog.delete_epoch(epoch.epoch_id, cascade=True)
 print(f"Deleted {len(test_epochs)} test epochs")
 
 # Archive old production epochs
 old_date = datetime.now() - timedelta(days=365)
 old_epochs = catalog.list_epochs(
-    filter=EpochFilter(end_date=old_date)
+ filter=EpochFilter(end_date=old_date)
 )
 for epoch in old_epochs:
-    catalog.update_epoch(
-        epoch.epoch_id,
-        status=EpochStatus.ARCHIVED
-    )
+ catalog.update_epoch(
+ epoch.epoch_id,
+ status=EpochStatus.ARCHIVED
+ )
 ```
 
 ---
@@ -2278,6 +2278,6 @@ for epoch in old_epochs:
 
 ---
 
-**Status:** Ready for Review  
+**Status:** Ready for Review 
 **Next Steps:** Review with stakeholders, refine requirements, create implementation tickets
 

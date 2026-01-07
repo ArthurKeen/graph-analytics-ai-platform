@@ -8,7 +8,7 @@
 
 ```bash
 cd ~/code
-mkdir customer-graph-analytics  # Replace 'customer' with actual name
+mkdir customer-graph-analytics # Replace 'customer' with actual name
 cd customer-graph-analytics
 mkdir -p {docs,scripts,config,outputs,notebooks}
 ```
@@ -43,38 +43,38 @@ from graph_analytics_ai.ai.agents.runner import AgenticWorkflowRunner
 from graph_analytics_ai.db_connection import get_db_connection
 
 def main():
-    # Load requirements document
-    docs_dir = Path(__file__).parent.parent / "docs"
-    requirements_file = docs_dir / "business_requirements.md"
-    
-    with open(requirements_file, 'r') as f:
-        requirements_content = f.read()
-    
-    # Initialize agentic workflow runner
-    runner = AgenticWorkflowRunner(
-        db_connection=get_db_connection(),
-        graph_name="YourGraphName"  # Change this
-    )
-    
-    # Run workflow
-    final_state = runner.run(
-        input_documents=[{
-            "path": str(requirements_file),
-            "content": requirements_content,
-            "type": "text/markdown"
-        }],
-        max_executions=3
-    )
-    
-    # Display results
-    print(f"✅ Workflow Complete!")
-    print(f"Status: {final_state.status}")
-    print(f"Reports: {len(final_state.reports)}")
-    
-    return final_state
+ # Load requirements document
+ docs_dir = Path(__file__).parent.parent / "docs"
+ requirements_file = docs_dir / "business_requirements.md"
+ 
+ with open(requirements_file, 'r') as f:
+ requirements_content = f.read()
+ 
+ # Initialize agentic workflow runner
+ runner = AgenticWorkflowRunner(
+ db_connection=get_db_connection(),
+ graph_name="YourGraphName" # Change this
+ )
+ 
+ # Run workflow
+ final_state = runner.run(
+ input_documents=[{
+ "path": str(requirements_file),
+ "content": requirements_content,
+ "type": "text/markdown"
+ }],
+ max_executions=3
+ )
+ 
+ # Display results
+ print(f" Workflow Complete!")
+ print(f"Status: {final_state.status}")
+ print(f"Reports: {len(final_state.reports)}")
+ 
+ return final_state
 
 if __name__ == "__main__":
-    main()
+ main()
 ```
 
 ---
@@ -105,7 +105,7 @@ OPENAI_MODEL=gpt-4
 
 **File:** `docs/business_requirements.md`
 
-### 💡 Pro Tip: Include Domain Description
+### Pro Tip: Include Domain Description
 
 **Adding a domain description section dramatically improves AI recommendations (15-25% better accuracy)!**
 
@@ -172,12 +172,12 @@ See `examples/requirements_template.md` for a complete template, or use this qui
 ```
 
 **Why Domain Description Matters:**
-- ✅ 15-25% improvement in recommendation accuracy
-- ✅ More contextual insights in reports
-- ✅ Better algorithm matching to your business needs
-- ✅ Domain-specific terminology in outputs
-- ⏱️ Takes only 5-10 minutes to write
-- 🎯 Makes AI "understand" your business
+- 15-25% improvement in recommendation accuracy
+- More contextual insights in reports
+- Better algorithm matching to your business needs
+- Domain-specific terminology in outputs
+- ⏱ Takes only 5-10 minutes to write
+- Makes AI "understand" your business
 
 **Quick Example:**
 ```markdown
@@ -212,10 +212,10 @@ Even a brief description is much better than none.
 
 ```bash
 # Test library import
-python -c "from graph_analytics_ai.ai.agents.runner import AgenticWorkflowRunner; print('✅ Import successful')"
+python -c "from graph_analytics_ai.ai.agents.runner import AgenticWorkflowRunner; print(' Import successful')"
 
 # Test database connection
-python -c "from graph_analytics_ai.db_connection import get_db_connection; db = get_db_connection(); print(f'✅ Connected to {db.name}')"
+python -c "from graph_analytics_ai.db_connection import get_db_connection; db = get_db_connection(); print(f' Connected to {db.name}')"
 
 # Run workflow
 python scripts/run_analysis.py
@@ -227,16 +227,16 @@ python scripts/run_analysis.py
 
 ```
 customer-graph-analytics/
-├── README.md
-├── requirements.txt
-├── .env
-├── docs/
-│   └── business_requirements.md
-├── scripts/
-│   └── run_analysis.py
-├── config/
-├── outputs/
-└── notebooks/
+ README.md
+ requirements.txt
+ .env
+ docs/
+ business_requirements.md
+ scripts/
+ run_analysis.py
+ config/
+ outputs/
+ notebooks/
 ```
 
 ---
@@ -251,7 +251,7 @@ pip install -r requirements.txt
 python scripts/run_analysis.py
 
 # Activate virtual environment (if using one)
-source venv/bin/activate  # or venv\Scripts\activate on Windows
+source venv/bin/activate # or venv\Scripts\activate on Windows
 
 # Update library (if installed in editable mode)
 cd ../graph-analytics-ai-platform
@@ -318,22 +318,22 @@ pwd
 
 ## Best Practices
 
-1. ✅ **Always use the library** - Import from `graph_analytics_ai`
-2. ✅ **Never bypass the workflow** - Use `AgenticWorkflowRunner` or `WorkflowOrchestrator`
-3. ✅ **Keep customer code separate** - Don't modify the library
-4. ✅ **Use .env for credentials** - Never commit credentials
-5. ✅ **Document your use cases** - Write clear business requirements
-6. ✅ **Version control** - Use git for your customer project
+1. **Always use the library** - Import from `graph_analytics_ai`
+2. **Never bypass the workflow** - Use `AgenticWorkflowRunner` or `WorkflowOrchestrator`
+3. **Keep customer code separate** - Don't modify the library
+4. **Use .env for credentials** - Never commit credentials
+5. **Document your use cases** - Write clear business requirements
+6. **Version control** - Use git for your customer project
 
 ---
 
 ## What NOT to Do
 
-❌ **Don't modify the library** - Keep it clean and reusable  
-❌ **Don't bypass the workflow** - Use the agentic system  
-❌ **Don't hardcode templates** - Let the agents generate them  
-❌ **Don't make direct GAE calls** - Use the workflow  
-❌ **Don't commit credentials** - Use .env files  
+ **Don't modify the library** - Keep it clean and reusable 
+ **Don't bypass the workflow** - Use the agentic system 
+ **Don't hardcode templates** - Let the agents generate them 
+ **Don't make direct GAE calls** - Use the workflow 
+ **Don't commit credentials** - Use .env files 
 
 ---
 
@@ -346,6 +346,6 @@ pwd
 
 ---
 
-**Pattern:** Library (reusable) + Customer Project (specific)  
+**Pattern:** Library (reusable) + Customer Project (specific) 
 **Result:** Clean, maintainable, scalable architecture
 

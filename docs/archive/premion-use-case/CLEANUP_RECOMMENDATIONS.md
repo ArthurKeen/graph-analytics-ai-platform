@@ -2,7 +2,7 @@
 
 Now that the agentic workflow is working successfully, you can clean up temporary files created during debugging.
 
-## ✅ Keep These (Library-Based)
+## Keep These (Library-Based)
 
 ### Main Scripts:
 - `run_full_agentic_workflow.py` - **MAIN SCRIPT** for agentic workflow
@@ -10,7 +10,7 @@ Now that the agentic workflow is working successfully, you can clean up temporar
 
 ### Documentation:
 - `PREMION_WORKFLOW_SUCCESS.md` - Complete success summary
-- `LIBRARY_ARCHITECTURE_SUMMARY.md` - Architecture explanation  
+- `LIBRARY_ARCHITECTURE_SUMMARY.md` - Architecture explanation 
 - `consumer_media_use_cases.md` - Your business requirements (INPUT)
 
 ### Outputs:
@@ -19,7 +19,7 @@ Now that the agentic workflow is working successfully, you can clean up temporar
 
 ---
 
-## 🗑️ Can Delete (Debugging Scripts)
+## Can Delete (Debugging Scripts)
 
 These were created during troubleshooting and are no longer needed:
 
@@ -34,10 +34,10 @@ rm inspect_sharding.py
 
 ### Manual Execution (Now Handled by AgenticWorkflowRunner):
 ```bash
-rm run_premion_workflow.py          # Old workflow orchestrator approach
-rm run_wcc_household_stitching.py   # Custom WCC execution
-rm generate_premion_templates.py    # Manual template generation
-rm execute_templates_properly.py    # Exploration script
+rm run_premion_workflow.py # Old workflow orchestrator approach
+rm run_wcc_household_stitching.py # Custom WCC execution
+rm generate_premion_templates.py # Manual template generation
+rm execute_templates_properly.py # Exploration script
 ```
 
 ### Debugging/One-off Scripts:
@@ -50,12 +50,12 @@ rm query_household_results.py
 
 ### Old Outputs (Keep most recent only):
 ```bash
-rm -rf premion_gae_templates/  # Manually created templates (agents now generate them)
+rm -rf premion_gae_templates/ # Manually created templates (agents now generate them)
 ```
 
 ---
 
-## ⚠️ Optional: Clean Up Library Scripts
+## Optional: Clean Up Library Scripts
 
 If you want to keep the repository pristine:
 
@@ -67,73 +67,73 @@ Since `run_full_agentic_workflow.py` is the complete solution, you could:
 ```bash
 # Rename for clarity
 mv run_full_agentic_workflow.py run_agentic_premion.py
-rm run_agentic_workflow.py  # Remove partial workflow version
+rm run_agentic_workflow.py # Remove partial workflow version
 ```
 
 ---
 
-## 📁 Recommended File Structure
+## Recommended File Structure
 
 After cleanup:
 
 ```
 graph-analytics-ai-platform/
-├── consumer_media_use_cases.md        ← Your input
-├── .env                                ← Configuration
-├── run_agentic_premion.py             ← Main script
-├── view_agentic_results.py            ← Results viewer
-├── PREMION_WORKFLOW_SUCCESS.md        ← Summary
-├── premion_agentic_state.json         ← Workflow state
-├── premion_workflow_output/           ← Generated docs
-│   ├── product_requirements.md
-│   ├── use_cases.md
-│   └── schema_analysis.md
-└── graph_analytics_ai/                ← Library (unchanged)
+ consumer_media_use_cases.md ← Your input
+ .env ← Configuration
+ run_agentic_premion.py ← Main script
+ view_agentic_results.py ← Results viewer
+ PREMION_WORKFLOW_SUCCESS.md ← Summary
+ premion_agentic_state.json ← Workflow state
+ premion_workflow_output/ ← Generated docs
+ product_requirements.md
+ use_cases.md
+ schema_analysis.md
+ graph_analytics_ai/ ← Library (unchanged)
 ```
 
 ---
 
-## 🔄 Cleanup Commands
+## Cleanup Commands
 
 ### Quick Cleanup (Remove All Debugging Scripts):
 ```bash
 # Remove temporary scripts
 rm test_premion_connection.py \
-   inspect_premion_database.py \
-   inspect_premion_fixed.py \
-   list_all_collections.py \
-   inspect_sharding.py \
-   run_premion_workflow.py \
-   run_wcc_household_stitching.py \
-   generate_premion_templates.py \
-   execute_templates_properly.py \
-   debug_job_status.py \
-   store_wcc_results.py \
-   create_result_collection.py \
-   query_household_results.py
+ inspect_premion_database.py \
+ inspect_premion_fixed.py \
+ list_all_collections.py \
+ inspect_sharding.py \
+ run_premion_workflow.py \
+ run_wcc_household_stitching.py \
+ generate_premion_templates.py \
+ execute_templates_properly.py \
+ debug_job_status.py \
+ store_wcc_results.py \
+ create_result_collection.py \
+ query_household_results.py
 
 # Remove old manual templates
 rm -rf premion_gae_templates/
 
-echo "✓ Cleanup complete!"
+echo " Cleanup complete!"
 ```
 
 ### Conservative Cleanup (Keep Reference Scripts):
 ```bash
 # Only remove debugging/inspection scripts
 rm test_premion_connection.py \
-   inspect_*.py \
-   list_all_collections.py \
-   debug_job_status.py \
-   store_wcc_results.py \
-   create_result_collection.py
+ inspect_*.py \
+ list_all_collections.py \
+ debug_job_status.py \
+ store_wcc_results.py \
+ create_result_collection.py
 
-echo "✓ Debugging scripts removed"
+echo " Debugging scripts removed"
 ```
 
 ---
 
-## 💡 Rationale
+## Rationale
 
 ### Why Delete Them?
 
@@ -150,13 +150,13 @@ echo "✓ Debugging scripts removed"
 
 ---
 
-## ✅ After Cleanup
+## After Cleanup
 
 You'll have a clean repository with:
-- ✅ One main script to run workflows
-- ✅ Clear documentation
-- ✅ No confusing duplicate scripts
-- ✅ Library remains unchanged and general-purpose
+- One main script to run workflows
+- Clear documentation
+- No confusing duplicate scripts
+- Library remains unchanged and general-purpose
 
 **The library never needed Premion-specific modifications!**
 

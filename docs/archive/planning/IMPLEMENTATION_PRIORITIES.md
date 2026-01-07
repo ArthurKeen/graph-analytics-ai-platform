@@ -15,10 +15,10 @@ This document outlines the prioritized list of next items to implement, ordered 
 
 ## P0: Foundation (v1.1.0) - Critical Path
 
-### 1. LLM Abstraction Layer ⭐ **START HERE**
-**Priority:** P0 - Critical  
-**Estimated Effort:** 1-2 weeks  
-**Dependencies:** None  
+### 1. LLM Abstraction Layer **START HERE**
+**Priority:** P0 - Critical 
+**Estimated Effort:** 1-2 weeks 
+**Dependencies:** None 
 **Blocks:** All AI workflow features
 
 **Tasks:**
@@ -45,23 +45,23 @@ This document outlines the prioritized list of next items to implement, ordered 
 
 ---
 
-### 2. Schema Analysis ⭐ **DO NEXT**
-**Priority:** P0 - Critical  
-**Estimated Effort:** 1-2 weeks  
-**Dependencies:** None (uses existing `get_db_connection`)  
+### 2. Schema Analysis **DO NEXT**
+**Priority:** P0 - Critical 
+**Estimated Effort:** 1-2 weeks 
+**Dependencies:** None (uses existing `get_db_connection`) 
 **Blocks:** PRD modification, use case generation
 
 **Tasks:**
 - [ ] Create `graph_analytics_ai/schema/` directory
 - [ ] Implement `extractor.py` - Extract schema from ArangoDB
-  - [ ] Collection discovery (vertices and edges)
-  - [ ] Edge relationship mapping
-  - [ ] Vertex attribute analysis
-  - [ ] Graph pattern detection
+ - [ ] Collection discovery (vertices and edges)
+ - [ ] Edge relationship mapping
+ - [ ] Vertex attribute analysis
+ - [ ] Graph pattern detection
 - [ ] Implement `analyzer.py` - Analyze schema structure
-  - [ ] Identify key entities
-  - [ ] Detect relationship patterns
-  - [ ] Analyze attribute distributions
+ - [ ] Identify key entities
+ - [ ] Detect relationship patterns
+ - [ ] Analyze attribute distributions
 - [ ] Implement `visualizer.py` - Generate schema visualizations (optional)
 - [ ] Unit tests for schema extraction
 - [ ] Documentation and examples
@@ -81,21 +81,21 @@ This document outlines the prioritized list of next items to implement, ordered 
 ## P1: Core AI Workflow (v1.2.0 - v1.5.0) - High Priority
 
 ### 3. PRD Generation
-**Priority:** P1 - High  
-**Estimated Effort:** 1-2 weeks  
-**Dependencies:** LLM Abstraction (P0 #1), Schema Analysis (P0 #2)  
+**Priority:** P1 - High 
+**Estimated Effort:** 1-2 weeks 
+**Dependencies:** LLM Abstraction (P0 #1), Schema Analysis (P0 #2) 
 **Blocks:** Use case generation
 
 **Tasks:**
 - [ ] Create `graph_analytics_ai/prd/` directory
 - [ ] Implement `generator.py` - Generate PRD from requirements
-  - [ ] Extract requirements from text/documents
-  - [ ] Generate structured PRD
-  - [ ] Use LLM for PRD generation
+ - [ ] Extract requirements from text/documents
+ - [ ] Generate structured PRD
+ - [ ] Use LLM for PRD generation
 - [ ] Implement `modifier.py` - Modify PRD based on schema
-  - [ ] Incorporate schema insights
-  - [ ] Validate against schema
-  - [ ] Update PRD sections
+ - [ ] Incorporate schema insights
+ - [ ] Validate against schema
+ - [ ] Update PRD sections
 - [ ] Create `template.py` - PRD templates
 - [ ] Implement PRD validation
 - [ ] Unit tests
@@ -114,21 +114,21 @@ This document outlines the prioritized list of next items to implement, ordered 
 ---
 
 ### 4. Use Case Generation
-**Priority:** P1 - High  
-**Estimated Effort:** 1-2 weeks  
-**Dependencies:** PRD Generation (P1 #3)  
+**Priority:** P1 - High 
+**Estimated Effort:** 1-2 weeks 
+**Dependencies:** PRD Generation (P1 #3) 
 **Blocks:** Template generation
 
 **Tasks:**
 - [ ] Create `graph_analytics_ai/usecases/` directory
 - [ ] Implement `generator.py` - Generate use cases
-  - [ ] Map business requirements to graph algorithms
-  - [ ] Generate use case descriptions
-  - [ ] Explain business value
+ - [ ] Map business requirements to graph algorithms
+ - [ ] Generate use case descriptions
+ - [ ] Explain business value
 - [ ] Implement `validator.py` - Validate use cases
-  - [ ] Check schema compatibility
-  - [ ] Validate algorithm feasibility
-  - [ ] Verify collection existence
+ - [ ] Check schema compatibility
+ - [ ] Validate algorithm feasibility
+ - [ ] Verify collection existence
 - [ ] Create `templates.py` - Use case templates
 - [ ] Unit tests
 - [ ] Documentation
@@ -146,21 +146,21 @@ This document outlines the prioritized list of next items to implement, ordered 
 ---
 
 ### 5. Template Generation
-**Priority:** P1 - High  
-**Estimated Effort:** 1-2 weeks  
-**Dependencies:** Use Case Generation (P1 #4)  
+**Priority:** P1 - High 
+**Estimated Effort:** 1-2 weeks 
+**Dependencies:** Use Case Generation (P1 #4) 
 **Blocks:** Report generation
 
 **Tasks:**
 - [ ] Create `graph_analytics_ai/templates/` directory
 - [ ] Implement `generator.py` - Generate AnalysisConfig templates
-  - [ ] Convert use cases to `AnalysisConfig` objects
-  - [ ] Set algorithm parameters
-  - [ ] Configure engine sizes
+ - [ ] Convert use cases to `AnalysisConfig` objects
+ - [ ] Set algorithm parameters
+ - [ ] Configure engine sizes
 - [ ] Implement `optimizer.py` - Optimize templates
-  - [ ] Optimize for performance
-  - [ ] Optimize for cost (AMP)
-  - [ ] Recommend engine sizes
+ - [ ] Optimize for performance
+ - [ ] Optimize for cost (AMP)
+ - [ ] Recommend engine sizes
 - [ ] Implement `validator.py` - Validate templates
 - [ ] Unit tests
 - [ ] Documentation
@@ -178,21 +178,21 @@ This document outlines the prioritized list of next items to implement, ordered 
 ---
 
 ### 6. Report Generation
-**Priority:** P1 - High  
-**Estimated Effort:** 1-2 weeks  
-**Dependencies:** Template Generation (P1 #5)  
+**Priority:** P1 - High 
+**Estimated Effort:** 1-2 weeks 
+**Dependencies:** Template Generation (P1 #5) 
 **Blocks:** Complete workflow
 
 **Tasks:**
 - [ ] Create `graph_analytics_ai/reports/` directory
 - [ ] Implement `generator.py` - Generate reports
-  - [ ] Summarize analysis results
-  - [ ] Generate visualizations
-  - [ ] Format reports (Markdown, HTML, PDF)
+ - [ ] Summarize analysis results
+ - [ ] Generate visualizations
+ - [ ] Format reports (Markdown, HTML, PDF)
 - [ ] Implement `interpreter.py` - Interpret results
-  - [ ] Interpret metrics in business context
-  - [ ] Generate recommendations
-  - [ ] Explain insights
+ - [ ] Interpret metrics in business context
+ - [ ] Generate recommendations
+ - [ ] Explain insights
 - [ ] Create report templates
 - [ ] Unit tests
 - [ ] Documentation
@@ -212,19 +212,19 @@ This document outlines the prioritized list of next items to implement, ordered 
 ## P2: Workflow Integration (v2.0.0) - Medium Priority
 
 ### 7. Complete Workflow Orchestration
-**Priority:** P2 - Medium  
-**Estimated Effort:** 2-3 weeks  
-**Dependencies:** All P1 items (P1 #3-6)  
+**Priority:** P2 - Medium 
+**Estimated Effort:** 2-3 weeks 
+**Dependencies:** All P1 items (P1 #3-6) 
 **Blocks:** Agentic workflow
 
 **Tasks:**
 - [ ] Create `graph_analytics_ai/workflow/` directory
 - [ ] Implement `orchestrator.py` - Workflow orchestrator
-  - [ ] Execute workflow steps in sequence
-  - [ ] Handle errors and retries
-  - [ ] State management
-  - [ ] Checkpoint system
-  - [ ] Resume functionality
+ - [ ] Execute workflow steps in sequence
+ - [ ] Handle errors and retries
+ - [ ] State management
+ - [ ] Checkpoint system
+ - [ ] Resume functionality
 - [ ] Implement `steps.py` - Individual workflow steps
 - [ ] Implement `state.py` - State management
 - [ ] Integration tests
@@ -243,21 +243,21 @@ This document outlines the prioritized list of next items to implement, ordered 
 ---
 
 ### 8. CLI Interface
-**Priority:** P2 - Medium  
-**Estimated Effort:** 1 week  
-**Dependencies:** Workflow Orchestration (P2 #7)  
+**Priority:** P2 - Medium 
+**Estimated Effort:** 1 week 
+**Dependencies:** Workflow Orchestration (P2 #7) 
 **Blocks:** None
 
 **Tasks:**
 - [ ] Create `graph_analytics_ai/cli/` directory
 - [ ] Implement CLI using `click` or `argparse`
 - [ ] Add commands:
-  - [ ] `analyze-schema` - Analyze graph schema
-  - [ ] `generate-prd` - Generate PRD
-  - [ ] `generate-usecases` - Generate use cases
-  - [ ] `generate-templates` - Generate templates
-  - [ ] `run-workflow` - Run complete workflow
-  - [ ] `generate-report` - Generate report
+ - [ ] `analyze-schema` - Analyze graph schema
+ - [ ] `generate-prd` - Generate PRD
+ - [ ] `generate-usecases` - Generate use cases
+ - [ ] `generate-templates` - Generate templates
+ - [ ] `run-workflow` - Run complete workflow
+ - [ ] `generate-report` - Generate report
 - [ ] Add interactive mode
 - [ ] Add progress indicators
 - [ ] Documentation
@@ -277,9 +277,9 @@ This document outlines the prioritized list of next items to implement, ordered 
 ## P3: Advanced Features - Lower Priority
 
 ### 9. Additional Algorithms
-**Priority:** P3 - Low  
-**Estimated Effort:** 1 week  
-**Dependencies:** None  
+**Priority:** P3 - Low 
+**Estimated Effort:** 1 week 
+**Dependencies:** None 
 **Blocks:** None
 
 **Tasks:**
@@ -300,9 +300,9 @@ This document outlines the prioritized list of next items to implement, ordered 
 ---
 
 ### 10. Agentic Workflow
-**Priority:** P3 - Low (but high value)  
-**Estimated Effort:** 4-6 weeks  
-**Dependencies:** Complete Workflow (P2 #7)  
+**Priority:** P3 - Low (but high value) 
+**Estimated Effort:** 4-6 weeks 
+**Dependencies:** Complete Workflow (P2 #7) 
 **Blocks:** None
 
 **Tasks:**
@@ -328,8 +328,8 @@ This document outlines the prioritized list of next items to implement, ordered 
 ## Quick Wins (Can be done anytime)
 
 ### A. Enhanced Examples
-**Priority:** P2 - Medium  
-**Estimated Effort:** 2-3 days  
+**Priority:** P2 - Medium 
+**Estimated Effort:** 2-3 days 
 **Dependencies:** None
 
 **Tasks:**
@@ -341,8 +341,8 @@ This document outlines the prioritized list of next items to implement, ordered 
 ---
 
 ### B. Documentation Improvements
-**Priority:** P2 - Medium  
-**Estimated Effort:** 1 week  
+**Priority:** P2 - Medium 
+**Estimated Effort:** 1 week 
 **Dependencies:** None
 
 **Tasks:**
@@ -354,8 +354,8 @@ This document outlines the prioritized list of next items to implement, ordered 
 ---
 
 ### C. Integration Testing
-**Priority:** P2 - Medium  
-**Estimated Effort:** 1 week  
+**Priority:** P2 - Medium 
+**Estimated Effort:** 1 week 
 **Dependencies:** Core features
 
 **Tasks:**
@@ -393,22 +393,22 @@ This document outlines the prioritized list of next items to implement, ordered 
 ## Success Criteria
 
 ### Phase 1 (v1.1.0) - Foundation
--  LLM abstraction with 3+ providers working
--  Schema analysis extracting complete schema
--  80%+ test coverage
--  Documentation complete
+- LLM abstraction with 3+ providers working
+- Schema analysis extracting complete schema
+- 80%+ test coverage
+- Documentation complete
 
 ### Phase 2-5 (v1.2.0 - v1.5.0) - Core Workflow
--  Each component generates correct outputs
--  Components integrate properly
--  80%+ test coverage for each
--  Documentation and examples
+- Each component generates correct outputs
+- Components integrate properly
+- 80%+ test coverage for each
+- Documentation and examples
 
 ### Phase 6 (v2.0.0) - Complete Workflow
--  End-to-end workflow executes successfully
--  CLI is user-friendly
--  90%+ test coverage
--  Can go from requirements to insights in < 1 hour
+- End-to-end workflow executes successfully
+- CLI is user-friendly
+- 90%+ test coverage
+- Can go from requirements to insights in < 1 hour
 
 ---
 
@@ -421,6 +421,6 @@ This document outlines the prioritized list of next items to implement, ordered 
 
 ---
 
-**Last Updated:** December 2025  
+**Last Updated:** December 2025 
 **Next Review:** After Phase 1 completion
 

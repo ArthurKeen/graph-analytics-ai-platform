@@ -1,8 +1,8 @@
 # Product Requirements Document (PRD): Graph Analytics AI Library
 
-**Document Status:** Living Document  
-**Last Updated:** December 2025  
-**Version:** 1.1.0 (AI Workflow Added)  
+**Document Status:** Living Document 
+**Last Updated:** December 2025 
+**Version:** 1.1.0 (AI Workflow Added) 
 **Purpose:** Common library for orchestrating ArangoDB Graph Analytics Engine (GAE) operations
 
 ---
@@ -38,11 +38,11 @@ This library provides a unified interface for orchestrating ArangoDB Graph Analy
 - Support for batch analysis workflows
 - Configuration via environment variables (.env file)
 - **AI-Assisted Workflow:** Automated end-to-end workflow from business requirements to actionable insights
-  - Graph schema analysis and understanding
-  - PRD generation from business requirements
-  - Use case generation based on schema and requirements
-  - Template generation for GAE analyses
-  - Report generation with actionable intelligence
+ - Graph schema analysis and understanding
+ - PRD generation from business requirements
+ - Use case generation based on schema and requirements
+ - Template generation for GAE analyses
+ - Report generation with actionable intelligence
 - **LLM Provider Agnostic:** Support for any LLM provider (OpenAI, Anthropic, custom APIs)
 
 ---
@@ -158,11 +158,11 @@ from graph_analytics_ai import GAEOrchestrator, AnalysisConfig
 
 # Define analysis
 config = AnalysisConfig(
-    name="product_demand",
-    vertex_collections=["users", "products"],
-    edge_collections=["clicks"],
-    algorithm="pagerank",
-    engine_size="e16"
+ name="product_demand",
+ vertex_collections=["users", "products"],
+ edge_collections=["clicks"],
+ algorithm="pagerank",
+ engine_size="e16"
 )
 
 # Run analysis
@@ -179,8 +179,8 @@ print(f"Cost: ${result.estimated_cost_usd}")
 
 ```python
 configs = [
-    AnalysisConfig(name="analysis1", ...),
-    AnalysisConfig(name="analysis2", ...),
+ AnalysisConfig(name="analysis1", ...),
+ AnalysisConfig(name="analysis2", ...),
 ]
 
 results = orchestrator.run_batch(configs)
@@ -190,15 +190,15 @@ results = orchestrator.run_batch(configs)
 
 ```python
 config = AnalysisConfig(
-    name="community_detection",
-    vertex_collections=["nodes"],
-    edge_collections=["edges"],
-    algorithm="label_propagation",
-    algorithm_params={
-        "start_label_attribute": "_key",
-        "synchronous": False,
-        "maximum_supersteps": 200
-    }
+ name="community_detection",
+ vertex_collections=["nodes"],
+ edge_collections=["edges"],
+ algorithm="label_propagation",
+ algorithm_params={
+ "start_label_attribute": "_key",
+ "synchronous": False,
+ "maximum_supersteps": 200
+ }
 )
 ```
 
@@ -210,32 +210,32 @@ config = AnalysisConfig(
 
 ```
 graph_analytics_ai/
-├── __init__.py          # Public API
-├── config.py            # Configuration management
-├── db_connection.py     # ArangoDB connection
-├── gae_connection.py    # GAE connection (AMP & self-managed)
-├── gae_orchestrator.py  # Workflow orchestration
-├── llm/                 # LLM provider abstraction (v2.0)
-│   ├── base.py          # Base LLM provider interface
-│   ├── openai_provider.py
-│   ├── anthropic_provider.py
-│   └── factory.py
-├── schema/              # Schema analysis (v2.0)
-│   ├── extractor.py     # Extract schema from ArangoDB
-│   └── analyzer.py      # Analyze schema structure
-├── prd/                 # PRD generation (v2.0)
-│   ├── generator.py     # Generate PRDs
-│   └── modifier.py      # Modify PRDs based on schema
-├── usecases/            # Use case generation (v2.0)
-│   └── generator.py     # Generate use cases
-├── templates/           # Template generation (v2.0)
-│   └── generator.py     # Generate GAE templates
-├── reporting/           # Report generation (v2.0)
-│   ├── generator.py     # Generate reports
-│   └── interpreter.py   # Interpret results
-└── workflow/            # Workflow orchestration (v2.0)
-    ├── orchestrator.py  # Main workflow orchestrator
-    └── steps.py         # Individual workflow steps
+ __init__.py # Public API
+ config.py # Configuration management
+ db_connection.py # ArangoDB connection
+ gae_connection.py # GAE connection (AMP & self-managed)
+ gae_orchestrator.py # Workflow orchestration
+ llm/ # LLM provider abstraction (v2.0)
+ base.py # Base LLM provider interface
+ openai_provider.py
+ anthropic_provider.py
+ factory.py
+ schema/ # Schema analysis (v2.0)
+ extractor.py # Extract schema from ArangoDB
+ analyzer.py # Analyze schema structure
+ prd/ # PRD generation (v2.0)
+ generator.py # Generate PRDs
+ modifier.py # Modify PRDs based on schema
+ usecases/ # Use case generation (v2.0)
+ generator.py # Generate use cases
+ templates/ # Template generation (v2.0)
+ generator.py # Generate GAE templates
+ reporting/ # Report generation (v2.0)
+ generator.py # Generate reports
+ interpreter.py # Interpret results
+ workflow/ # Workflow orchestration (v2.0)
+ orchestrator.py # Main workflow orchestrator
+ steps.py # Individual workflow steps
 ```
 
 ### 6.2 Connection Abstraction
@@ -252,20 +252,20 @@ A factory function (`get_gae_connection()`) automatically selects the appropriat
 
 ### 7.1 Functional Requirements
 
--  Support both AMP and self-managed deployments
--  Automate complete workflow (deploy → load → analyze → store → cleanup)
--  Support all major graph algorithms
--  Handle errors gracefully with retry logic
--  Track costs for AMP deployments
--  Provide clear error messages and logging
+- Support both AMP and self-managed deployments
+- Automate complete workflow (deploy → load → analyze → store → cleanup)
+- Support all major graph algorithms
+- Handle errors gracefully with retry logic
+- Track costs for AMP deployments
+- Provide clear error messages and logging
 
 ### 7.2 Non-Functional Requirements
 
--  Configuration via environment variables
--  Comprehensive documentation
--  Migration guides for existing projects
--  Code reusability (single library for all projects)
--  Backward compatibility where possible
+- Configuration via environment variables
+- Comprehensive documentation
+- Migration guides for existing projects
+- Code reusability (single library for all projects)
+- Backward compatibility where possible
 
 ---
 
@@ -293,34 +293,34 @@ The library provides an AI-assisted workflow that automates the complete process
 #### Step 2: Graph Schema Analysis
 - **Input:** ArangoDB database connection
 - **Process:** 
-  - Extract collection structure (vertices and edges)
-  - Analyze relationships and patterns
-  - Identify key entities and attributes
+ - Extract collection structure (vertices and edges)
+ - Analyze relationships and patterns
+ - Identify key entities and attributes
 - **Output:** Graph schema analysis document
 
 #### Step 3: PRD Generation
 - **Input:** Business requirements + Graph schema
 - **Process:** LLM generates comprehensive PRD incorporating:
-  - Business objectives
-  - Graph structure insights
-  - Technical constraints
-  - Success criteria
+ - Business objectives
+ - Graph structure insights
+ - Technical constraints
+ - Success criteria
 - **Output:** Complete Product Requirements Document
 
 #### Step 4: Use Case Generation
 - **Input:** PRD + Graph schema
 - **Process:** LLM generates analytics use cases:
-  - Maps business requirements to graph algorithms
-  - Identifies relevant collections and relationships
-  - Explains business value and expected outcomes
+ - Maps business requirements to graph algorithms
+ - Identifies relevant collections and relationships
+ - Explains business value and expected outcomes
 - **Output:** List of analytics use cases with descriptions
 
 #### Step 5: Template Generation
 - **Input:** Use cases + Graph schema
 - **Process:** 
-  - Converts use cases to `AnalysisConfig` objects
-  - Sets optimal algorithm parameters
-  - Configures engine sizes based on graph size
+ - Converts use cases to `AnalysisConfig` objects
+ - Sets optimal algorithm parameters
+ - Configures engine sizes based on graph size
 - **Output:** GAE analysis templates ready for execution
 
 #### Step 6: Analysis Execution
@@ -331,10 +331,10 @@ The library provides an AI-assisted workflow that automates the complete process
 #### Step 7: Report Generation
 - **Input:** Analysis results + Original requirements
 - **Process:** LLM generates comprehensive report:
-  - Summarizes findings
-  - Interprets results in business context
-  - Provides actionable recommendations
-  - Explains insights and implications
+ - Summarizes findings
+ - Interprets results in business context
+ - Provides actionable recommendations
+ - Explains insights and implications
 - **Output:** Actionable intelligence report
 
 ### 8.3 LLM Provider Support
@@ -353,10 +353,10 @@ Customers provide their own LLM API keys and configuration.
 **LLM Configuration:**
 ```bash
 # LLM Provider Selection
-LLM_PROVIDER=openai  # openai, anthropic, generic
+LLM_PROVIDER=openai # openai, anthropic, generic
 LLM_API_KEY=your-api-key-here
-LLM_MODEL=gpt-4  # Model name (provider-specific)
-LLM_BASE_URL=  # For generic provider
+LLM_MODEL=gpt-4 # Model name (provider-specific)
+LLM_BASE_URL= # For generic provider
 LLM_MAX_TOKENS=4000
 LLM_TEMPERATURE=0.7
 
@@ -372,15 +372,15 @@ from graph_analytics_ai.workflow import AIWorkflowOrchestrator
 
 # Initialize AI workflow
 workflow = AIWorkflowOrchestrator(
-    llm_provider="openai",
-    llm_api_key=os.getenv("LLM_API_KEY"),
-    output_dir="./workflow_output"
+ llm_provider="openai",
+ llm_api_key=os.getenv("LLM_API_KEY"),
+ output_dir="./workflow_output"
 )
 
 # Run complete workflow
 result = workflow.run_complete_workflow(
-    business_requirements="path/to/requirements.md",
-    database_name="customer_db"
+ business_requirements="path/to/requirements.md",
+ database_name="customer_db"
 )
 
 # Or run individual steps
@@ -452,12 +452,12 @@ See `AGENTIC_WORKFLOW_ANALYSIS.md` for detailed analysis and architecture propos
 - **Monitoring:** Integration with monitoring systems
 - **Caching:** Result caching for repeated analyses
 - **AI Workflow Enhancements:**
-  - **Agentic Workflow:** Multi-agent system with autonomous decision-making (v2.1.0)
-  - Multi-LLM support (use different LLMs for different tasks)
-  - Learning system (improve prompts based on feedback)
-  - Custom prompt templates
-  - Integration with NotebookLM API
-  - Interactive workflow mode
+ - **Agentic Workflow:** Multi-agent system with autonomous decision-making (v2.1.0)
+ - Multi-LLM support (use different LLMs for different tasks)
+ - Learning system (improve prompts based on feedback)
+ - Custom prompt templates
+ - Integration with NotebookLM API
+ - Interactive workflow mode
 
 ### 9.2 Integration Opportunities
 

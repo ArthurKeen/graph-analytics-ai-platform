@@ -72,82 +72,82 @@ The current design follows a **linear orchestrated workflow**:
 #### 1. **Orchestrator Agent** (Supervisor)
 - **Role:** Coordinates all other agents
 - **Responsibilities:**
-  - Break down high-level goals into tasks
-  - Assign tasks to appropriate agents
-  - Monitor progress and handle errors
-  - Make strategic decisions about workflow direction
+ - Break down high-level goals into tasks
+ - Assign tasks to appropriate agents
+ - Monitor progress and handle errors
+ - Make strategic decisions about workflow direction
 
 #### 2. **Schema Analysis Agent**
 - **Role:** Expert in graph database schemas
 - **Responsibilities:**
-  - Extract and analyze graph structure
-  - Identify patterns and relationships
-  - Detect anomalies or issues
-  - Generate schema insights
+ - Extract and analyze graph structure
+ - Identify patterns and relationships
+ - Detect anomalies or issues
+ - Generate schema insights
 
 #### 3. **Business Requirements Agent**
 - **Role:** Expert in business analysis
 - **Responsibilities:**
-  - Extract and structure business requirements
-  - Identify business objectives and success criteria
-  - Map requirements to graph analytics capabilities
-  - Validate requirement completeness
+ - Extract and structure business requirements
+ - Identify business objectives and success criteria
+ - Map requirements to graph analytics capabilities
+ - Validate requirement completeness
 
 #### 4. **PRD Generation Agent**
 - **Role:** Technical writer and analyst
 - **Responsibilities:**
-  - Synthesize requirements and schema insights
-  - Generate comprehensive PRD
-  - Ensure technical feasibility
-  - Validate against best practices
+ - Synthesize requirements and schema insights
+ - Generate comprehensive PRD
+ - Ensure technical feasibility
+ - Validate against best practices
 
 #### 5. **Use Case Generation Agent**
 - **Role:** Analytics consultant
 - **Responsibilities:**
-  - Map business requirements to graph algorithms
-  - Generate use cases with business value
-  - Validate use case feasibility
-  - Prioritize use cases by impact
+ - Map business requirements to graph algorithms
+ - Generate use cases with business value
+ - Validate use case feasibility
+ - Prioritize use cases by impact
 
 #### 6. **Template Generation Agent**
 - **Role:** Analytics engineer
 - **Responsibilities:**
-  - Convert use cases to analysis templates
-  - Optimize algorithm parameters
-  - Configure engine sizes
-  - Validate template correctness
+ - Convert use cases to analysis templates
+ - Optimize algorithm parameters
+ - Configure engine sizes
+ - Validate template correctness
 
 #### 7. **Analysis Execution Agent**
 - **Role:** Operations specialist
 - **Responsibilities:**
-  - Execute analyses using GAE orchestrator
-  - Monitor execution progress
-  - Handle errors and retries
-  - Optimize resource usage
+ - Execute analyses using GAE orchestrator
+ - Monitor execution progress
+ - Handle errors and retries
+ - Optimize resource usage
 
 #### 8. **Result Interpretation Agent**
 - **Role:** Data scientist and business analyst
 - **Responsibilities:**
-  - Analyze analysis results
-  - Interpret metrics in business context
-  - Generate insights and recommendations
-  - Identify actionable intelligence
+ - Analyze analysis results
+ - Interpret metrics in business context
+ - Generate insights and recommendations
+ - Identify actionable intelligence
 
 #### 9. **Report Generation Agent**
 - **Role:** Technical writer
 - **Responsibilities:**
-  - Synthesize all information into comprehensive report
-  - Format for different audiences
-  - Ensure clarity and actionability
-  - Generate visualizations
+ - Synthesize all information into comprehensive report
+ - Format for different audiences
+ - Ensure clarity and actionability
+ - Generate visualizations
 
 #### 10. **Quality Assurance Agent**
 - **Role:** Validator and reviewer
 - **Responsibilities:**
-  - Validate outputs at each step
-  - Check for consistency and quality
-  - Suggest improvements
-  - Ensure compliance with standards
+ - Validate outputs at each step
+ - Check for consistency and quality
+ - Suggest improvements
+ - Ensure compliance with standards
 
 ### Agent Communication
 
@@ -161,42 +161,42 @@ Agents communicate through:
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant Orch as Orchestrator Agent
-    participant Schema as Schema Analysis Agent
-    participant Req as Requirements Agent
-    participant UseCase as Use Case Agent
-    participant Template as Template Agent
-    participant Exec as Execution Agent
-    participant Report as Reporting Agent
-    
-    User->>Orch: "Analyze customer database for fraud detection"
-    
-    par Parallel Analysis
-        Orch->>Schema: Analyze schema
-        Orch->>Req: Extract requirements
-    end
-    
-    Schema-->>Orch: "Transaction network, 1M+ edges"
-    Req-->>Orch: "Detect fraudulent patterns"
-    
-    Orch->>UseCase: Generate use cases for fraud detection
-    UseCase-->>Orch: "PageRank for influencers, WCC for communities"
-    
-    Orch->>Template: Create optimized templates
-    Template-->>Orch: "2 templates (e32 engine)"
-    
-    Orch->>Exec: Execute analyses
-    Exec-->>Orch: "Completed successfully"
-    
-    Orch->>Report: Generate actionable report
-    Report-->>Orch: "3 high-risk communities identified"
-    
-    Orch-->>User: Complete fraud detection report
-    
-    Note over Schema,Req: Phase 1: Run in parallel
-    Note over Exec: Phase 4: Templates execute in parallel
-    Note over Report: Phase 5: Reports generate in parallel
+ participant User
+ participant Orch as Orchestrator Agent
+ participant Schema as Schema Analysis Agent
+ participant Req as Requirements Agent
+ participant UseCase as Use Case Agent
+ participant Template as Template Agent
+ participant Exec as Execution Agent
+ participant Report as Reporting Agent
+ 
+ User->>Orch: "Analyze customer database for fraud detection"
+ 
+ par Parallel Analysis
+ Orch->>Schema: Analyze schema
+ Orch->>Req: Extract requirements
+ end
+ 
+ Schema-->>Orch: "Transaction network, 1M+ edges"
+ Req-->>Orch: "Detect fraudulent patterns"
+ 
+ Orch->>UseCase: Generate use cases for fraud detection
+ UseCase-->>Orch: "PageRank for influencers, WCC for communities"
+ 
+ Orch->>Template: Create optimized templates
+ Template-->>Orch: "2 templates (e32 engine)"
+ 
+ Orch->>Exec: Execute analyses
+ Exec-->>Orch: "Completed successfully"
+ 
+ Orch->>Report: Generate actionable report
+ Report-->>Orch: "3 high-risk communities identified"
+ 
+ Orch-->>User: Complete fraud detection report
+ 
+ Note over Schema,Req: Phase 1: Run in parallel
+ Note over Exec: Phase 4: Templates execute in parallel
+ Note over Report: Phase 5: Reports generate in parallel
 ```
 
 **Key Steps:**
@@ -247,25 +247,25 @@ sequenceDiagram
 ### Framework Options
 
 1. **LangGraph** (Recommended)
-   - Built for agentic workflows
-   - State management
-   - Conditional routing
-   - Human-in-the-loop support
+ - Built for agentic workflows
+ - State management
+ - Conditional routing
+ - Human-in-the-loop support
 
 2. **AutoGen**
-   - Multi-agent conversations
-   - Tool use
-   - Code execution
+ - Multi-agent conversations
+ - Tool use
+ - Code execution
 
 3. **CrewAI**
-   - Role-based agents
-   - Task delegation
-   - Collaboration patterns
+ - Role-based agents
+ - Task delegation
+ - Collaboration patterns
 
 4. **Custom Framework**
-   - Full control
-   - Lightweight
-   - Customized to needs
+ - Full control
+ - Lightweight
+ - Customized to needs
 
 ### Architecture Pattern
 
@@ -273,47 +273,47 @@ sequenceDiagram
 
 ```mermaid
 graph TB
-    subgraph "Agentic Workflow Architecture"
-        Orch[Orchestrator Agent<br/>Supervisor]
-        
-        Schema[Schema Analysis Agent<br/>Graph DB Expert]
-        Req[Requirements Agent<br/>Business Analyst]
-        UseCase[Use Case Agent<br/>Analytics Consultant]
-        Template[Template Agent<br/>Analytics Engineer]
-        Exec[Execution Agent<br/>Operations Specialist]
-        Report[Reporting Agent<br/>BI Expert]
-        
-        Orch --> Schema
-        Orch --> Req
-        Orch --> UseCase
-        Orch --> Template
-        Orch --> Exec
-        Orch --> Report
-        
-        Schema -.-> Orch
-        Req -.-> Orch
-        UseCase -.-> Orch
-        Template -.-> Orch
-        Exec -.-> Orch
-        Report -.-> Orch
-    end
-    
-    style Orch fill:#e1f5ff,stroke:#01579b,stroke-width:3px
-    style Schema fill:#fff9c4,stroke:#f57f17,stroke-width:2px
-    style Req fill:#fff9c4,stroke:#f57f17,stroke-width:2px
-    style UseCase fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    style Template fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
-    style Exec fill:#ffe0b2,stroke:#e65100,stroke-width:2px
-    style Report fill:#c5e1a5,stroke:#33691e,stroke-width:2px
+ subgraph "Agentic Workflow Architecture"
+ Orch[Orchestrator Agent<br/>Supervisor]
+ 
+ Schema[Schema Analysis Agent<br/>Graph DB Expert]
+ Req[Requirements Agent<br/>Business Analyst]
+ UseCase[Use Case Agent<br/>Analytics Consultant]
+ Template[Template Agent<br/>Analytics Engineer]
+ Exec[Execution Agent<br/>Operations Specialist]
+ Report[Reporting Agent<br/>BI Expert]
+ 
+ Orch --> Schema
+ Orch --> Req
+ Orch --> UseCase
+ Orch --> Template
+ Orch --> Exec
+ Orch --> Report
+ 
+ Schema -.-> Orch
+ Req -.-> Orch
+ UseCase -.-> Orch
+ Template -.-> Orch
+ Exec -.-> Orch
+ Report -.-> Orch
+ end
+ 
+ style Orch fill:#e1f5ff,stroke:#01579b,stroke-width:3px
+ style Schema fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+ style Req fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+ style UseCase fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+ style Template fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+ style Exec fill:#ffe0b2,stroke:#e65100,stroke-width:2px
+ style Report fill:#c5e1a5,stroke:#33691e,stroke-width:2px
 ```
 
 **Agent Roles:**
-- 🔵 **Orchestrator**: Coordinates all agents, makes strategic decisions
-- 🟡 **Schema/Requirements**: Parallel analysis of data and business needs
-- 🟣 **Use Case**: Maps requirements to graph algorithms
-- 🟢 **Template**: Configures and optimizes analysis templates
-- 🟠 **Execution**: Runs analyses, monitors progress, handles errors
-- 🟢 **Reporting**: Generates actionable insights and recommendations
+- **Orchestrator**: Coordinates all agents, makes strategic decisions
+- **Schema/Requirements**: Parallel analysis of data and business needs
+- **Use Case**: Maps requirements to graph algorithms
+- **Template**: Configures and optimizes analysis templates
+- **Execution**: Runs analyses, monitors progress, handles errors
+- **Reporting**: Generates actionable insights and recommendations
 
 ### State Management
 
@@ -380,11 +380,11 @@ Agents have access to:
 ## Conclusion
 
 This project is **highly suitable** for an agentic workflow because:
--  Complex decision-making required
--  Multiple domains of expertise
--  Need for adaptive execution
--  Quality and validation important
--  Explainability valuable
+- Complex decision-making required
+- Multiple domains of expertise
+- Need for adaptive execution
+- Quality and validation important
+- Explainability valuable
 
 The agentic approach will provide:
 - Better decision-making

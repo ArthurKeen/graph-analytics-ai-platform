@@ -35,24 +35,24 @@ The workflow consists of 7 main steps:
 ### Components
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│           WorkflowOrchestrator (orchestrator.py)        │
-│  • Coordinates step execution                           │
-│  • Manages state and checkpoints                        │
-│  • Handles errors and retries                           │
-└─────────────────────────────────────────────────────────┘
-                          │
-        ┌─────────────────┼─────────────────┐
-        │                 │                 │
-        ▼                 ▼                 ▼
-┌───────────────┐  ┌────────────┐  ┌──────────────┐
-│ WorkflowState │  │WorkflowSteps│  │ Exceptions   │
-│  (state.py)   │  │ (steps.py)  │  │(exceptions.py)│
-│               │  │             │  │              │
-│ • Status      │  │ • Execute   │  │ • Error types│
-│ • Progress    │  │   each step │  │ • Messages   │
-│ • Checkpoint  │  │ • Format    │  │              │
-└───────────────┘  └────────────┘  └──────────────┘
+
+ WorkflowOrchestrator (orchestrator.py) 
+ • Coordinates step execution 
+ • Manages state and checkpoints 
+ • Handles errors and retries 
+
+ 
+ 
+ 
+ 
+ 
+ WorkflowState WorkflowSteps Exceptions 
+ (state.py) (steps.py) (exceptions.py)
+ 
+ • Status • Execute • Error types
+ • Progress each step • Messages 
+ • Checkpoint • Format 
+ 
 ```
 
 ## Installation
@@ -76,11 +76,11 @@ The easiest way to use the workflow is through the CLI:
 
 ```bash
 gaai run-workflow \
-  --requirements requirements.pdf \
-  --database-endpoint http://localhost:8529 \
-  --database-name my_graph \
-  --database-password password \
-  --output-dir ./output
+ --requirements requirements.pdf \
+ --database-endpoint http://localhost:8529 \
+ --database-name my_graph \
+ --database-password password \
+ --output-dir ./output
 ```
 
 ### Using Python API
@@ -92,27 +92,27 @@ from graph_analytics_ai.ai.workflow import WorkflowOrchestrator
 
 # Create orchestrator
 orchestrator = WorkflowOrchestrator(
-    output_dir="./workflow_output",
-    enable_checkpoints=True,
-    max_retries=3
+ output_dir="./workflow_output",
+ enable_checkpoints=True,
+ max_retries=3
 )
 
 # Run complete workflow
 result = orchestrator.run_complete_workflow(
-    business_requirements=["requirements.pdf", "scope.docx"],
-    database_endpoint="http://localhost:8529",
-    database_name="my_graph",
-    database_password="password",
-    product_name="My Analytics Project"
+ business_requirements=["requirements.pdf", "scope.docx"],
+ database_endpoint="http://localhost:8529",
+ database_name="my_graph",
+ database_password="password",
+ product_name="My Analytics Project"
 )
 
 # Check results
 if result.status == WorkflowStatus.COMPLETED:
-    print(f"PRD: {result.prd_path}")
-    print(f"Use Cases: {result.use_cases_path}")
-    print(f"Completed in {result.total_duration_seconds:.2f}s")
+ print(f"PRD: {result.prd_path}")
+ print(f"Use Cases: {result.use_cases_path}")
+ print(f"Completed in {result.total_duration_seconds:.2f}s")
 else:
-    print(f"Failed: {result.error_message}")
+ print(f"Failed: {result.error_message}")
 ```
 
 ## CLI Commands
@@ -125,28 +125,28 @@ Run the complete end-to-end workflow.
 gaai run-workflow [OPTIONS]
 
 Options:
-  -r, --requirements PATH      Business requirements document (can be specified multiple times)
-  -e, --database-endpoint URL  ArangoDB endpoint (e.g., http://localhost:8529)
-  -d, --database-name NAME     Database name to analyze
-  -u, --database-username NAME Database username (default: root)
-  -p, --database-password TEXT Database password
-  --product-name TEXT          Product/project name for PRD
-  -o, --output-dir PATH        Output directory (default: ./workflow_output)
-  --resume                     Resume from last checkpoint
-  --no-checkpoints             Disable checkpoint saving
+ -r, --requirements PATH Business requirements document (can be specified multiple times)
+ -e, --database-endpoint URL ArangoDB endpoint (e.g., http://localhost:8529)
+ -d, --database-name NAME Database name to analyze
+ -u, --database-username NAME Database username (default: root)
+ -p, --database-password TEXT Database password
+ --product-name TEXT Product/project name for PRD
+ -o, --output-dir PATH Output directory (default: ./workflow_output)
+ --resume Resume from last checkpoint
+ --no-checkpoints Disable checkpoint saving
 ```
 
 **Example:**
 
 ```bash
 gaai run-workflow \
-  -r requirements.pdf \
-  -r business_case.docx \
-  -e http://localhost:8529 \
-  -d ecommerce_graph \
-  -p my_password \
-  --product-name "E-commerce Analytics" \
-  -o ./ecommerce_output
+ -r requirements.pdf \
+ -r business_case.docx \
+ -e http://localhost:8529 \
+ -d ecommerce_graph \
+ -p my_password \
+ --product-name "E-commerce Analytics" \
+ -o ./ecommerce_output
 ```
 
 ### analyze-schema
@@ -157,21 +157,21 @@ Analyze graph database schema only.
 gaai analyze-schema [OPTIONS]
 
 Options:
-  -e, --database-endpoint URL  ArangoDB endpoint
-  -d, --database-name NAME     Database name
-  -u, --database-username NAME Database username
-  -p, --database-password TEXT Database password
-  -o, --output PATH            Output file for report (optional)
+ -e, --database-endpoint URL ArangoDB endpoint
+ -d, --database-name NAME Database name
+ -u, --database-username NAME Database username
+ -p, --database-password TEXT Database password
+ -o, --output PATH Output file for report (optional)
 ```
 
 **Example:**
 
 ```bash
 gaai analyze-schema \
-  -e http://localhost:8529 \
-  -d my_graph \
-  -p password \
-  -o schema_report.md
+ -e http://localhost:8529 \
+ -d my_graph \
+ -p password \
+ -o schema_report.md
 ```
 
 ### parse-requirements
@@ -182,20 +182,20 @@ Parse and extract requirements from documents.
 gaai parse-requirements DOCUMENTS... [OPTIONS]
 
 Options:
-  -o, --output PATH  Output file for requirements summary
+ -o, --output PATH Output file for requirements summary
 
 Arguments:
-  DOCUMENTS  One or more document paths
+ DOCUMENTS One or more document paths
 ```
 
 **Example:**
 
 ```bash
 gaai parse-requirements \
-  requirements.pdf \
-  scope.docx \
-  notes.txt \
-  -o requirements_summary.md
+ requirements.pdf \
+ scope.docx \
+ notes.txt \
+ -o requirements_summary.md
 ```
 
 ### status
@@ -206,7 +206,7 @@ Check workflow execution status and progress.
 gaai status [OPTIONS]
 
 Options:
-  -o, --output-dir PATH  Workflow output directory (default: ./workflow_output)
+ -o, --output-dir PATH Workflow output directory (default: ./workflow_output)
 ```
 
 **Example:**
@@ -242,14 +242,14 @@ Checkpoints are automatically saved after each step (unless disabled):
 ```python
 # Enable checkpointing (default)
 orchestrator = WorkflowOrchestrator(
-    output_dir="./output",
-    enable_checkpoints=True
+ output_dir="./output",
+ enable_checkpoints=True
 )
 
 # Resume from checkpoint
 result = orchestrator.run_complete_workflow(
-    ...,
-    resume_from_checkpoint=True
+ ...,
+ resume_from_checkpoint=True
 )
 ```
 
@@ -276,7 +276,7 @@ Failed steps are automatically retried:
 
 ```python
 orchestrator = WorkflowOrchestrator(
-    max_retries=3  # Retry up to 3 times per step
+ max_retries=3 # Retry up to 3 times per step
 )
 ```
 
@@ -296,15 +296,15 @@ When a step fails:
 result = orchestrator.run_complete_workflow(...)
 
 if result.status == WorkflowStatus.FAILED:
-    print(f"Error: {result.error_message}")
-    print(f"Completed steps: {', '.join(result.completed_steps)}")
-    
-    # Review checkpoint for details
-    state = orchestrator.get_state()
-    for step_name, step_result in state.step_results.items():
-        if step_result.status == WorkflowStatus.FAILED:
-            print(f"Failed step: {step_name}")
-            print(f"Error: {step_result.error_message}")
+ print(f"Error: {result.error_message}")
+ print(f"Completed steps: {', '.join(result.completed_steps)}")
+ 
+ # Review checkpoint for details
+ state = orchestrator.get_state()
+ for step_name, step_result in state.step_results.items():
+ if step_result.status == WorkflowStatus.FAILED:
+ print(f"Failed step: {step_name}")
+ print(f"Error: {step_result.error_message}")
 ```
 
 ## Configuration
@@ -334,14 +334,14 @@ from graph_analytics_ai.ai.llm import create_llm_provider
 
 # Create custom provider
 llm_provider = create_llm_provider(
-    provider_type="openrouter",
-    api_key="your-key",
-    model="anthropic/claude-3.5-sonnet"
+ provider_type="openrouter",
+ api_key="your-key",
+ model="anthropic/claude-3.5-sonnet"
 )
 
 # Use with orchestrator
 orchestrator = WorkflowOrchestrator(
-    llm_provider=llm_provider
+ llm_provider=llm_provider
 )
 ```
 
@@ -396,12 +396,12 @@ Execute only specific steps (coming soon):
 
 ```python
 result = orchestrator.run_partial_workflow(
-    steps_to_run=[
-        WorkflowStep.EXTRACT_SCHEMA,
-        WorkflowStep.ANALYZE_SCHEMA
-    ],
-    database_endpoint="...",
-    database_name="..."
+ steps_to_run=[
+ WorkflowStep.EXTRACT_SCHEMA,
+ WorkflowStep.ANALYZE_SCHEMA
+ ],
+ database_endpoint="...",
+ database_name="..."
 )
 ```
 
@@ -418,9 +418,9 @@ steps = WorkflowSteps(provider)
 
 # Extract schema
 schema = steps.extract_schema(
-    database_endpoint="http://localhost:8529",
-    database_name="my_graph",
-    password="password"
+ database_endpoint="http://localhost:8529",
+ database_name="my_graph",
+ password="password"
 )
 
 # Analyze schema
@@ -440,24 +440,24 @@ Integrate workflow into existing applications:
 from graph_analytics_ai.ai.workflow import WorkflowOrchestrator
 
 class MyAnalyticsPipeline:
-    def __init__(self):
-        self.orchestrator = WorkflowOrchestrator()
-    
-    def run_analysis(self, requirements_path, database_config):
-        result = self.orchestrator.run_complete_workflow(
-            business_requirements=[requirements_path],
-            **database_config
-        )
-        
-        if result.status == WorkflowStatus.COMPLETED:
-            self.process_results(result)
-        else:
-            self.handle_error(result)
-    
-    def process_results(self, result):
-        # Load and process generated artifacts
-        prd_content = Path(result.prd_path).read_text()
-        # ... process PRD, use cases, etc.
+ def __init__(self):
+ self.orchestrator = WorkflowOrchestrator()
+ 
+ def run_analysis(self, requirements_path, database_config):
+ result = self.orchestrator.run_complete_workflow(
+ business_requirements=[requirements_path],
+ **database_config
+ )
+ 
+ if result.status == WorkflowStatus.COMPLETED:
+ self.process_results(result)
+ else:
+ self.handle_error(result)
+ 
+ def process_results(self, result):
+ # Load and process generated artifacts
+ prd_content = Path(result.prd_path).read_text()
+ # ... process PRD, use cases, etc.
 ```
 
 ## Best Practices
@@ -468,7 +468,7 @@ Always enable checkpointing for long-running workflows:
 
 ```python
 orchestrator = WorkflowOrchestrator(
-    enable_checkpoints=True  # Default
+ enable_checkpoints=True # Default
 )
 ```
 
@@ -481,10 +481,10 @@ import time
 from threading import Thread
 
 def monitor_progress(orchestrator):
-    while orchestrator.state and orchestrator.state.status == WorkflowStatus.IN_PROGRESS:
-        progress = orchestrator.get_progress()
-        print(f"Progress: {progress['progress'] * 100:.1f}%")
-        time.sleep(5)
+ while orchestrator.state and orchestrator.state.status == WorkflowStatus.IN_PROGRESS:
+ progress = orchestrator.get_progress()
+ print(f"Progress: {progress['progress'] * 100:.1f}%")
+ time.sleep(5)
 
 # Start monitoring in background
 Thread(target=monitor_progress, args=(orchestrator,), daemon=True).start()
@@ -503,20 +503,20 @@ from pathlib import Path
 # Check requirements files exist
 requirements = ["req1.pdf", "req2.docx"]
 for req_path in requirements:
-    if not Path(req_path).exists():
-        raise FileNotFoundError(f"Requirements file not found: {req_path}")
+ if not Path(req_path).exists():
+ raise FileNotFoundError(f"Requirements file not found: {req_path}")
 
 # Test database connection
 from graph_analytics_ai.db_connection import get_db_connection
 try:
-    db = get_db_connection(
-        endpoint=database_endpoint,
-        database=database_name,
-        password=database_password
-    )
-    db.aql.execute("RETURN 1")
+ db = get_db_connection(
+ endpoint=database_endpoint,
+ database=database_name,
+ password=database_password
+ )
+ db.aql.execute("RETURN 1")
 except Exception as e:
-    raise ConnectionError(f"Cannot connect to database: {e}")
+ raise ConnectionError(f"Cannot connect to database: {e}")
 ```
 
 ### 4. Handle Failures Gracefully
@@ -525,28 +525,28 @@ Implement proper error handling:
 
 ```python
 try:
-    result = orchestrator.run_complete_workflow(...)
-    
-    if result.status == WorkflowStatus.FAILED:
-        # Log error
-        logger.error(f"Workflow failed: {result.error_message}")
-        
-        # Notify stakeholders
-        send_notification(
-            subject="Workflow Failed",
-            body=f"Error: {result.error_message}\n"
-                 f"Completed: {len(result.completed_steps)} steps"
-        )
-        
-        # Optionally retry
-        if is_retryable_error(result.error_message):
-            result = orchestrator.run_complete_workflow(
-                ...,
-                resume_from_checkpoint=True
-            )
+ result = orchestrator.run_complete_workflow(...)
+ 
+ if result.status == WorkflowStatus.FAILED:
+ # Log error
+ logger.error(f"Workflow failed: {result.error_message}")
+ 
+ # Notify stakeholders
+ send_notification(
+ subject="Workflow Failed",
+ body=f"Error: {result.error_message}\n"
+ f"Completed: {len(result.completed_steps)} steps"
+ )
+ 
+ # Optionally retry
+ if is_retryable_error(result.error_message):
+ result = orchestrator.run_complete_workflow(
+ ...,
+ resume_from_checkpoint=True
+ )
 except Exception as e:
-    logger.exception("Unexpected error in workflow")
-    raise
+ logger.exception("Unexpected error in workflow")
+ raise
 ```
 
 ## Troubleshooting

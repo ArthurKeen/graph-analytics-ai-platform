@@ -1,8 +1,8 @@
 # Analysis Catalog - Implementation Plan
 
-**Version:** 1.0  
-**Date:** 2026-01-06  
-**Status:** Ready for Review  
+**Version:** 1.0 
+**Date:** 2026-01-06 
+**Status:** Ready for Review 
 **Estimated Duration:** 14 weeks (MVP with critical operational features)
 
 ---
@@ -42,18 +42,18 @@ This plan outlines the implementation of the Analysis Catalog system in 4 phases
 ### Scope: MVP (Phases 1-4)
 
 **In Scope:**
-- ✅ FR-1: Execution Tracking (P0)
-- ✅ FR-2: Epoch Management (P0)
-- ✅ FR-3: Query and Retrieval (P0)
-- ✅ FR-4: Catalog Management (P0)
-- ✅ FR-5: Storage Backend - ArangoDB (P0)
-- ✅ FR-6: Workflow Integration - All 3 modes (P0)
-- ✅ FR-7: Lineage Tracking (P0)
-- ✅ FR-8: Time-Series Analysis (P1)
-- ✅ FR-9: Performance Benchmarking (P1) ⭐
-- ✅ FR-10: Execution Comparison (P1) ⭐
-- ✅ FR-11: Result Sampling (P1) ⭐
-- ✅ FR-13: Alerting (P1) ⭐
+- FR-1: Execution Tracking (P0)
+- FR-2: Epoch Management (P0)
+- FR-3: Query and Retrieval (P0)
+- FR-4: Catalog Management (P0)
+- FR-5: Storage Backend - ArangoDB (P0)
+- FR-6: Workflow Integration - All 3 modes (P0)
+- FR-7: Lineage Tracking (P0)
+- FR-8: Time-Series Analysis (P1)
+- FR-9: Performance Benchmarking (P1) 
+- FR-10: Execution Comparison (P1) 
+- FR-11: Result Sampling (P1) 
+- FR-13: Alerting (P1) 
 
 **Out of Scope (Post-MVP):**
 - FR-12: Audit Trail (P2)
@@ -91,42 +91,42 @@ This plan outlines the implementation of the Analysis Catalog system in 4 phases
 
 ```
 Phase 1: Foundation (Weeks 1-4)
-├─ Data Models (Week 1)
-├─ Storage Backend (Weeks 1-2)
-│  └─ ArangoDB collections and indexes
-├─ Basic CRUD Operations (Week 3)
-└─ Unit Tests (Week 4)
+ Data Models (Week 1)
+ Storage Backend (Weeks 1-2)
+ ArangoDB collections and indexes
+ Basic CRUD Operations (Week 3)
+ Unit Tests (Week 4)
 
 Phase 2: Core Features (Weeks 5-7)
-├─ Query Operations (Week 5)
-│  └─ Depends on: Basic CRUD
-├─ Catalog Management (Week 5)
-│  └─ Depends on: Basic CRUD
-├─ Lineage Tracking (Weeks 6-7)
-│  └─ Depends on: Storage Backend
-└─ Integration Tests (Week 7)
+ Query Operations (Week 5)
+ Depends on: Basic CRUD
+ Catalog Management (Week 5)
+ Depends on: Basic CRUD
+ Lineage Tracking (Weeks 6-7)
+ Depends on: Storage Backend
+ Integration Tests (Week 7)
 
 Phase 3: Workflow Integration (Weeks 8-10)
-├─ Traditional Orchestrator (Week 8)
-│  └─ Depends on: Core Features
-├─ Agentic Workflow (Week 9)
-│  └─ Depends on: Core Features, Lineage
-├─ Parallel Agentic (Week 10)
-│  └─ Depends on: Agentic, Thread-safety
-└─ End-to-End Tests (Week 10)
+ Traditional Orchestrator (Week 8)
+ Depends on: Core Features
+ Agentic Workflow (Week 9)
+ Depends on: Core Features, Lineage
+ Parallel Agentic (Week 10)
+ Depends on: Agentic, Thread-safety
+ End-to-End Tests (Week 10)
 
 Phase 4: Operational Features (Weeks 11-14)
-├─ Time-Series Analysis (Week 11)
-│  └─ Depends on: Query Operations
-├─ Performance Benchmarking (Week 11)
-│  └─ Depends on: Data Models
-├─ Result Sampling (Week 12)
-│  └─ Depends on: Storage Backend
-├─ Execution Comparison (Week 13)
-│  └─ Depends on: Time-Series, Sampling
-├─ Alerting System (Week 14)
-│  └─ Depends on: All monitoring features
-└─ Final Testing & Documentation (Week 14)
+ Time-Series Analysis (Week 11)
+ Depends on: Query Operations
+ Performance Benchmarking (Week 11)
+ Depends on: Data Models
+ Result Sampling (Week 12)
+ Depends on: Storage Backend
+ Execution Comparison (Week 13)
+ Depends on: Time-Series, Sampling
+ Alerting System (Week 14)
+ Depends on: All monitoring features
+ Final Testing & Documentation (Week 14)
 ```
 
 ### Parallel Work Opportunities
@@ -273,36 +273,36 @@ Phase 4: Operational Features (Weeks 11-14)
 
 **Tasks:**
 1. Create catalog module structure
-   - Directory: `graph_analytics_ai/catalog/`
-   - Files: `__init__.py`, `models.py`, `exceptions.py`
-   - Time: 0.5 days
+ - Directory: `graph_analytics_ai/catalog/`
+ - Files: `__init__.py`, `models.py`, `exceptions.py`
+ - Time: 0.5 days
 
 2. Define core data models
-   - `AnalysisExecution` dataclass
-   - `AnalysisEpoch` dataclass
-   - `ExtractedRequirements` dataclass
-   - `GeneratedUseCase` dataclass
-   - `AnalysisTemplate` dataclass
-   - `GraphConfig` dataclass
-   - `ExecutionStatus`, `EpochStatus` enums
-   - Time: 1.5 days
+ - `AnalysisExecution` dataclass
+ - `AnalysisEpoch` dataclass
+ - `ExtractedRequirements` dataclass
+ - `GeneratedUseCase` dataclass
+ - `AnalysisTemplate` dataclass
+ - `GraphConfig` dataclass
+ - `ExecutionStatus`, `EpochStatus` enums
+ - Time: 1.5 days
 
 3. Define filter and query models
-   - `ExecutionFilter` dataclass
-   - `EpochFilter` dataclass
-   - `ExecutionLineage` dataclass
-   - `RequirementTrace` dataclass
-   - Time: 1 day
+ - `ExecutionFilter` dataclass
+ - `EpochFilter` dataclass
+ - `ExecutionLineage` dataclass
+ - `RequirementTrace` dataclass
+ - Time: 1 day
 
 4. Write model unit tests
-   - Test serialization (to_dict/from_dict)
-   - Test validation
-   - Test edge cases
-   - Time: 1 day
+ - Test serialization (to_dict/from_dict)
+ - Test validation
+ - Test edge cases
+ - Time: 1 day
 
 5. Write exceptions
-   - `CatalogError`, `StorageError`, `ValidationError`
-   - Time: 0.5 days
+ - `CatalogError`, `StorageError`, `ValidationError`
+ - Time: 0.5 days
 
 **Deliverable:** Complete data model layer with tests
 
@@ -312,45 +312,45 @@ Phase 4: Operational Features (Weeks 11-14)
 
 **Tasks:**
 1. Design storage abstraction
-   - `StorageBackend` abstract base class
-   - Methods: insert, get, query, update, delete
-   - Time: 0.5 days
+ - `StorageBackend` abstract base class
+ - Methods: insert, get, query, update, delete
+ - Time: 0.5 days
 
 2. Implement ArangoDB storage
-   - `ArangoDBStorage` class
-   - Collection management
-   - Index creation
-   - Connection handling
-   - Time: 2 days
+ - `ArangoDBStorage` class
+ - Collection management
+ - Index creation
+ - Connection handling
+ - Time: 2 days
 
 3. Implement CRUD operations
-   - Insert execution/epoch/requirements/use_case/template
-   - Get by ID
-   - Update
-   - Delete
-   - Time: 1.5 days
+ - Insert execution/epoch/requirements/use_case/template
+ - Get by ID
+ - Update
+ - Delete
+ - Time: 1.5 days
 
 4. Add transaction support
-   - Atomic operations
-   - Rollback on error
-   - Time: 1 day
+ - Atomic operations
+ - Rollback on error
+ - Time: 1 day
 
 5. Add thread-safety
-   - Locks for concurrent operations
-   - Async-safe operations
-   - Time: 1 day
+ - Locks for concurrent operations
+ - Async-safe operations
+ - Time: 1 day
 
 6. Write storage unit tests
-   - Test each CRUD operation
-   - Test transactions
-   - Test thread-safety
-   - Time: 1.5 days
+ - Test each CRUD operation
+ - Test transactions
+ - Test thread-safety
+ - Time: 1.5 days
 
 7. Create database initialization script
-   - Create collections
-   - Create indexes
-   - Migration support
-   - Time: 0.5 days
+ - Create collections
+ - Create indexes
+ - Migration support
+ - Time: 0.5 days
 
 **Deliverable:** Production-ready ArangoDB storage backend
 
@@ -360,37 +360,37 @@ Phase 4: Operational Features (Weeks 11-14)
 
 **Tasks:**
 1. Create `AnalysisCatalog` class
-   - Initialization with storage backend
-   - Configuration options
-   - Time: 0.5 days
+ - Initialization with storage backend
+ - Configuration options
+ - Time: 0.5 days
 
 2. Implement execution tracking
-   - `track_execution()`
-   - `get_execution()`
-   - Auto-generate IDs
-   - Time: 0.5 days
+ - `track_execution()`
+ - `get_execution()`
+ - Auto-generate IDs
+ - Time: 0.5 days
 
 3. Implement epoch operations
-   - `create_epoch()`
-   - `get_epoch()`
-   - Time: 0.5 days
+ - `create_epoch()`
+ - `get_epoch()`
+ - Time: 0.5 days
 
 4. Write catalog unit tests
-   - Test execution tracking
-   - Test epoch creation
-   - Test error handling
-   - Time: 1 day
+ - Test execution tracking
+ - Test epoch creation
+ - Test error handling
+ - Time: 1 day
 
 5. Create test fixtures
-   - Sample executions
-   - Sample epochs
-   - Test utilities
-   - Time: 0.5 days
+ - Sample executions
+ - Sample epochs
+ - Test utilities
+ - Time: 0.5 days
 
 6. Write initial documentation
-   - Module docstrings
-   - Usage examples
-   - Time: 1 day
+ - Module docstrings
+ - Usage examples
+ - Time: 1 day
 
 **Deliverable:** Basic functional catalog
 
@@ -402,28 +402,28 @@ Phase 4: Operational Features (Weeks 11-14)
 
 **Tasks:**
 1. Implement query operations
-   - `query_executions()` with filters
-   - `list_epochs()` with filters
-   - Pagination support
-   - Sorting support
-   - Time: 2 days
+ - `query_executions()` with filters
+ - `list_epochs()` with filters
+ - Pagination support
+ - Sorting support
+ - Time: 2 days
 
 2. Implement management operations
-   - `delete_execution()`
-   - `delete_epoch()` with cascade
-   - `reset()` catalog
-   - Time: 1 day
+ - `delete_execution()`
+ - `delete_epoch()` with cascade
+ - `reset()` catalog
+ - Time: 1 day
 
 3. Implement export/import
-   - `export_catalog()` to JSON/CSV
-   - `import_catalog()` from file
-   - Time: 1 day
+ - `export_catalog()` to JSON/CSV
+ - `import_catalog()` from file
+ - Time: 1 day
 
 4. Write query tests
-   - Test filters
-   - Test pagination
-   - Test sorting
-   - Time: 1 day
+ - Test filters
+ - Test pagination
+ - Test sorting
+ - Time: 1 day
 
 **Deliverable:** Complete query and management API
 
@@ -433,41 +433,41 @@ Phase 4: Operational Features (Weeks 11-14)
 
 **Tasks:**
 1. Implement requirements tracking
-   - `track_requirements()`
-   - Storage in `_analysis_requirements`
-   - Time: 0.5 days
+ - `track_requirements()`
+ - Storage in `_analysis_requirements`
+ - Time: 0.5 days
 
 2. Implement use case tracking
-   - `track_use_case()` with requirements link
-   - Storage in `_analysis_use_cases`
-   - Time: 0.5 days
+ - `track_use_case()` with requirements link
+ - Storage in `_analysis_use_cases`
+ - Time: 0.5 days
 
 3. Implement template tracking
-   - `track_template()` with use case link
-   - Storage in `_analysis_templates`
-   - Time: 0.5 days
+ - `track_template()` with use case link
+ - Storage in `_analysis_templates`
+ - Time: 0.5 days
 
 4. Implement lineage queries
-   - `get_execution_lineage()`
-   - `get_requirements_executions()`
-   - `trace_requirement()`
-   - Time: 2 days
+ - `get_execution_lineage()`
+ - `get_requirements_executions()`
+ - `trace_requirement()`
+ - Time: 2 days
 
 5. Update execution tracking
-   - Add requirements_id, use_case_id fields
-   - Link to lineage
-   - Time: 0.5 days
+ - Add requirements_id, use_case_id fields
+ - Link to lineage
+ - Time: 0.5 days
 
 6. Write lineage tests
-   - Test complete lineage chain
-   - Test partial lineage
-   - Test lineage queries
-   - Time: 1.5 days
+ - Test complete lineage chain
+ - Test partial lineage
+ - Test lineage queries
+ - Time: 1.5 days
 
 7. Write integration tests
-   - Test multi-collection operations
-   - Test lineage integrity
-   - Time: 1 day
+ - Test multi-collection operations
+ - Test lineage integrity
+ - Time: 1 day
 
 **Deliverable:** Complete lineage tracking system
 
@@ -479,31 +479,31 @@ Phase 4: Operational Features (Weeks 11-14)
 
 **Tasks:**
 1. Update `AnalysisExecutor`
-   - Add `catalog` parameter
-   - Add automatic tracking
-   - Extract metadata (graph config, etc.)
-   - Time: 1 day
+ - Add `catalog` parameter
+ - Add automatic tracking
+ - Extract metadata (graph config, etc.)
+ - Time: 1 day
 
 2. Update `WorkflowOrchestrator`
-   - Pass catalog to executor
-   - Track workflow_mode
-   - Time: 0.5 days
+ - Pass catalog to executor
+ - Track workflow_mode
+ - Time: 0.5 days
 
 3. Test traditional workflow
-   - Run full workflow
-   - Verify tracking
-   - Test with/without catalog
-   - Time: 1 day
+ - Run full workflow
+ - Verify tracking
+ - Test with/without catalog
+ - Time: 1 day
 
 4. Handle errors gracefully
-   - Track failed executions
-   - Don't crash on catalog errors
-   - Time: 0.5 days
+ - Track failed executions
+ - Don't crash on catalog errors
+ - Time: 0.5 days
 
 5. Write integration tests
-   - Test full workflow tracking
-   - Test error cases
-   - Time: 1 day
+ - Test full workflow tracking
+ - Test error cases
+ - Time: 1 day
 
 **Deliverable:** Traditional workflow fully integrated
 
@@ -513,43 +513,43 @@ Phase 4: Operational Features (Weeks 11-14)
 
 **Tasks:**
 1. Update agent base classes
-   - Add catalog support
-   - Thread-safe operations
-   - Time: 1 day
+ - Add catalog support
+ - Thread-safe operations
+ - Time: 1 day
 
 2. Update `RequirementsAgent`
-   - Track extracted requirements
-   - Link to epoch
-   - Time: 0.5 days
+ - Track extracted requirements
+ - Link to epoch
+ - Time: 0.5 days
 
 3. Update `UseCaseAgent`
-   - Track generated use cases
-   - Link to requirements
-   - Time: 0.5 days
+ - Track generated use cases
+ - Link to requirements
+ - Time: 0.5 days
 
 4. Update `TemplateAgent`
-   - Track created templates
-   - Link to use cases
-   - Time: 0.5 days
+ - Track created templates
+ - Link to use cases
+ - Time: 0.5 days
 
 5. Update `ExecutionAgent`
-   - Track executions with full lineage
-   - Time: 0.5 days
+ - Track executions with full lineage
+ - Time: 0.5 days
 
 6. Update `AgenticWorkflowRunner`
-   - Pass catalog to agents
-   - Coordinate tracking
-   - Time: 0.5 days
+ - Pass catalog to agents
+ - Coordinate tracking
+ - Time: 0.5 days
 
 7. Test agentic workflow
-   - Run full agentic workflow
-   - Verify complete lineage
-   - Time: 1.5 days
+ - Run full agentic workflow
+ - Verify complete lineage
+ - Time: 1.5 days
 
 8. Write integration tests
-   - Test full lineage tracking
-   - Test error cases
-   - Time: 1 day
+ - Test full lineage tracking
+ - Test error cases
+ - Time: 1 day
 
 **Deliverable:** Agentic workflow with full lineage tracking
 
@@ -559,34 +559,34 @@ Phase 4: Operational Features (Weeks 11-14)
 
 **Tasks:**
 1. Add async tracking methods
-   - `track_execution_async()`
-   - `track_requirements_async()`
-   - etc.
-   - Time: 1 day
+ - `track_execution_async()`
+ - `track_requirements_async()`
+ - etc.
+ - Time: 1 day
 
 2. Ensure thread-safety
-   - Test concurrent tracking
-   - Fix race conditions
-   - Time: 1 day
+ - Test concurrent tracking
+ - Fix race conditions
+ - Time: 1 day
 
 3. Update parallel orchestrator
-   - Use async tracking methods
-   - Handle concurrent operations
-   - Time: 1 day
+ - Use async tracking methods
+ - Handle concurrent operations
+ - Time: 1 day
 
 4. Write parallel tests
-   - Test concurrent tracking
-   - Test no data corruption
-   - Time: 1 day
+ - Test concurrent tracking
+ - Test no data corruption
+ - Time: 1 day
 
 5. Performance testing
-   - Verify parallel overhead is minimal
-   - Time: 0.5 days
+ - Verify parallel overhead is minimal
+ - Time: 0.5 days
 
 6. End-to-end testing
-   - Test all 3 workflows
-   - Compare results
-   - Time: 0.5 days
+ - Test all 3 workflows
+ - Compare results
+ - Time: 0.5 days
 
 **Deliverable:** All workflow modes integrated with thread-safe tracking
 
@@ -598,30 +598,30 @@ Phase 4: Operational Features (Weeks 11-14)
 
 **Tasks:**
 1. Implement time-series queries
-   - `get_time_series()`
-   - Aggregation by date
-   - DataFrame export
-   - Time: 2 days
+ - `get_time_series()`
+ - Aggregation by date
+ - DataFrame export
+ - Time: 2 days
 
 2. Implement cross-epoch comparison
-   - `compare_epochs()`
-   - Align metrics across epochs
-   - Time: 1 day
+ - `compare_epochs()`
+ - Align metrics across epochs
+ - Time: 1 day
 
 3. Add performance tracking fields
-   - Update `AnalysisExecution` model
-   - Track time, memory, cost
-   - Time: 0.5 days
+ - Update `AnalysisExecution` model
+ - Track time, memory, cost
+ - Time: 0.5 days
 
 4. Implement performance queries
-   - `get_performance_trend()`
-   - `detect_performance_regressions()`
-   - Time: 1 day
+ - `get_performance_trend()`
+ - `detect_performance_regressions()`
+ - Time: 1 day
 
 5. Test time-series and performance
-   - Create multi-epoch test data
-   - Verify queries
-   - Time: 0.5 days
+ - Create multi-epoch test data
+ - Verify queries
+ - Time: 0.5 days
 
 **Deliverable:** Time-series analysis and performance tracking
 
@@ -631,38 +631,38 @@ Phase 4: Operational Features (Weeks 11-14)
 
 **Tasks:**
 1. Design sampling strategy
-   - Top N entities
-   - Summary statistics
-   - Histogram binning
-   - Time: 0.5 days
+ - Top N entities
+ - Summary statistics
+ - Histogram binning
+ - Time: 0.5 days
 
 2. Implement sampling during execution
-   - Extract top results
-   - Calculate statistics
-   - Store in execution record
-   - Time: 1.5 days
+ - Extract top results
+ - Calculate statistics
+ - Store in execution record
+ - Time: 1.5 days
 
 3. Implement fast query APIs
-   - `get_sampled_results()`
-   - `compare_sampled_results()`
-   - `get_stats_timeline()`
-   - Time: 1 day
+ - `get_sampled_results()`
+ - `compare_sampled_results()`
+ - `get_stats_timeline()`
+ - Time: 1 day
 
 4. Add configuration options
-   - Sample size
-   - Statistics to compute
-   - Per-algorithm config
-   - Time: 0.5 days
+ - Sample size
+ - Statistics to compute
+ - Per-algorithm config
+ - Time: 0.5 days
 
 5. Test sampling
-   - Verify accuracy
-   - Verify performance improvement
-   - Time: 1 day
+ - Verify accuracy
+ - Verify performance improvement
+ - Time: 1 day
 
 6. Benchmark performance
-   - Compare with/without sampling
-   - Document speedup
-   - Time: 0.5 days
+ - Compare with/without sampling
+ - Document speedup
+ - Time: 0.5 days
 
 **Deliverable:** Result sampling with 10-100x query speedup
 
@@ -672,32 +672,32 @@ Phase 4: Operational Features (Weeks 11-14)
 
 **Tasks:**
 1. Design comparison data structures
-   - `ExecutionDiff`
-   - `EpochDiff`
-   - Time: 0.5 days
+ - `ExecutionDiff`
+ - `EpochDiff`
+ - Time: 0.5 days
 
 2. Implement execution comparison
-   - `compare_executions()`
-   - Parameter diff
-   - Result diff (using samples)
-   - Performance diff
-   - Time: 2 days
+ - `compare_executions()`
+ - Parameter diff
+ - Result diff (using samples)
+ - Performance diff
+ - Time: 2 days
 
 3. Implement epoch comparison
-   - `compare_epochs_detailed()`
-   - Analysis changes
-   - Metric changes
-   - Time: 1.5 days
+ - `compare_epochs_detailed()`
+ - Analysis changes
+ - Metric changes
+ - Time: 1.5 days
 
 4. Add visualization export
-   - Export to HTML report
-   - Charts and tables
-   - Time: 1 day
+ - Export to HTML report
+ - Charts and tables
+ - Time: 1 day
 
 5. Test comparison features
-   - Test diffs are accurate
-   - Test edge cases
-   - Time: 1 day
+ - Test diffs are accurate
+ - Test edge cases
+ - Time: 1 day
 
 **Deliverable:** Comprehensive execution and epoch comparison
 
@@ -707,44 +707,44 @@ Phase 4: Operational Features (Weeks 11-14)
 
 **Tasks:**
 1. Design alert system
-   - Alert rule data model
-   - Condition evaluation engine
-   - Time: 1 day
+ - Alert rule data model
+ - Condition evaluation engine
+ - Time: 1 day
 
 2. Implement alert rules
-   - `create_alert()`
-   - Condition parser
-   - Rule evaluation
-   - Time: 1.5 days
+ - `create_alert()`
+ - Condition parser
+ - Rule evaluation
+ - Time: 1.5 days
 
 3. Implement alert channels
-   - Email
-   - Slack (optional)
-   - Webhook
-   - Time: 1 day
+ - Email
+ - Slack (optional)
+ - Webhook
+ - Time: 1 day
 
 4. Implement alert management
-   - `list_alerts()`, `update_alert()`
-   - Alert history
-   - Time: 0.5 days
+ - `list_alerts()`, `update_alert()`
+ - Alert history
+ - Time: 0.5 days
 
 5. Test alerting
-   - Test rule evaluation
-   - Test alert triggering
-   - Mock alert channels
-   - Time: 1 day
+ - Test rule evaluation
+ - Test alert triggering
+ - Mock alert channels
+ - Time: 1 day
 
 6. Final documentation
-   - User guide
-   - API reference
-   - Examples
-   - Time: 1.5 days
+ - User guide
+ - API reference
+ - Examples
+ - Time: 1.5 days
 
 7. Final testing and bug fixes
-   - Integration testing
-   - Performance testing
-   - Bug fixes
-   - Time: 1.5 days
+ - Integration testing
+ - Performance testing
+ - Bug fixes
+ - Time: 1.5 days
 
 **Deliverable:** Production-ready catalog with alerting
 
@@ -756,41 +756,41 @@ Phase 4: Operational Features (Weeks 11-14)
 
 ```
 graph_analytics_ai/
-└── catalog/
-    ├── __init__.py              # Public API exports
-    ├── models.py                # Data models
-    ├── exceptions.py            # Custom exceptions
-    ├── catalog.py               # Main AnalysisCatalog class
-    ├── filters.py               # Filter classes
-    ├── storage/
-    │   ├── __init__.py
-    │   ├── base.py             # StorageBackend ABC
-    │   ├── arangodb.py         # ArangoDB implementation
-    │   └── sqlite.py           # SQLite (future)
-    ├── lineage.py              # Lineage tracking logic
-    ├── timeseries.py           # Time-series queries
-    ├── performance.py          # Performance tracking
-    ├── sampling.py             # Result sampling
-    ├── comparison.py           # Execution comparison
-    ├── alerts/
-    │   ├── __init__.py
-    │   ├── models.py           # Alert models
-    │   ├── engine.py           # Rule evaluation
-    │   ├── channels.py         # Alert channels
-    │   └── manager.py          # Alert management
-    └── utils.py                # Utility functions
+ catalog/
+ __init__.py # Public API exports
+ models.py # Data models
+ exceptions.py # Custom exceptions
+ catalog.py # Main AnalysisCatalog class
+ filters.py # Filter classes
+ storage/
+ __init__.py
+ base.py # StorageBackend ABC
+ arangodb.py # ArangoDB implementation
+ sqlite.py # SQLite (future)
+ lineage.py # Lineage tracking logic
+ timeseries.py # Time-series queries
+ performance.py # Performance tracking
+ sampling.py # Result sampling
+ comparison.py # Execution comparison
+ alerts/
+ __init__.py
+ models.py # Alert models
+ engine.py # Rule evaluation
+ channels.py # Alert channels
+ manager.py # Alert management
+ utils.py # Utility functions
 ```
 
 ### ArangoDB Collections
 
 ```
-_analysis_epochs             # Epoch records
-_analysis_requirements       # Requirements records
-_analysis_use_cases          # Use case records
-_analysis_templates          # Template records
-_analysis_executions         # Execution records (main)
-_analysis_alerts             # Alert rules
-_analysis_alert_history      # Alert trigger history
+_analysis_epochs # Epoch records
+_analysis_requirements # Requirements records
+_analysis_use_cases # Use case records
+_analysis_templates # Template records
+_analysis_executions # Execution records (main)
+_analysis_alerts # Alert rules
+_analysis_alert_history # Alert trigger history
 ```
 
 ### Key Design Decisions
@@ -802,20 +802,20 @@ _analysis_alert_history      # Alert trigger history
 3. **Atomic Operations**: Use ArangoDB transactions for multi-collection operations
 
 4. **Indexing Strategy**:
-   - Primary keys on all ID fields
-   - Hash indexes on foreign keys (epoch_id, requirements_id, etc.)
-   - Skiplist indexes on timestamps for time-series queries
-   - Composite indexes for common query patterns
+ - Primary keys on all ID fields
+ - Hash indexes on foreign keys (epoch_id, requirements_id, etc.)
+ - Skiplist indexes on timestamps for time-series queries
+ - Composite indexes for common query patterns
 
 5. **Performance Optimization**:
-   - Store result samples directly in execution records
-   - Use AQL queries for complex aggregations
-   - Cache frequently accessed data (consider adding caching layer in future)
+ - Store result samples directly in execution records
+ - Use AQL queries for complex aggregations
+ - Cache frequently accessed data (consider adding caching layer in future)
 
 6. **Error Handling**:
-   - Graceful degradation (catalog errors don't crash workflows)
-   - Track failed executions
-   - Detailed error messages with context
+ - Graceful degradation (catalog errors don't crash workflows)
+ - Track failed executions
+ - Detailed error messages with context
 
 ---
 
@@ -921,35 +921,35 @@ _analysis_alert_history      # Alert trigger history
 ## Acceptance Criteria
 
 ### Phase 1 (Foundation)
-- ✅ Can track single execution
-- ✅ Can create and retrieve epoch
-- ✅ ArangoDB collections created with indexes
-- ✅ Unit tests pass with 90%+ coverage
-- ✅ Basic documentation complete
+- Can track single execution
+- Can create and retrieve epoch
+- ArangoDB collections created with indexes
+- Unit tests pass with 90%+ coverage
+- Basic documentation complete
 
 ### Phase 2 (Core Features)
-- ✅ Can query with complex filters
-- ✅ Pagination and sorting work
-- ✅ Can export/import catalog
-- ✅ Complete lineage tracked (requirements → execution)
-- ✅ Integration tests pass
+- Can query with complex filters
+- Pagination and sorting work
+- Can export/import catalog
+- Complete lineage tracked (requirements → execution)
+- Integration tests pass
 
 ### Phase 3 (Workflow Integration)
-- ✅ All 3 workflow modes automatically track
-- ✅ Thread-safe for parallel execution
-- ✅ Complete lineage in agentic mode
-- ✅ No breaking changes to existing workflows
-- ✅ End-to-end tests pass
+- All 3 workflow modes automatically track
+- Thread-safe for parallel execution
+- Complete lineage in agentic mode
+- No breaking changes to existing workflows
+- End-to-end tests pass
 
 ### Phase 4 (Operational Features)
-- ✅ Time-series queries work efficiently
-- ✅ Performance metrics tracked
-- ✅ Result sampling reduces query time by 10-100x
-- ✅ Can compare executions and epochs
-- ✅ Alerts trigger correctly
-- ✅ Documentation complete
-- ✅ All tests pass
-- ✅ Performance targets met
+- Time-series queries work efficiently
+- Performance metrics tracked
+- Result sampling reduces query time by 10-100x
+- Can compare executions and epochs
+- Alerts trigger correctly
+- Documentation complete
+- All tests pass
+- Performance targets met
 
 ---
 
@@ -958,27 +958,27 @@ _analysis_alert_history      # Alert trigger history
 ### Gantt Chart Overview
 
 ```
-Week  1: ████ Data Models
-Week  2: ████ Storage Backend (Part 1)
-Week  3: ████ Storage Backend (Part 2) + Basic CRUD
-Week  4: ████ Testing & Documentation
-         ↓ MILESTONE 1: Foundation Complete
+Week 1: Data Models
+Week 2: Storage Backend (Part 1)
+Week 3: Storage Backend (Part 2) + Basic CRUD
+Week 4: Testing & Documentation
+ ↓ MILESTONE 1: Foundation Complete
 
-Week  5: ████ Query & Management Operations
-Week  6: ████ Lineage Tracking (Part 1)
-Week  7: ████ Lineage Tracking (Part 2) + Tests
-         ↓ MILESTONE 2: Core Features Complete
+Week 5: Query & Management Operations
+Week 6: Lineage Tracking (Part 1)
+Week 7: Lineage Tracking (Part 2) + Tests
+ ↓ MILESTONE 2: Core Features Complete
 
-Week  8: ████ Traditional Orchestrator Integration
-Week  9: ████ Agentic Workflow Integration
-Week 10: ████ Parallel Agentic + E2E Tests
-         ↓ MILESTONE 3: Workflow Integration Complete
+Week 8: Traditional Orchestrator Integration
+Week 9: Agentic Workflow Integration
+Week 10: Parallel Agentic + E2E Tests
+ ↓ MILESTONE 3: Workflow Integration Complete
 
-Week 11: ████ Time-Series & Performance
-Week 12: ████ Result Sampling
-Week 13: ████ Execution Comparison
-Week 14: ████ Alerting + Documentation + Final Testing
-         ↓ MILESTONE 4: MVP COMPLETE 🎉
+Week 11: Time-Series & Performance
+Week 12: Result Sampling
+Week 13: Execution Comparison
+Week 14: Alerting + Documentation + Final Testing
+ ↓ MILESTONE 4: MVP COMPLETE 
 ```
 
 ### Major Milestones
@@ -997,41 +997,41 @@ Week 14: ████ Alerting + Documentation + Final Testing
 ### Technical Decisions
 
 1. **Result Sampling Configuration**
-   - Q: What should be the default sample size?
-   - Options: 50, 100, 200
-   - Recommendation: **100** (good balance of detail vs storage)
+ - Q: What should be the default sample size?
+ - Options: 50, 100, 200
+ - Recommendation: **100** (good balance of detail vs storage)
 
 2. **Alert Channels Priority**
-   - Q: Which alert channels to implement first?
-   - Options: Email, Slack, PagerDuty, Webhook
-   - Recommendation: **Email + Webhook** (covers most use cases)
+ - Q: Which alert channels to implement first?
+ - Options: Email, Slack, PagerDuty, Webhook
+ - Recommendation: **Email + Webhook** (covers most use cases)
 
 3. **Cost Tracking**
-   - Q: Should we integrate with cloud provider APIs for automatic cost tracking?
-   - Options: Manual, AWS/GCP integration, Both
-   - Recommendation: **Manual for MVP** (users provide cost_usd), cloud integration in v2
+ - Q: Should we integrate with cloud provider APIs for automatic cost tracking?
+ - Options: Manual, AWS/GCP integration, Both
+ - Recommendation: **Manual for MVP** (users provide cost_usd), cloud integration in v2
 
 4. **Storage for Alert Rules**
-   - Q: Store alert rules in ArangoDB or separate config files?
-   - Recommendation: **ArangoDB** (consistent with rest of catalog)
+ - Q: Store alert rules in ArangoDB or separate config files?
+ - Recommendation: **ArangoDB** (consistent with rest of catalog)
 
 5. **Thread-Safety Approach**
-   - Q: Use locks or rely on ArangoDB transactions?
-   - Recommendation: **Both** (locks for in-memory state, transactions for DB)
+ - Q: Use locks or rely on ArangoDB transactions?
+ - Recommendation: **Both** (locks for in-memory state, transactions for DB)
 
 ### Process Decisions
 
 6. **Code Review Process**
-   - Q: How should code reviews be structured?
-   - Recommendation: Each phase reviewed before proceeding to next
+ - Q: How should code reviews be structured?
+ - Recommendation: Each phase reviewed before proceeding to next
 
 7. **Testing During Development**
-   - Q: Run tests continuously or at phase boundaries?
-   - Recommendation: **Continuous** (pytest watch mode during development)
+ - Q: Run tests continuously or at phase boundaries?
+ - Recommendation: **Continuous** (pytest watch mode during development)
 
 8. **Documentation Timing**
-   - Q: Write docs during development or after?
-   - Recommendation: **During** (docstrings and examples as we code)
+ - Q: Write docs during development or after?
+ - Recommendation: **During** (docstrings and examples as we code)
 
 ---
 
@@ -1061,11 +1061,11 @@ Week 14: ████ Alerting + Documentation + Final Testing
 ### Internal Dependencies
 
 **Must be stable:**
-- ✅ AnalysisExecutor
-- ✅ WorkflowOrchestrator  
-- ✅ AgenticWorkflowRunner
-- ✅ Agent classes
-- ✅ Result models
+- AnalysisExecutor
+- WorkflowOrchestrator 
+- AgenticWorkflowRunner
+- Agent classes
+- Result models
 
 **May need updates:**
 - AnalysisExecutor: Add catalog parameter
@@ -1115,24 +1115,24 @@ Week 14: ████ Alerting + Documentation + Final Testing
 
 ### Development Metrics
 
-- ✅ All acceptance criteria met
-- ✅ Test coverage > 90%
-- ✅ No critical bugs in backlog
-- ✅ Documentation complete
+- All acceptance criteria met
+- Test coverage > 90%
+- No critical bugs in backlog
+- Documentation complete
 
 ### Performance Metrics
 
-- ✅ Query latency P95 < 1 second
-- ✅ Sampling speedup 10-100x measured
-- ✅ Tracking overhead < 5%
-- ✅ Storage overhead < 5%
+- Query latency P95 < 1 second
+- Sampling speedup 10-100x measured
+- Tracking overhead < 5%
+- Storage overhead < 5%
 
 ### Quality Metrics
 
-- ✅ Zero data loss incidents
-- ✅ No breaking changes to existing workflows
-- ✅ All edge cases tested
-- ✅ Error handling comprehensive
+- Zero data loss incidents
+- No breaking changes to existing workflows
+- All edge cases tested
+- Error handling comprehensive
 
 ---
 
@@ -1165,13 +1165,13 @@ Week 14: ████ Alerting + Documentation + Final Testing
 **Proceed with this plan?**
 
 This implementation plan delivers a **production-ready Analysis Catalog** in 14 weeks with:
-- ✅ Complete execution and lineage tracking
-- ✅ Time-series analysis capabilities
-- ✅ Performance monitoring and cost tracking
-- ✅ Fast queries with result sampling (10-100x speedup)
-- ✅ Execution comparison for debugging
-- ✅ Alerting for operational monitoring
-- ✅ Integration with all 3 workflow modes
+- Complete execution and lineage tracking
+- Time-series analysis capabilities
+- Performance monitoring and cost tracking
+- Fast queries with result sampling (10-100x speedup)
+- Execution comparison for debugging
+- Alerting for operational monitoring
+- Integration with all 3 workflow modes
 
 **Estimated Effort:** 14 weeks with 1-2 developers
 
@@ -1184,8 +1184,8 @@ This implementation plan delivers a **production-ready Analysis Catalog** in 14 
 
 ---
 
-**Status:** Ready for Review  
-**Prepared by:** AI Development Assistant  
+**Status:** Ready for Review 
+**Prepared by:** AI Development Assistant 
 **Date:** 2026-01-06
 
 ---
@@ -1198,59 +1198,59 @@ This implementation plan delivers a **production-ready Analysis Catalog** in 14 
 # models.py
 @dataclass
 class AnalysisExecution:
-    execution_id: str
-    timestamp: datetime
-    algorithm: str
-    parameters: Dict[str, Any]
-    template_id: str
-    requirements_id: Optional[str]
-    use_case_id: Optional[str]
-    epoch_id: Optional[str]
-    graph_config: GraphConfig
-    results_location: str
-    result_count: int
-    execution_time_seconds: float
-    performance_metrics: PerformanceMetrics
-    result_sample: Optional[ResultSample]
-    status: ExecutionStatus
-    metadata: Dict[str, Any]
+ execution_id: str
+ timestamp: datetime
+ algorithm: str
+ parameters: Dict[str, Any]
+ template_id: str
+ requirements_id: Optional[str]
+ use_case_id: Optional[str]
+ epoch_id: Optional[str]
+ graph_config: GraphConfig
+ results_location: str
+ result_count: int
+ execution_time_seconds: float
+ performance_metrics: PerformanceMetrics
+ result_sample: Optional[ResultSample]
+ status: ExecutionStatus
+ metadata: Dict[str, Any]
 
 # catalog.py
 class AnalysisCatalog:
-    def __init__(self, storage: StorageBackend):
-        ...
-    
-    # Execution tracking
-    def track_execution(self, execution: AnalysisExecution) -> str:
-        ...
-    async def track_execution_async(self, execution: AnalysisExecution) -> str:
-        ...
-    
-    # Epoch management
-    def create_epoch(self, name: str, **kwargs) -> AnalysisEpoch:
-        ...
-    def get_epoch(self, epoch_id: str) -> AnalysisEpoch:
-        ...
-    
-    # Queries
-    def query_executions(self, filter: ExecutionFilter) -> List[AnalysisExecution]:
-        ...
-    
-    # Lineage
-    def get_execution_lineage(self, execution_id: str) -> ExecutionLineage:
-        ...
-    
-    # Time-series
-    def get_time_series(self, metric: str, **kwargs) -> pd.DataFrame:
-        ...
-    
-    # Comparison
-    def compare_executions(self, id1: str, id2: str) -> ExecutionDiff:
-        ...
-    
-    # Alerts
-    def create_alert(self, name: str, condition: str, **kwargs) -> Alert:
-        ...
+ def __init__(self, storage: StorageBackend):
+ ...
+ 
+ # Execution tracking
+ def track_execution(self, execution: AnalysisExecution) -> str:
+ ...
+ async def track_execution_async(self, execution: AnalysisExecution) -> str:
+ ...
+ 
+ # Epoch management
+ def create_epoch(self, name: str, **kwargs) -> AnalysisEpoch:
+ ...
+ def get_epoch(self, epoch_id: str) -> AnalysisEpoch:
+ ...
+ 
+ # Queries
+ def query_executions(self, filter: ExecutionFilter) -> List[AnalysisExecution]:
+ ...
+ 
+ # Lineage
+ def get_execution_lineage(self, execution_id: str) -> ExecutionLineage:
+ ...
+ 
+ # Time-series
+ def get_time_series(self, metric: str, **kwargs) -> pd.DataFrame:
+ ...
+ 
+ # Comparison
+ def compare_executions(self, id1: str, id2: str) -> ExecutionDiff:
+ ...
+ 
+ # Alerts
+ def create_alert(self, name: str, condition: str, **kwargs) -> Alert:
+ ...
 ```
 
 ---

@@ -6,7 +6,7 @@ Complete quick reference for the Graph Analytics AI Platform. For detailed docum
 
 ---
 
-## 📦 Installation
+## Installation
 
 ```bash
 # Basic installation
@@ -21,7 +21,7 @@ pip install -r requirements-dev.txt
 
 ---
 
-## ⚙️ Environment Setup
+## Environment Setup
 
 ### Quick Setup
 
@@ -48,7 +48,7 @@ ARANGO_GRAPH_API_KEY_ID=your_api_key_id
 ARANGO_GRAPH_API_KEY_SECRET=your_api_key_secret
 
 # LLM Provider (choose one)
-LLM_PROVIDER=openrouter  # or: openai, anthropic, gemini
+LLM_PROVIDER=openrouter # or: openai, anthropic, gemini
 
 # OpenRouter (recommended)
 OPENROUTER_API_KEY=your_key
@@ -73,8 +73,8 @@ GEMINI_MODEL=gemini-pro
 python test_connection.py
 
 # Expected output:
-# ✅ Successfully connected to ArangoDB!
-#    Database Name: your_database
+# Successfully connected to ArangoDB!
+# Database Name: your_database
 ```
 
 ### For Customer Projects
@@ -83,7 +83,7 @@ See [Environment Setup Guide](ENV_SETUP_GUIDE.md) for detailed instructions on s
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Agentic Workflow (Recommended)
 
@@ -92,16 +92,16 @@ from graph_analytics_ai.ai.agents import AgenticWorkflowRunner
 
 # Initialize runner
 runner = AgenticWorkflowRunner(
-    db_connection=db,
-    llm_provider=llm,
-    core_collections=["users", "products"],  # Main entities
-    satellite_collections=["metadata"]        # Reference data
+ db_connection=db,
+ llm_provider=llm,
+ core_collections=["users", "products"], # Main entities
+ satellite_collections=["metadata"] # Reference data
 )
 
 # Run complete workflow
 result = runner.run(
-    use_case_file="requirements.md",
-    output_dir="./output"
+ use_case_file="requirements.md",
+ output_dir="./output"
 )
 
 # Reports with interactive charts automatically generated!
@@ -116,7 +116,7 @@ from graph_analytics_ai.ai.workflow import WorkflowOrchestrator
 orchestrator = WorkflowOrchestrator(graph_name="your_graph")
 
 result = orchestrator.run_complete_workflow(
-    input_files=["requirements.pdf"]
+ input_files=["requirements.pdf"]
 )
 
 print(f"Generated {len(result.reports)} reports")
@@ -124,7 +124,7 @@ print(f"Generated {len(result.reports)} reports")
 
 ---
 
-## 📊 Interactive HTML Reports
+## Interactive HTML Reports
 
 ### Generate Reports with Charts
 
@@ -134,8 +134,8 @@ from graph_analytics_ai.ai.reporting import ReportGenerator, HTMLReportFormatter
 # Charts enabled by default
 generator = ReportGenerator(enable_charts=True)
 report = generator.generate_report(execution_result, context={
-    "use_case": {"title": "Your Analysis"},
-    "requirements": {"domain": "your domain"}
+ "use_case": {"title": "Your Analysis"},
+ "requirements": {"domain": "your domain"}
 })
 
 # Format as HTML
@@ -145,7 +145,7 @@ html_content = html_formatter.format_report(report, charts=charts)
 
 # Save
 with open('report.html', 'w') as f:
-    f.write(html_content)
+ f.write(html_content)
 ```
 
 ### Chart Types by Algorithm
@@ -168,7 +168,7 @@ generator = ReportGenerator(enable_charts=False)
 
 ---
 
-## 🎯 Collection Selection
+## Collection Selection
 
 ### Specify Core vs Satellite Collections
 
@@ -176,9 +176,9 @@ generator = ReportGenerator(enable_charts=False)
 from graph_analytics_ai.ai.templates import TemplateGenerator
 
 generator = TemplateGenerator(
-    graph_name="your_graph",
-    satellite_collections=["metadata", "configs", "lookups"],  # Exclude from WCC/SCC
-    core_collections=["users", "products", "orders"]           # Main entities
+ graph_name="your_graph",
+ satellite_collections=["metadata", "configs", "lookups"], # Exclude from WCC/SCC
+ core_collections=["users", "products", "orders"] # Main entities
 )
 
 templates = generator.generate_templates(use_cases, schema)
@@ -188,11 +188,11 @@ templates = generator.generate_templates(use_cases, schema)
 
 | Algorithm | Satellites? | Collections Used | Why |
 |-----------|-------------|------------------|-----|
-| **WCC** | ❌ Excluded | Core only | Find meaningful components |
-| **SCC** | ❌ Excluded | Core only | Strongly connected core |
-| **PageRank** | ✅ Included | Everything | Full graph importance |
-| **Betweenness** | ✅ Included | Everything | Accurate centrality |
-| **Label Propagation** | ❌ Excluded | Core only | Community detection |
+| **WCC** | Excluded | Core only | Find meaningful components |
+| **SCC** | Excluded | Core only | Strongly connected core |
+| **PageRank** | Included | Everything | Full graph importance |
+| **Betweenness** | Included | Everything | Accurate centrality |
+| **Label Propagation** | Excluded | Core only | Community detection |
 
 ### Test Before Executing
 
@@ -201,9 +201,9 @@ from graph_analytics_ai.ai.templates import select_collections_for_algorithm, Al
 
 # Preview WCC selection
 wcc = select_collections_for_algorithm(
-    AlgorithmType.WCC,
-    schema,
-    satellite_collections=["metadata"]
+ AlgorithmType.WCC,
+ schema,
+ satellite_collections=["metadata"]
 )
 
 print(f"WCC uses: {wcc.vertex_collections}")
@@ -214,7 +214,7 @@ print(f"WCC excludes: {wcc.excluded_vertices}")
 
 ---
 
-## 🔍 Workflow Tracing
+## Workflow Tracing
 
 ### Enable Tracing
 
@@ -222,10 +222,10 @@ print(f"WCC excludes: {wcc.excluded_vertices}")
 from graph_analytics_ai.ai.agents import AgenticWorkflowRunner
 
 runner = AgenticWorkflowRunner(
-    db_connection=db,
-    llm_provider=llm,
-    enable_tracing=True,      # Enable comprehensive tracing
-    enable_debug_mode=True    # Extra verbose logging
+ db_connection=db,
+ llm_provider=llm,
+ enable_tracing=True, # Enable comprehensive tracing
+ enable_debug_mode=True # Extra verbose logging
 )
 
 result = runner.run("use_cases.md")
@@ -249,7 +249,7 @@ runner.export_trace("trace.html", format="html")
 
 ---
 
-## 🧪 Common Tasks
+## Common Tasks
 
 ### Run Tests
 
@@ -293,7 +293,7 @@ make html
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Connection Issues
 
@@ -303,8 +303,8 @@ python test_connection.py
 
 # Check environment variables
 python -c "import os; from dotenv import load_dotenv; load_dotenv(); \
-           print(f'DB: {os.getenv(\"ARANGO_DATABASE\")}'); \
-           print(f'Endpoint: {os.getenv(\"ARANGO_ENDPOINT\")}')"
+ print(f'DB: {os.getenv(\"ARANGO_DATABASE\")}'); \
+ print(f'Endpoint: {os.getenv(\"ARANGO_ENDPOINT\")}')"
 ```
 
 ### Module Not Found
@@ -322,7 +322,7 @@ pip install -e .
 
 ```bash
 # Check if plotly is installed
-python -c "import plotly; print('✅ Plotly available')"
+python -c "import plotly; print(' Plotly available')"
 
 # If not, install it
 pip install plotly
@@ -333,13 +333,13 @@ pip install plotly
 ```bash
 # Check API key is set
 python -c "import os; from dotenv import load_dotenv; load_dotenv(); \
-           print(f'LLM Provider: {os.getenv(\"LLM_PROVIDER\")}'); \
-           print(f'API Key Set: {bool(os.getenv(\"OPENROUTER_API_KEY\"))}')"
+ print(f'LLM Provider: {os.getenv(\"LLM_PROVIDER\")}'); \
+ print(f'API Key Set: {bool(os.getenv(\"OPENROUTER_API_KEY\"))}')"
 ```
 
 ---
 
-## 📚 Documentation Links
+## Documentation Links
 
 ### Getting Started
 - [Project Overview](docs/getting-started/PROJECT_OVERVIEW.md)
@@ -369,33 +369,33 @@ python -c "import os; from dotenv import load_dotenv; load_dotenv(); \
 
 ---
 
-## 🎯 Quick Commands
+## Quick Commands
 
 ```bash
 # Development
-pytest                    # Run tests
-pytest --cov             # With coverage
-python setup.py sdist    # Build distribution
+pytest # Run tests
+pytest --cov # With coverage
+python setup.py sdist # Build distribution
 
 # Testing
-python test_connection.py              # Test DB connection
-python examples/agentic_workflow_example.py  # Run demo
-python examples/chart_report_example.py      # Generate charts
+python test_connection.py # Test DB connection
+python examples/agentic_workflow_example.py # Run demo
+python examples/chart_report_example.py # Generate charts
 
 # Documentation
-cd docs && make html     # Generate Sphinx docs
-pdoc graph_analytics_ai  # Generate API docs
+cd docs && make html # Generate Sphinx docs
+pdoc graph_analytics_ai # Generate API docs
 
 # Git
-git status              # Check status
-git add .               # Stage changes
-git commit -m "msg"     # Commit
-git push                # Push to remote
+git status # Check status
+git add . # Stage changes
+git commit -m "msg" # Commit
+git push # Push to remote
 ```
 
 ---
 
-## 📞 Support
+## Support
 
 - **Documentation**: See [docs/README.md](docs/README.md)
 - **Issues**: Report bugs on GitHub
@@ -404,7 +404,7 @@ git push                # Push to remote
 
 ---
 
-**Version**: 1.1.0  
-**Last Updated**: December 22, 2025  
-**Status**: Production Ready ✅
+**Version**: 1.1.0 
+**Last Updated**: December 22, 2025 
+**Status**: Production Ready 
 

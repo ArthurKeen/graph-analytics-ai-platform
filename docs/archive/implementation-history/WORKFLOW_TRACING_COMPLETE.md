@@ -121,9 +121,9 @@ runner.export_trace("./traces", formats=['all'])
 ```python
 # Enable verbose debug logging
 runner = AgenticWorkflowRunner(
-    graph_name="my_graph",
-    enable_tracing=True,
-    enable_debug_mode=True
+ graph_name="my_graph",
+ enable_tracing=True,
+ enable_debug_mode=True
 )
 
 state = runner.run()
@@ -154,8 +154,8 @@ bottlenecks = replayer.find_bottlenecks(threshold_ms=1000)
 from graph_analytics_ai.ai.tracing.replay import compare_traces
 
 comparison = compare_traces(
-    "./traces/trace_old.json",
-    "./traces/trace_new.json"
+ "./traces/trace_old.json",
+ "./traces/trace_new.json"
 )
 
 print(f"Time diff: {comparison['performance']['total_time_ms']['diff']}ms")
@@ -232,12 +232,12 @@ Human-readable report with:
 
 ## Benefits
 
-1. **🔍 Visibility**: See exactly what your workflow is doing
-2. **⏱️ Performance**: Identify bottlenecks and optimize
-3. **💰 Cost Tracking**: Monitor LLM usage and costs
-4. **🐛 Debugging**: Detailed logs and state snapshots
-5. **📊 Analytics**: Compare runs, track trends
-6. **🎯 Optimization**: Data-driven improvements
+1. ** Visibility**: See exactly what your workflow is doing
+2. **⏱ Performance**: Identify bottlenecks and optimize
+3. ** Cost Tracking**: Monitor LLM usage and costs
+4. ** Debugging**: Detailed logs and state snapshots
+5. ** Analytics**: Compare runs, track trends
+6. ** Optimization**: Data-driven improvements
 
 ## Integration Points
 
@@ -250,7 +250,7 @@ The tracing system integrates seamlessly:
 
 ## Backwards Compatibility
 
-✅ **Fully backwards compatible**
+ **Fully backwards compatible**
 
 - Tracing is enabled by default but non-intrusive
 - All existing code works without modifications
@@ -290,8 +290,8 @@ from graph_analytics_ai.ai.agents import AgenticWorkflowRunner
 
 # 1. Run workflow with tracing
 runner = AgenticWorkflowRunner(
-    graph_name="production_graph",
-    enable_tracing=True
+ graph_name="production_graph",
+ enable_tracing=True
 )
 
 state = runner.run()
@@ -305,16 +305,16 @@ runner.print_trace_summary()
 # Total Tokens: 125,000
 # Estimated Cost: $3.75
 # Slowest Agents:
-#   1. SchemaAnalyst: 8500ms
-#   2. ExecutionSpecialist: 7200ms
-#   3. UseCaseExpert: 5100ms
+# 1. SchemaAnalyst: 8500ms
+# 2. ExecutionSpecialist: 7200ms
+# 3. UseCaseExpert: 5100ms
 
 # 3. Export for analysis
 runner.export_trace("./traces/production")
 
 # Creates:
 # - trace_{id}.json
-# - trace_{id}_timeline.html  (Open in browser!)
+# - trace_{id}_timeline.html (Open in browser!)
 # - trace_{id}_agents.svg
 # - trace_{id}_report.md
 
@@ -325,21 +325,21 @@ replayer = TraceReplayer("./traces/production/trace_{id}.json")
 bottlenecks = replayer.find_bottlenecks(threshold_ms=2000)
 
 for b in bottlenecks:
-    print(f"Slow: {b['agent']} took {b['duration_ms']}ms")
+ print(f"Slow: {b['agent']} took {b['duration_ms']}ms")
 ```
 
 ## Summary
 
 The workflow tracing system is **production-ready** and provides:
 
-✅ **Comprehensive event tracking**  
-✅ **Performance metrics and cost estimation**  
-✅ **Multiple export formats (JSON, HTML, SVG, Markdown)**  
-✅ **Trace replay and comparison**  
-✅ **Debug mode with state snapshots**  
-✅ **Minimal performance overhead (~2-5%)**  
-✅ **Full backwards compatibility**  
-✅ **Extensive documentation**  
+ **Comprehensive event tracking** 
+ **Performance metrics and cost estimation** 
+ **Multiple export formats (JSON, HTML, SVG, Markdown)** 
+ **Trace replay and comparison** 
+ **Debug mode with state snapshots** 
+ **Minimal performance overhead (~2-5%)** 
+ **Full backwards compatibility** 
+ **Extensive documentation** 
 
 Users can now:
 - Understand what their workflows are doing

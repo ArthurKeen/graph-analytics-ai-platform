@@ -1,86 +1,86 @@
-# 📁 Documentation Reorganization Plan
+# Documentation Reorganization Plan
 
-**Current Status:** 50+ markdown files at root level (debris field!)  
-**Goal:** Clean, organized documentation structure  
+**Current Status:** 50+ markdown files at root level (debris field!) 
+**Goal:** Clean, organized documentation structure 
 **Approach:** Keep, Combine, Archive, Remove
 
 ---
 
-## 📊 Current State Analysis
+## Current State Analysis
 
 ### Root Level Files (50+ files!)
 
 **Categories:**
-- ✅ Keep at Root: 5 files
-- 📦 Move to docs/: 15 files
-- 🗜️ Combine: 20 files (into 5)
-- 📚 Archive: 25 files
-- 🗑️ Remove: 5 files
+- Keep at Root: 5 files
+- Move to docs/: 15 files
+- Combine: 20 files (into 5)
+- Archive: 25 files
+- Remove: 5 files
 
 ---
 
-## 🎯 Proposed Structure
+## Proposed Structure
 
 ```
 graph-analytics-ai/
-├── README.md                          ← Keep (main entry point)
-├── LICENSE                            ← Keep
-├── CONTRIBUTING.md                    ← Keep
-├── CHANGELOG.md                       ← Create (combine phase completions)
-├── requirements.txt                   ← Keep
-├── requirements-dev.txt               ← Keep
-├── setup.py                           ← Keep
-├── pytest.ini                         ← Keep
-│
-├── docs/                              ← Organize here
-│   ├── README.md                      ← Docs index
-│   ├── getting-started/
-│   │   ├── INSTALLATION.md
-│   │   ├── QUICK_START.md
-│   │   └── CONFIGURATION.md
-│   ├── user-guide/
-│   │   ├── LINEAR_WORKFLOW.md
-│   │   ├── AGENTIC_WORKFLOW.md
-│   │   ├── CLI_REFERENCE.md
-│   │   └── API_REFERENCE.md
-│   ├── development/
-│   │   ├── CONTRIBUTING.md
-│   │   ├── CODE_QUALITY.md
-│   │   ├── TESTING.md
-│   │   └── ARCHITECTURE.md
-│   ├── deployment/
-│   │   ├── DEPLOYMENT_GUIDE.md
-│   │   └── SECURITY.md
-│   └── archive/                       ← Historical docs
-│       ├── phase-completions/
-│       ├── migrations/
-│       ├── planning/
-│       └── deprecated/
-│
-├── examples/                          ← Keep, clean up
-├── scripts/                           ← Keep, organize
-├── tests/                             ← Keep
-└── graph_analytics_ai/               ← Keep
+ README.md ← Keep (main entry point)
+ LICENSE ← Keep
+ CONTRIBUTING.md ← Keep
+ CHANGELOG.md ← Create (combine phase completions)
+ requirements.txt ← Keep
+ requirements-dev.txt ← Keep
+ setup.py ← Keep
+ pytest.ini ← Keep
+
+ docs/ ← Organize here
+ README.md ← Docs index
+ getting-started/
+ INSTALLATION.md
+ QUICK_START.md
+ CONFIGURATION.md
+ user-guide/
+ LINEAR_WORKFLOW.md
+ AGENTIC_WORKFLOW.md
+ CLI_REFERENCE.md
+ API_REFERENCE.md
+ development/
+ CONTRIBUTING.md
+ CODE_QUALITY.md
+ TESTING.md
+ ARCHITECTURE.md
+ deployment/
+ DEPLOYMENT_GUIDE.md
+ SECURITY.md
+ archive/ ← Historical docs
+ phase-completions/
+ migrations/
+ planning/
+ deprecated/
+
+ examples/ ← Keep, clean up
+ scripts/ ← Keep, organize
+ tests/ ← Keep
+ graph_analytics_ai/ ← Keep
 ```
 
 ---
 
-## 📋 Detailed Action Plan
+## Detailed Action Plan
 
-### KEEP at Root (5 files) ✅
+### KEEP at Root (5 files) 
 
 These are essential and belong at root:
-- ✅ `README.md` - Main documentation entry
-- ✅ `LICENSE` - Legal
-- ✅ `CONTRIBUTING.md` - Contribution guidelines
-- ✅ `requirements.txt` - Dependencies
-- ✅ `requirements-dev.txt` - Dev dependencies
-- ✅ `setup.py` - Package setup
-- ✅ `pytest.ini` - Test config
+- `README.md` - Main documentation entry
+- `LICENSE` - Legal
+- `CONTRIBUTING.md` - Contribution guidelines
+- `requirements.txt` - Dependencies
+- `requirements-dev.txt` - Dev dependencies
+- `setup.py` - Package setup
+- `pytest.ini` - Test config
 
 ---
 
-### CREATE & COMBINE 🗜️
+### CREATE & COMBINE 
 
 #### 1. `CHANGELOG.md` (NEW - Combine Phase Completions)
 
@@ -143,7 +143,7 @@ These are essential and belong at root:
 
 ---
 
-### MOVE to docs/ 📦
+### MOVE to docs/ 
 
 #### Move to `docs/getting-started/`
 - GETTING_STARTED.md → QUICK_START.md
@@ -165,7 +165,7 @@ These are essential and belong at root:
 
 ---
 
-### ARCHIVE to docs/archive/ 📚
+### ARCHIVE to docs/archive/ 
 
 #### `docs/archive/phase-completions/`
 - PHASE_1_2_3_COMPLETE.md
@@ -208,7 +208,7 @@ These are essential and belong at root:
 
 ---
 
-### REMOVE 🗑️
+### REMOVE 
 
 **These are no longer needed:**
 - QUICK_PUSH_GUIDE.md (git workflows documented elsewhere)
@@ -218,18 +218,18 @@ These are essential and belong at root:
 
 ---
 
-## 🎯 Priority Actions
+## Priority Actions
 
-### Phase 1: Critical (Do First) 🔴
+### Phase 1: Critical (Do First) 
 
 1. **Create docs structure**
-   ```bash
-   mkdir -p docs/getting-started
-   mkdir -p docs/user-guide
-   mkdir -p docs/development
-   mkdir -p docs/deployment
-   mkdir -p docs/archive/{phase-completions,migrations,planning,github-setup,deprecated}
-   ```
+ ```bash
+ mkdir -p docs/getting-started
+ mkdir -p docs/user-guide
+ mkdir -p docs/development
+ mkdir -p docs/deployment
+ mkdir -p docs/archive/{phase-completions,migrations,planning,github-setup,deprecated}
+ ```
 
 2. **Create CHANGELOG.md** (combine phase completions)
 
@@ -239,7 +239,7 @@ These are essential and belong at root:
 
 ---
 
-### Phase 2: Consolidation 🟠
+### Phase 2: Consolidation 
 
 5. **Combine code quality docs** → docs/development/CODE_QUALITY.md
 
@@ -249,7 +249,7 @@ These are essential and belong at root:
 
 ---
 
-### Phase 3: Archive 🟡
+### Phase 3: Archive 
 
 8. **Archive historical docs** → docs/archive/
 
@@ -257,7 +257,7 @@ These are essential and belong at root:
 
 ---
 
-### Phase 4: Polish 🟢
+### Phase 4: Polish 
 
 10. **Update README.md** with new structure
 
@@ -269,7 +269,7 @@ These are essential and belong at root:
 
 ---
 
-## 📝 File-by-File Decision Matrix
+## File-by-File Decision Matrix
 
 | Current File | Action | New Location | Notes |
 |--------------|--------|--------------|-------|
@@ -297,7 +297,7 @@ These are essential and belong at root:
 
 ---
 
-## 🎨 New Documentation Structure
+## New Documentation Structure
 
 ### `docs/README.md` (Documentation Index)
 
@@ -333,7 +333,7 @@ These are essential and belong at root:
 
 ---
 
-## ✅ Success Criteria
+## Success Criteria
 
 - [ ] Root level has < 10 markdown files
 - [ ] All docs organized by purpose
@@ -345,7 +345,7 @@ These are essential and belong at root:
 
 ---
 
-## ⏱️ Estimated Time
+## ⏱ Estimated Time
 
 - Phase 1 (Critical): 2 hours
 - Phase 2 (Consolidation): 3 hours
@@ -356,7 +356,7 @@ These are essential and belong at root:
 
 ---
 
-## 🚀 Quick Start Command Sequence
+## Quick Start Command Sequence
 
 ```bash
 # Phase 1: Create structure
@@ -387,7 +387,7 @@ git commit -m "refactor: Reorganize documentation structure"
 
 ---
 
-**Status:** Ready to execute  
-**Impact:** Clean, professional documentation structure  
+**Status:** Ready to execute 
+**Impact:** Clean, professional documentation structure 
 **Maintenance:** Much easier going forward
 

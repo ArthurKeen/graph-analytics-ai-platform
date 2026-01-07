@@ -1,7 +1,7 @@
 # Analysis Catalog - Complete Requirements Index
 
-**Version:** 2.0  
-**Date:** 2026-01-06  
+**Version:** 2.0 
+**Date:** 2026-01-06 
 **Status:** Comprehensive Requirements List
 
 ---
@@ -25,12 +25,12 @@
 | ID | Requirement | Description | Benefit |
 |----|-------------|-------------|---------|
 | **FR-8** | **Time-Series Analysis** | Query metrics across epochs | Core value proposition |
-| **FR-9** | ⭐ **Performance Benchmarking** | Track execution time, cost, resources | Optimization & cost control |
-| **FR-10** | ⭐ **Execution Comparison** | Compare executions & epochs in detail | Debug changes, root cause |
-| **FR-11** | ⭐ **Result Sampling** | Store top N + stats in catalog | Fast queries, 10-100x speedup |
-| **FR-13** | ⭐ **Alerting** | Trigger alerts on failures, anomalies, costs | Proactive monitoring |
+| **FR-9** | **Performance Benchmarking** | Track execution time, cost, resources | Optimization & cost control |
+| **FR-10** | **Execution Comparison** | Compare executions & epochs in detail | Debug changes, root cause |
+| **FR-11** | **Result Sampling** | Store top N + stats in catalog | Fast queries, 10-100x speedup |
+| **FR-13** | **Alerting** | Trigger alerts on failures, anomalies, costs | Proactive monitoring |
 
-⭐ = **Critical for production operations**
+ = **Critical for production operations**
 
 ### P2: Nice to Have (v2 - Phase 4-5)
 
@@ -142,15 +142,15 @@
 **Track complete lineage:**
 ```
 Requirements Document
-  ↓ RequirementsAgent
+ ↓ RequirementsAgent
 Extracted Requirements
-  ↓ UseCaseAgent  
+ ↓ UseCaseAgent 
 Use Cases
-  ↓ TemplateAgent
+ ↓ TemplateAgent
 Templates
-  ↓ ExecutionAgent
+ ↓ ExecutionAgent
 Executions
-  ↓ ReportingAgent
+ ↓ ReportingAgent
 Reports
 ```
 
@@ -179,34 +179,34 @@ Reports
 **Example:**
 ```python
 ts_data = catalog.get_time_series(
-    metric="wcc.component_count",
-    start_date="2026-01-01",
-    end_date="2026-06-30",
-    frequency="daily"
+ metric="wcc.component_count",
+ start_date="2026-01-01",
+ end_date="2026-06-30",
+ frequency="daily"
 )
 ```
 
 ---
 
-### FR-9: Performance Benchmarking (P1) ⭐
+### FR-9: Performance Benchmarking (P1) 
 
 **Track for each execution:**
 ```json
 {
-  "performance_metrics": {
-    "execution_time_seconds": 45.3,
-    "memory_usage_mb": 512,
-    "memory_peak_mb": 768,
-    "cpu_time_seconds": 120.5,
-    "io_operations": 15000,
-    "network_bytes": 1048576,
-    "cost_usd": 0.023
-  },
-  "resource_config": {
-    "engine_size": "e16",
-    "cluster_nodes": 3,
-    "parallel_workers": 8
-  }
+ "performance_metrics": {
+ "execution_time_seconds": 45.3,
+ "memory_usage_mb": 512,
+ "memory_peak_mb": 768,
+ "cpu_time_seconds": 120.5,
+ "io_operations": 15000,
+ "network_bytes": 1048576,
+ "cost_usd": 0.023
+ },
+ "resource_config": {
+ "engine_size": "e16",
+ "cluster_nodes": 3,
+ "parallel_workers": 8
+ }
 }
 ```
 
@@ -230,7 +230,7 @@ ts_data = catalog.get_time_series(
 
 ---
 
-### FR-10: Execution Comparison (P1) ⭐
+### FR-10: Execution Comparison (P1) 
 
 **Compare two executions:**
 ```python
@@ -270,30 +270,30 @@ epoch_diff = catalog.compare_epochs_detailed("2026-01", "2026-02")
 
 ---
 
-### FR-11: Result Sampling (P1) ⭐
+### FR-11: Result Sampling (P1) 
 
 **Store in catalog:**
 ```json
 {
-  "result_sample": {
-    "top_100": [
-      {"_key": "customer_42", "score": 0.0456, "rank": 1},
-      ...
-    ],
-    "summary_stats": {
-      "mean": 0.0001,
-      "median": 0.00008,
-      "std_dev": 0.0002,
-      "min": 0.00001,
-      "max": 0.0456,
-      "percentile_95": 0.0005,
-      ...
-    },
-    "distribution_histogram": {
-      "bins": [...],
-      "counts": [...]
-    }
-  }
+ "result_sample": {
+ "top_100": [
+ {"_key": "customer_42", "score": 0.0456, "rank": 1},
+ ...
+ ],
+ "summary_stats": {
+ "mean": 0.0001,
+ "median": 0.00008,
+ "std_dev": 0.0002,
+ "min": 0.00001,
+ "max": 0.0456,
+ "percentile_95": 0.0005,
+ ...
+ },
+ "distribution_histogram": {
+ "bins": [...],
+ "counts": [...]
+ }
+ }
 }
 ```
 
@@ -336,14 +336,14 @@ stats = catalog.get_stats_timeline(algorithm, stat="mean")
 **Track per execution:**
 ```json
 {
-  "audit_info": {
-    "initiated_by": "data_scientist@company.com",
-    "initiated_from": "jupyter_notebook",
-    "purpose": "Monthly KPI analysis",
-    "cost_center": "marketing_analytics",
-    "project_id": "Q1_analysis",
-    "approved_by": "manager@company.com"
-  }
+ "audit_info": {
+ "initiated_by": "data_scientist@company.com",
+ "initiated_from": "jupyter_notebook",
+ "purpose": "Monthly KPI analysis",
+ "cost_center": "marketing_analytics",
+ "project_id": "Q1_analysis",
+ "approved_by": "manager@company.com"
+ }
 }
 ```
 
@@ -360,55 +360,55 @@ stats = catalog.get_stats_timeline(algorithm, stat="mean")
 
 ---
 
-### FR-13: Alerting and Monitoring (P1) ⭐
+### FR-13: Alerting and Monitoring (P1) 
 
 **Alert types:**
 
 1. **Execution Failures**
 ```python
 catalog.create_alert(
-    name="high_failure_rate",
-    condition="failure_rate > 0.1 over last 24h",
-    actions=[
-        {"type": "email", "recipients": ["ops@company.com"]},
-        {"type": "slack", "channel": "#data-ops"}
-    ]
+ name="high_failure_rate",
+ condition="failure_rate > 0.1 over last 24h",
+ actions=[
+ {"type": "email", "recipients": ["ops@company.com"]},
+ {"type": "slack", "channel": "#data-ops"}
+ ]
 )
 ```
 
 2. **Metric Anomalies**
 ```python
 catalog.create_alert(
-    name="pagerank_anomaly",
-    condition="avg_score > mean + (2 * std_dev) from 30d baseline",
-    actions=[{"type": "create_ticket", "priority": "high"}]
+ name="pagerank_anomaly",
+ condition="avg_score > mean + (2 * std_dev) from 30d baseline",
+ actions=[{"type": "create_ticket", "priority": "high"}]
 )
 ```
 
 3. **Cost Overruns**
 ```python
 catalog.create_alert(
-    name="daily_cost_limit",
-    condition="daily_cost > $100",
-    actions=[{"type": "slack"}, {"type": "webhook"}]
+ name="daily_cost_limit",
+ condition="daily_cost > $100",
+ actions=[{"type": "slack"}, {"type": "webhook"}]
 )
 ```
 
 4. **Performance Degradation**
 ```python
 catalog.create_alert(
-    name="slow_execution",
-    condition="execution_time > 2 * avg over last 30d",
-    actions=[{"type": "email"}]
+ name="slow_execution",
+ condition="execution_time > 2 * avg over last 30d",
+ actions=[{"type": "email"}]
 )
 ```
 
 5. **Missed Schedules**
 ```python
 catalog.create_alert(
-    name="schedule_miss",
-    condition="scheduled_job_not_run within 1h",
-    actions=[{"type": "pagerduty"}]
+ name="schedule_miss",
+ condition="scheduled_job_not_run within 1h",
+ actions=[{"type": "pagerduty"}]
 )
 ```
 
@@ -444,14 +444,14 @@ catalog.create_alert(
 **Track scheduling info:**
 ```json
 {
-  "schedule_info": {
-    "type": "scheduled",
-    "schedule_id": "daily_pagerank",
-    "schedule_cron": "0 2 * * *",
-    "scheduled_time": "2026-01-01T02:00:00Z",
-    "actual_start_time": "2026-01-01T02:00:15Z",
-    "delay_seconds": 15
-  }
+ "schedule_info": {
+ "type": "scheduled",
+ "schedule_id": "daily_pagerank",
+ "schedule_cron": "0 2 * * *",
+ "scheduled_time": "2026-01-01T02:00:00Z",
+ "actual_start_time": "2026-01-01T02:00:15Z",
+ "delay_seconds": 15
+ }
 }
 ```
 
@@ -474,14 +474,14 @@ catalog.create_alert(
 ```python
 # Add dependency
 catalog.add_dependency(
-    execution_id="exec2",
-    depends_on="exec1",
-    dependency_type="results"
+ execution_id="exec2",
+ depends_on="exec1",
+ dependency_type="results"
 )
 
 # Validate before execution
 if not catalog.validate_dependencies("exec2"):
-    raise Exception("Dependencies not satisfied")
+ raise Exception("Dependencies not satisfied")
 
 # Get dependency tree
 tree = catalog.get_dependency_tree("exec5")
@@ -511,10 +511,10 @@ dependents = catalog.get_dependents("exec1")
 ```python
 # Update creates new version
 v2 = catalog.update_template(
-    template_id="template_001",
-    changes={"parameters": {"damping_factor": 0.90}},
-    change_reason="Improve convergence",
-    changed_by="analyst@company.com"
+ template_id="template_001",
+ changes={"parameters": {"damping_factor": 0.90}},
+ change_reason="Improve convergence",
+ changed_by="analyst@company.com"
 )
 
 # Get version history
@@ -542,21 +542,21 @@ catalog.rollback_template("template_001", to_version=1)
 ```python
 # Mark as golden baseline
 catalog.mark_epoch_golden(
-    epoch_id="2026-01-baseline",
-    reason="Pre-migration baseline"
+ epoch_id="2026-01-baseline",
+ reason="Pre-migration baseline"
 )
 
 # Compare to golden
 comparison = catalog.compare_to_golden(
-    current_epoch_id="2026-06",
-    golden_epoch_id="2026-01-baseline"
+ current_epoch_id="2026-06",
+ golden_epoch_id="2026-01-baseline"
 )
 
 # Detect regressions
 regressions = catalog.detect_regressions(
-    current_epoch_id="2026-06",
-    golden_epoch_id="2026-01-baseline",
-    threshold=0.1  # 10% regression = alert
+ current_epoch_id="2026-06",
+ golden_epoch_id="2026-01-baseline",
+ threshold=0.1 # 10% regression = alert
 )
 ```
 
@@ -574,19 +574,19 @@ regressions = catalog.detect_regressions(
 **Quality tracking:**
 ```json
 {
-  "data_quality": {
-    "graph_freshness_hours": 2.5,
-    "data_completeness_score": 0.98,
-    "missing_data_percentage": 0.02,
-    "orphaned_vertices": 10,
-    "self_loops": 5,
-    "validation_passed": true,
-    "quality_score": 0.95,
-    "warnings": [
-      "10 orphaned vertices in customers",
-      "Graph freshness exceeds 4 hours"
-    ]
-  }
+ "data_quality": {
+ "graph_freshness_hours": 2.5,
+ "data_completeness_score": 0.98,
+ "missing_data_percentage": 0.02,
+ "orphaned_vertices": 10,
+ "self_loops": 5,
+ "validation_passed": true,
+ "quality_score": 0.95,
+ "warnings": [
+ "10 orphaned vertices in customers",
+ "Graph freshness exceeds 4 hours"
+ ]
+ }
 }
 ```
 
@@ -610,25 +610,25 @@ regressions = catalog.detect_regressions(
 ```python
 # Add comment
 catalog.add_comment(
-    execution_id="exec1",
-    comment="Unusual spike - investigate pipeline",
-    author="analyst@company.com"
+ execution_id="exec1",
+ comment="Unusual spike - investigate pipeline",
+ author="analyst@company.com"
 )
 
 # Annotate epoch
 catalog.annotate(
-    epoch_id="2026-01",
-    annotation="Marketing campaign launched",
-    annotation_type="external_event"
+ epoch_id="2026-01",
+ annotation="Marketing campaign launched",
+ annotation_type="external_event"
 )
 ```
 
 **Sharing:**
 ```python
 catalog.share(
-    execution_id="exec1",
-    with_users=["team@company.com"],
-    permissions="read"
+ execution_id="exec1",
+ with_users=["team@company.com"],
+ permissions="read"
 )
 
 catalog.bookmark(execution_id="exec1")
@@ -641,16 +641,16 @@ catalog.bookmark(execution_id="exec1")
 **Webhooks:**
 ```python
 catalog.register_webhook(
-    event="execution_completed",
-    url="https://api.company.com/webhooks",
-    filters={"algorithm": "pagerank"}
+ event="execution_completed",
+ url="https://api.company.com/webhooks",
+ filters={"algorithm": "pagerank"}
 )
 ```
 
 **Event stream:**
 ```python
 for event in catalog.stream_events():
-    send_to_data_warehouse(event)
+ send_to_data_warehouse(event)
 ```
 
 **Events:**
@@ -677,12 +677,12 @@ for event in catalog.stream_events():
 
 ### Phase 3: Time-Series & Performance (4 weeks)
 - FR-8: Time-Series Analysis
-- **FR-9: Performance Benchmarking** ⭐
-- **FR-10: Execution Comparison** ⭐
-- **FR-11: Result Sampling** ⭐
+- **FR-9: Performance Benchmarking** 
+- **FR-10: Execution Comparison** 
+- **FR-11: Result Sampling** 
 
 ### Phase 4: Operations & Monitoring (3 weeks)
-- **FR-13: Alerting** ⭐
+- **FR-13: Alerting** 
 - FR-14: Schedule Tracking
 - FR-12: Audit Trail
 
@@ -758,7 +758,7 @@ Based on analysis, **strongly recommend including FR-9, FR-10, FR-11, FR-13** in
 
 ---
 
-**Status:** Ready for review and implementation planning  
+**Status:** Ready for review and implementation planning 
 **Next Steps:** 
 1. Confirm MVP scope
 2. Answer decision questions

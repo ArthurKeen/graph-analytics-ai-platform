@@ -6,7 +6,7 @@
 
 ## Test Coverage
 
-### Unit Tests (40 tests) ✅
+### Unit Tests (40 tests) 
 
 All unit tests use mocks to test functionality without requiring real database connections.
 
@@ -29,10 +29,10 @@ All unit tests use mocks to test functionality without requiring real database c
 - `export_results_to_json()` - 7 tests
 
 ### Test Results
-- ✅ **40/40 tests pass**
-- ✅ All success cases covered
-- ✅ Error cases covered
-- ✅ Edge cases covered
+- **40/40 tests pass**
+- All success cases covered
+- Error cases covered
+- Edge cases covered
 
 ---
 
@@ -62,18 +62,18 @@ All unit tests use mocks to test functionality without requiring real database c
 ## Verification
 
 ### Manual Verification Performed
-1. ✅ All methods exist on `GenAIGAEConnection` class
-2. ✅ All methods are callable
-3. ✅ Methods properly delegate to module functions
-4. ✅ Imports work correctly
-5. ✅ No syntax errors
-6. ✅ No linting errors
+1. All methods exist on `GenAIGAEConnection` class
+2. All methods are callable
+3. Methods properly delegate to module functions
+4. Imports work correctly
+5. No syntax errors
+6. No linting errors
 
 ### Code Quality
-- ✅ Type hints present
-- ✅ Docstrings complete
-- ✅ Error handling implemented
-- ✅ Logging used instead of print statements
+- Type hints present
+- Docstrings complete
+- Error handling implemented
+- Logging used instead of print statements
 
 ---
 
@@ -100,5 +100,5 @@ pytest tests/test_results.py tests/test_queries.py tests/test_export.py --cov=gr
 
 ---
 
-**Status:** ✅ Unit testing complete and comprehensive
+**Status:** Unit testing complete and comprehensive
 

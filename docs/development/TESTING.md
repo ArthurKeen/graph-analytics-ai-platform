@@ -1,26 +1,26 @@
 # Testing Guide
 
-**Version:** 3.0.0  
-**Last Updated:** December 12, 2025  
+**Version:** 3.0.0 
+**Last Updated:** December 12, 2025 
 **Coverage:** 90%+
 
 ---
 
-##  Testing Overview
+## Testing Overview
 
 ### Current Status
 
 | Metric | Value | Target | Status |
 |--------|-------|--------|--------|
-| **Test Coverage** | 90%+ | 80%+ |  Excellent |
-| **Total Tests** | 150+ | 100+ |  Exceeds |
-| **Unit Tests** | 130+ | - |  Good |
-| **Integration Tests** | 20+ | - |  Good |
-| **Test Runtime** | < 30s | < 60s |  Fast |
+| **Test Coverage** | 90%+ | 80%+ | Excellent |
+| **Total Tests** | 150+ | 100+ | Exceeds |
+| **Unit Tests** | 130+ | - | Good |
+| **Integration Tests** | 20+ | - | Good |
+| **Test Runtime** | < 30s | < 60s | Fast |
 
 ---
 
-##  Quick Start
+## Quick Start
 
 ### Running Tests
 
@@ -56,62 +56,62 @@ open htmlcov/index.html
 
 ---
 
-##  Test Structure
+## Test Structure
 
 ```
 tests/
-├── conftest.py              # Shared fixtures
-├── unit/                    # Unit tests
-│   ├── ai/
-│   │   ├── agents/         # Agent tests
-│   │   ├── llm/            # LLM provider tests
-│   │   ├── schema/         # Schema analysis tests
-│   │   ├── documents/      # Document processing tests
-│   │   ├── execution/      # Execution tests
-│   │   ├── reporting/      # Reporting tests
-│   │   ├── templates/      # Template tests
-│   │   └── workflow/       # Workflow tests
-│   └── ...
-├── integration/             # Integration tests
-│   └── test_complete_workflow.py
-└── fixtures/                # Test data
-    ├── sample_documents/
-    └── sample_schemas/
+ conftest.py # Shared fixtures
+ unit/ # Unit tests
+ ai/
+ agents/ # Agent tests
+ llm/ # LLM provider tests
+ schema/ # Schema analysis tests
+ documents/ # Document processing tests
+ execution/ # Execution tests
+ reporting/ # Reporting tests
+ templates/ # Template tests
+ workflow/ # Workflow tests
+ ...
+ integration/ # Integration tests
+ test_complete_workflow.py
+ fixtures/ # Test data
+ sample_documents/
+ sample_schemas/
 ```
 
 ---
 
-## ✍️ Writing Tests
+## Writing Tests
 
 ### Test Naming Convention
 
 ```python
 def test_<component>_<scenario>_<expected_result>():
-    """Test that <component> <expected_result> when <scenario>."""
-    pass
+ """Test that <component> <expected_result> when <scenario>."""
+ pass
 
 # Examples:
 def test_schema_extractor_returns_collections_when_graph_exists():
-    """Test that schema extractor returns collections when graph exists."""
-    
+ """Test that schema extractor returns collections when graph exists."""
+ 
 def test_agent_process_raises_error_when_message_invalid():
-    """Test that agent process raises error when message invalid."""
+ """Test that agent process raises error when message invalid."""
 ```
 
 ### Test Structure (AAA Pattern)
 
 ```python
 def test_example():
-    # Arrange - Set up test data
-    schema = create_test_schema()
-    analyzer = SchemaAnalyzer(mock_llm)
-    
-    # Act - Execute the code under test
-    result = analyzer.analyze(schema)
-    
-    # Assert - Verify the results
-    assert result.domain == "E-commerce"
-    assert result.complexity_score > 0
+ # Arrange - Set up test data
+ schema = create_test_schema()
+ analyzer = SchemaAnalyzer(mock_llm)
+ 
+ # Act - Execute the code under test
+ result = analyzer.analyze(schema)
+ 
+ # Assert - Verify the results
+ assert result.domain == "E-commerce"
+ assert result.complexity_score > 0
 ```
 
 ### Using Fixtures
@@ -122,17 +122,17 @@ import pytest
 
 @pytest.fixture
 def mock_db():
-    """Mock database connection."""
-    db = Mock()
-    db.version.return_value = {"version": "3.10.0"}
-    return db
+ """Mock database connection."""
+ db = Mock()
+ db.version.return_value = {"version": "3.10.0"}
+ return db
 
 # test file
 def test_with_fixture(mock_db):
-    """Test using fixture."""
-    extractor = SchemaExtractor(mock_db)
-    result = extractor.extract()
-    assert result is not None
+ """Test using fixture."""
+ extractor = SchemaExtractor(mock_db)
+ result = extractor.extract()
+ assert result is not None
 ```
 
 ### Mocking External Dependencies
@@ -143,70 +143,70 @@ from unittest.mock import Mock, patch, MagicMock
 # Mock LLM provider
 @patch('module.LLMProvider')
 def test_with_mock_llm(mock_llm_class):
-    mock_llm = Mock()
-    mock_llm.generate.return_value = Mock(content="test response")
-    mock_llm_class.return_value = mock_llm
-    
-    # Test code here
+ mock_llm = Mock()
+ mock_llm.generate.return_value = Mock(content="test response")
+ mock_llm_class.return_value = mock_llm
+ 
+ # Test code here
 
 # Mock database
 @patch('module.get_db_connection')
 def test_with_mock_db(mock_get_db):
-    mock_db = MagicMock()
-    mock_get_db.return_value = mock_db
-    
-    # Test code here
+ mock_db = MagicMock()
+ mock_get_db.return_value = mock_db
+ 
+ # Test code here
 ```
 
 ---
 
-##  Test Coverage Requirements
+## Test Coverage Requirements
 
 ### Minimum Coverage by Component
 
 | Component | Minimum | Current |
 |-----------|---------|---------|
-| **Agents** | 85% | 92%  |
-| **LLM** | 80% | 88%  |
-| **Schema** | 85% | 90%  |
-| **Documents** | 80% | 87%  |
-| **Execution** | 85% | 91%  |
-| **Reporting** | 80% | 89%  |
-| **Templates** | 85% | 90%  |
-| **Workflow** | 85% | 93%  |
+| **Agents** | 85% | 92% |
+| **LLM** | 80% | 88% |
+| **Schema** | 85% | 90% |
+| **Documents** | 80% | 87% |
+| **Execution** | 85% | 91% |
+| **Reporting** | 80% | 89% |
+| **Templates** | 85% | 90% |
+| **Workflow** | 85% | 93% |
 
 ### What to Test
 
 **Always Test:**
--  Happy path (normal operation)
--  Error handling
--  Edge cases
--  Boundary conditions
--  Invalid input handling
+- Happy path (normal operation)
+- Error handling
+- Edge cases
+- Boundary conditions
+- Invalid input handling
 
 **Example:**
 ```python
 class TestSchemaExtractor:
-    def test_extract_success(self, mock_db):
-        """Test successful extraction."""
-        # Happy path
-        
-    def test_extract_empty_graph(self, mock_db):
-        """Test extraction with empty graph."""
-        # Edge case
-        
-    def test_extract_invalid_connection(self):
-        """Test extraction with invalid connection."""
-        # Error handling
-        
-    def test_extract_with_large_graph(self, mock_db):
-        """Test extraction with 10M+ nodes."""
-        # Boundary condition
+ def test_extract_success(self, mock_db):
+ """Test successful extraction."""
+ # Happy path
+ 
+ def test_extract_empty_graph(self, mock_db):
+ """Test extraction with empty graph."""
+ # Edge case
+ 
+ def test_extract_invalid_connection(self):
+ """Test extraction with invalid connection."""
+ # Error handling
+ 
+ def test_extract_with_large_graph(self, mock_db):
+ """Test extraction with 10M+ nodes."""
+ # Boundary condition
 ```
 
 ---
 
-##  Test Types
+## Test Types
 
 ### 1. Unit Tests
 
@@ -215,17 +215,17 @@ Test individual components in isolation.
 ```python
 # tests/unit/ai/agents/test_base.py
 def test_agent_create_message():
-    """Test message creation."""
-    agent = TestAgent("test", mock_llm)
-    message = agent.create_message(
-        to_agent="other",
-        message_type="task",
-        content={"data": "value"}
-    )
-    
-    assert message.from_agent == "test"
-    assert message.to_agent == "other"
-    assert message.content["data"] == "value"
+ """Test message creation."""
+ agent = TestAgent("test", mock_llm)
+ message = agent.create_message(
+ to_agent="other",
+ message_type="task",
+ content={"data": "value"}
+ )
+ 
+ assert message.from_agent == "test"
+ assert message.to_agent == "other"
+ assert message.content["data"] == "value"
 ```
 
 ### 2. Integration Tests
@@ -235,17 +235,17 @@ Test components working together.
 ```python
 # tests/integration/test_workflow.py
 def test_complete_linear_workflow():
-    """Test complete workflow execution."""
-    # Set up real components
-    db = get_db_connection()
-    orchestrator = WorkflowOrchestrator(...)
-    
-    # Run workflow
-    result = orchestrator.run_complete_workflow(...)
-    
-    # Verify end-to-end
-    assert result.success
-    assert len(result.reports) > 0
+ """Test complete workflow execution."""
+ # Set up real components
+ db = get_db_connection()
+ orchestrator = WorkflowOrchestrator(...)
+ 
+ # Run workflow
+ result = orchestrator.run_complete_workflow(...)
+ 
+ # Verify end-to-end
+ assert result.success
+ assert len(result.reports) > 0
 ```
 
 ### 3. Parametrized Tests
@@ -254,67 +254,67 @@ Test multiple scenarios.
 
 ```python
 @pytest.mark.parametrize("algorithm,expected_type", [
-    ("pagerank", AlgorithmType.CENTRALITY),
-    ("louvain", AlgorithmType.COMMUNITY),
-    ("shortest_path", AlgorithmType.PATHFINDING),
+ ("pagerank", AlgorithmType.CENTRALITY),
+ ("louvain", AlgorithmType.COMMUNITY),
+ ("shortest_path", AlgorithmType.PATHFINDING),
 ])
 def test_algorithm_type_detection(algorithm, expected_type):
-    """Test algorithm type detection."""
-    result = detect_algorithm_type(algorithm)
-    assert result == expected_type
+ """Test algorithm type detection."""
+ result = detect_algorithm_type(algorithm)
+ assert result == expected_type
 ```
 
 ---
 
-##  Test Utilities
+## Test Utilities
 
 ### Creating Test Data
 
 ```python
 # tests/conftest.py
 def create_test_schema():
-    """Create test schema."""
-    return GraphSchema(
-        vertex_collections=[
-            CollectionInfo(name="users", type=CollectionType.VERTEX),
-            CollectionInfo(name="products", type=CollectionType.VERTEX),
-        ],
-        edge_collections=[
-            CollectionInfo(name="purchased", type=CollectionType.EDGE),
-        ],
-        total_documents=1000,
-        total_edges=500
-    )
+ """Create test schema."""
+ return GraphSchema(
+ vertex_collections=[
+ CollectionInfo(name="users", type=CollectionType.VERTEX),
+ CollectionInfo(name="products", type=CollectionType.VERTEX),
+ ],
+ edge_collections=[
+ CollectionInfo(name="purchased", type=CollectionType.EDGE),
+ ],
+ total_documents=1000,
+ total_edges=500
+ )
 
 def create_test_requirements():
-    """Create test requirements."""
-    return ExtractedRequirements(
-        domain="Test",
-        summary="Test requirements",
-        objectives=[...],
-        requirements=[...]
-    )
+ """Create test requirements."""
+ return ExtractedRequirements(
+ domain="Test",
+ summary="Test requirements",
+ objectives=[...],
+ requirements=[...]
+ )
 ```
 
 ### Assertion Helpers
 
 ```python
 def assert_valid_schema(schema):
-    """Assert schema is valid."""
-    assert schema is not None
-    assert len(schema.vertex_collections) > 0
-    assert schema.total_documents > 0
+ """Assert schema is valid."""
+ assert schema is not None
+ assert len(schema.vertex_collections) > 0
+ assert schema.total_documents > 0
 
 def assert_successful_execution(result):
-    """Assert execution was successful."""
-    assert result.success
-    assert result.job is not None
-    assert result.job.status == "completed"
+ """Assert execution was successful."""
+ assert result.success
+ assert result.job is not None
+ assert result.job.status == "completed"
 ```
 
 ---
 
-##  Pre-Commit Checklist
+## Pre-Commit Checklist
 
 Before committing code:
 
@@ -345,18 +345,18 @@ pylint graph_analytics_ai/
 ### Verify Changes
 ```bash
 # 7. Run only affected tests
-pytest tests/unit/ai/agents/  # If you changed agents
+pytest tests/unit/ai/agents/ # If you changed agents
 
 # 8. Run integration tests
 pytest tests/integration/
 
 # 9. Check for regressions
-pytest --lf  # Run last failed tests
+pytest --lf # Run last failed tests
 ```
 
 ---
 
-##  Debugging Tests
+## Debugging Tests
 
 ### Running Failed Tests
 
@@ -402,7 +402,7 @@ pytest -m "not slow"
 
 ---
 
-##  Continuous Integration
+## Continuous Integration
 
 ### GitHub Actions Workflow
 
@@ -413,33 +413,33 @@ name: Tests
 on: [push, pull_request]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v2
-    
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
-    
-    - name: Install dependencies
-      run: |
-        pip install -e .
-        pip install -r requirements-dev.txt
-    
-    - name: Run tests
-      run: |
-        pytest --cov=graph_analytics_ai --cov-report=xml tests/
-    
-    - name: Upload coverage
-      uses: codecov/codecov-action@v2
+ test:
+ runs-on: ubuntu-latest
+ 
+ steps:
+ - uses: actions/checkout@v2
+ 
+ - name: Set up Python
+ uses: actions/setup-python@v2
+ with:
+ python-version: '3.8'
+ 
+ - name: Install dependencies
+ run: |
+ pip install -e .
+ pip install -r requirements-dev.txt
+ 
+ - name: Run tests
+ run: |
+ pytest --cov=graph_analytics_ai --cov-report=xml tests/
+ 
+ - name: Upload coverage
+ uses: codecov/codecov-action@v2
 ```
 
 ---
 
-##  Testing Best Practices
+## Testing Best Practices
 
 ### DO 
 
@@ -464,15 +464,15 @@ jobs:
 
 ---
 
-##  Common Testing Patterns
+## Common Testing Patterns
 
 ### Testing Exceptions
 
 ```python
 def test_raises_error_on_invalid_input():
-    """Test error handling."""
-    with pytest.raises(ValueError, match="Invalid input"):
-        process_invalid_data()
+ """Test error handling."""
+ with pytest.raises(ValueError, match="Invalid input"):
+ process_invalid_data()
 ```
 
 ### Testing Async Code
@@ -480,9 +480,9 @@ def test_raises_error_on_invalid_input():
 ```python
 @pytest.mark.asyncio
 async def test_async_operation():
-    """Test async operation."""
-    result = await async_function()
-    assert result is not None
+ """Test async operation."""
+ result = await async_function()
+ assert result is not None
 ```
 
 ### Testing with Temp Files
@@ -491,17 +491,17 @@ async def test_async_operation():
 import tempfile
 
 def test_with_temp_file():
-    """Test with temporary file."""
-    with tempfile.NamedTemporaryFile(mode='w') as f:
-        f.write("test data")
-        f.flush()
-        result = process_file(f.name)
-        assert result is not None
+ """Test with temporary file."""
+ with tempfile.NamedTemporaryFile(mode='w') as f:
+ f.write("test data")
+ f.flush()
+ result = process_file(f.name)
+ assert result is not None
 ```
 
 ---
 
-##  Test Metrics
+## Test Metrics
 
 ### Current Stats (v3.0.0)
 
@@ -516,48 +516,48 @@ def test_with_temp_file():
 
 ```
 graph_analytics_ai/
-├── ai/
-│   ├── agents/          92% 
-│   ├── llm/             88% 
-│   ├── schema/          90% 
-│   ├── documents/       87% 
-│   ├── execution/       91% 
-│   ├── reporting/       89% 
-│   ├── templates/       90% 
-│   └── workflow/        93% 
-├── db_connection.py     85% 
-├── gae_orchestrator.py  88% 
-└── config.py            92% 
+ ai/
+ agents/ 92% 
+ llm/ 88% 
+ schema/ 90% 
+ documents/ 87% 
+ execution/ 91% 
+ reporting/ 89% 
+ templates/ 90% 
+ workflow/ 93% 
+ db_connection.py 85% 
+ gae_orchestrator.py 88% 
+ config.py 92% 
 
 Overall: 90%+ 
 ```
 
 ---
 
-##  Next Steps
+## Next Steps
 
 ### Planned Improvements (v3.1.0)
 
 1. **Performance Tests**
-   - Benchmark critical paths
-   - Load testing
-   - Memory profiling
+ - Benchmark critical paths
+ - Load testing
+ - Memory profiling
 
 2. **Property-Based Testing**
-   - Use hypothesis library
-   - Generate test cases automatically
+ - Use hypothesis library
+ - Generate test cases automatically
 
 3. **Mutation Testing**
-   - Verify test quality
-   - Find untested code paths
+ - Verify test quality
+ - Find untested code paths
 
 4. **Contract Testing**
-   - API contract validation
-   - Integration contract tests
+ - API contract validation
+ - Integration contract tests
 
 ---
 
-##  Getting Help
+## Getting Help
 
 **Questions about testing?**
 
@@ -568,7 +568,7 @@ Overall: 90%+
 
 ---
 
-**Maintained By:** Development Team  
-**Last Updated:** December 12, 2025  
+**Maintained By:** Development Team 
+**Last Updated:** December 12, 2025 
 **Test Coverage:** 90%+ 
 

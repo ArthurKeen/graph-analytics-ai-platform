@@ -39,11 +39,11 @@ Created `/Users/arthurkeen/code/graph-analytics-ai-platform/graph_analytics_ai/a
 
 | Algorithm | Satellites? | Focus | Reasoning |
 |-----------|-------------|-------|-----------|
-| WCC | ❌ No | Core graph | Find meaningful components |
-| SCC | ❌ No | Core graph | Find strongly connected components |
-| PageRank | ✅ Yes | Full graph | Satellites affect importance |
-| Betweenness | ✅ Yes | Full graph | Need complete paths |
-| Label Propagation | ❌ No | Core graph | Communities in main structure |
+| WCC | No | Core graph | Find meaningful components |
+| SCC | No | Core graph | Find strongly connected components |
+| PageRank | Yes | Full graph | Satellites affect importance |
+| Betweenness | Yes | Full graph | Need complete paths |
+| Label Propagation | No | Core graph | Communities in main structure |
 
 ### 2. CollectionRole Enum
 
@@ -66,19 +66,19 @@ Modified `/Users/arthurkeen/code/graph-analytics-ai-platform/graph_analytics_ai/
 
 ```python
 def __init__(
-    self,
-    graph_name: str = "ecommerce_graph",
-    default_engine_size: EngineSize = EngineSize.SMALL,
-    auto_optimize: bool = True,
-    satellite_collections: Optional[List[str]] = None,  # NEW
-    core_collections: Optional[List[str]] = None        # NEW
+ self,
+ graph_name: str = "ecommerce_graph",
+ default_engine_size: EngineSize = EngineSize.SMALL,
+ auto_optimize: bool = True,
+ satellite_collections: Optional[List[str]] = None, # NEW
+ core_collections: Optional[List[str]] = None # NEW
 ):
-    # ... initialization
-    self.collection_selector = CollectionSelector()
-    self.collection_hints = {
-        "satellite_collections": satellite_collections,
-        "core_collections": core_collections
-    }
+ # ... initialization
+ self.collection_selector = CollectionSelector()
+ self.collection_hints = {
+ "satellite_collections": satellite_collections,
+ "core_collections": core_collections
+ }
 ```
 
 The generator now automatically invokes the CollectionSelector for each template and stores selection reasoning in metadata.
@@ -102,9 +102,9 @@ from graph_analytics_ai.ai.templates import TemplateGenerator
 
 # Specify collection roles
 generator = TemplateGenerator(
-    graph_name="premion_media_graph",
-    satellite_collections=["audience_metadata", "device_specs", "geo_lookups"],
-    core_collections=["audiences", "campaigns", "devices", "publishers"]
+ graph_name="premion_media_graph",
+ satellite_collections=["audience_metadata", "device_specs", "geo_lookups"],
+ core_collections=["audiences", "campaigns", "devices", "publishers"]
 )
 
 # Generate templates - selection happens automatically
@@ -112,10 +112,10 @@ templates = generator.generate_templates(use_cases, schema)
 
 # Review selections
 for template in templates:
-    print(f"\n{template.name}")
-    print(f"Algorithm: {template.algorithm.algorithm.value}")
-    print(f"Collections: {template.config.vertex_collections}")
-    print(f"Reasoning: {template.metadata['collection_selection_reasoning']}")
+ print(f"\n{template.name}")
+ print(f"Algorithm: {template.algorithm.algorithm.value}")
+ print(f"Collections: {template.config.vertex_collections}")
+ print(f"Reasoning: {template.metadata['collection_selection_reasoning']}")
 ```
 
 ### Standalone Usage
@@ -125,26 +125,26 @@ from graph_analytics_ai.ai.templates import select_collections_for_algorithm, Al
 
 # Test what WCC would select
 selection = select_collections_for_algorithm(
-    algorithm=AlgorithmType.WCC,
-    schema=my_schema,
-    satellite_collections=["metadata", "configs"]
+ algorithm=AlgorithmType.WCC,
+ schema=my_schema,
+ satellite_collections=["metadata", "configs"]
 )
 
 print(f"WCC will use: {selection.vertex_collections}")
-# Output: ['users', 'products', 'orders']  (excludes metadata, configs)
+# Output: ['users', 'products', 'orders'] (excludes metadata, configs)
 
 print(f"Excluded: {selection.excluded_vertices}")
 # Output: ['metadata (satellite)', 'configs (satellite)']
 
 # Compare with PageRank
 pr_selection = select_collections_for_algorithm(
-    algorithm=AlgorithmType.PAGERANK,
-    schema=my_schema,
-    satellite_collections=["metadata", "configs"]
+ algorithm=AlgorithmType.PAGERANK,
+ schema=my_schema,
+ satellite_collections=["metadata", "configs"]
 )
 
 print(f"PageRank will use: {pr_selection.vertex_collections}")
-# Output: ['users', 'products', 'orders', 'metadata', 'configs']  (includes all)
+# Output: ['users', 'products', 'orders', 'metadata', 'configs'] (includes all)
 ```
 
 ### Auto-Classification (No Hints)
@@ -165,24 +165,24 @@ templates = generator.generate_templates(use_cases, schema)
 Created comprehensive unit tests in `tests/unit/ai/templates/test_collection_selector.py`:
 
 **Test Coverage**:
-- ✅ Initialization
-- ✅ Manual classification with hints
-- ✅ Auto-classification by keywords
-- ✅ Auto-classification by size
-- ✅ WCC excludes satellites
-- ✅ SCC excludes satellites
-- ✅ PageRank includes all
-- ✅ Betweenness includes all
-- ✅ Label Propagation excludes satellites
-- ✅ Selection metadata structure
-- ✅ Algorithm requirements exist
-- ✅ Convenience function
-- ✅ Empty schema handling
-- ✅ No hints fallback
-- ✅ Unknown algorithm handling
-- ✅ Integration with TemplateGenerator
+- Initialization
+- Manual classification with hints
+- Auto-classification by keywords
+- Auto-classification by size
+- WCC excludes satellites
+- SCC excludes satellites
+- PageRank includes all
+- Betweenness includes all
+- Label Propagation excludes satellites
+- Selection metadata structure
+- Algorithm requirements exist
+- Convenience function
+- Empty schema handling
+- No hints fallback
+- Unknown algorithm handling
+- Integration with TemplateGenerator
 
-**Test Results**: 18/18 tests passing ✅
+**Test Results**: 18/18 tests passing 
 
 ## Documentation
 
@@ -216,14 +216,14 @@ Updated `README.md`:
 
 ### Modified
 1. `graph_analytics_ai/ai/templates/generator.py`
-   - Added `satellite_collections` and `core_collections` parameters
-   - Integrated CollectionSelector
-   - Added selection metadata to templates
+ - Added `satellite_collections` and `core_collections` parameters
+ - Integrated CollectionSelector
+ - Added selection metadata to templates
 2. `graph_analytics_ai/ai/templates/__init__.py`
-   - Exported new classes and functions
+ - Exported new classes and functions
 3. `README.md`
-   - Updated key features
-   - Added advanced configuration example
+ - Updated key features
+ - Added advanced configuration example
 
 ## Impact
 
@@ -241,8 +241,8 @@ templates = generator.generate_templates(use_cases, schema)
 ```python
 # Algorithm-aware selection - correct results
 generator = TemplateGenerator(
-    graph_name="my_graph",
-    satellite_collections=["metadata", "configs"]
+ graph_name="my_graph",
+ satellite_collections=["metadata", "configs"]
 )
 templates = generator.generate_templates(use_cases, schema)
 # WCC finds 5 meaningful components (core graph only)
@@ -255,20 +255,20 @@ Your Premion project can now specify:
 
 ```python
 generator = TemplateGenerator(
-    graph_name="premion_media_graph",
-    satellite_collections=[
-        "audience_metadata",
-        "device_specs",
-        "geo_lookups",
-        "rate_cards"
-    ],
-    core_collections=[
-        "audiences",
-        "campaigns",
-        "creatives",
-        "devices",
-        "publishers"
-    ]
+ graph_name="premion_media_graph",
+ satellite_collections=[
+ "audience_metadata",
+ "device_specs",
+ "geo_lookups",
+ "rate_cards"
+ ],
+ core_collections=[
+ "audiences",
+ "campaigns",
+ "creatives",
+ "devices",
+ "publishers"
+ ]
 )
 ```
 
@@ -293,7 +293,7 @@ The collection selection is **fully automated** within the workflow:
 # Traditional Orchestrator
 orchestrator = WorkflowOrchestrator(graph_name="my_graph")
 result = orchestrator.run_complete_workflow(
-    input_files=["requirements.pdf"]
+ input_files=["requirements.pdf"]
 )
 # Collection selection happens automatically in template generation phase
 
@@ -309,15 +309,15 @@ Users can also configure it explicitly:
 from graph_analytics_ai.ai.templates import TemplateGenerator
 
 generator = TemplateGenerator(
-    graph_name="my_graph",
-    satellite_collections=["metadata"],
-    core_collections=["users", "products"]
+ graph_name="my_graph",
+ satellite_collections=["metadata"],
+ core_collections=["users", "products"]
 )
 
 # Pass to workflow
 orchestrator = WorkflowOrchestrator(
-    graph_name="my_graph",
-    template_generator=generator
+ graph_name="my_graph",
+ template_generator=generator
 )
 ```
 
@@ -326,42 +326,42 @@ orchestrator = WorkflowOrchestrator(
 ### In Your Premion Project
 
 1. **Specify collection roles** in your workflow setup:
-   ```python
-   from graph_analytics_ai.ai.templates import TemplateGenerator
-   
-   generator = TemplateGenerator(
-       graph_name="premion_media_graph",
-       satellite_collections=["audience_metadata", "device_specs", "geo_lookups"],
-       core_collections=["audiences", "campaigns", "devices"]
-   )
-   ```
+ ```python
+ from graph_analytics_ai.ai.templates import TemplateGenerator
+ 
+ generator = TemplateGenerator(
+ graph_name="premion_media_graph",
+ satellite_collections=["audience_metadata", "device_specs", "geo_lookups"],
+ core_collections=["audiences", "campaigns", "devices"]
+ )
+ ```
 
 2. **Review template selections** before execution:
-   ```python
-   templates = generator.generate_templates(use_cases, schema)
-   
-   for template in templates:
-       print(f"\n{template.name}")
-       print(f"  Algorithm: {template.algorithm.algorithm.value}")
-       print(f"  Collections: {template.config.vertex_collections}")
-       print(f"  Reasoning: {template.metadata.get('collection_selection_reasoning')}")
-       
-       excluded = template.metadata.get('excluded_collections', {})
-       if excluded:
-           print(f"  Excluded: {excluded['vertices']}")
-   ```
+ ```python
+ templates = generator.generate_templates(use_cases, schema)
+ 
+ for template in templates:
+ print(f"\n{template.name}")
+ print(f" Algorithm: {template.algorithm.algorithm.value}")
+ print(f" Collections: {template.config.vertex_collections}")
+ print(f" Reasoning: {template.metadata.get('collection_selection_reasoning')}")
+ 
+ excluded = template.metadata.get('excluded_collections', {})
+ if excluded:
+ print(f" Excluded: {excluded['vertices']}")
+ ```
 
 3. **Compare WCC results**:
-   - Run WCC with and without satellite exclusion
-   - Verify that excluding satellites produces more meaningful components
+ - Run WCC with and without satellite exclusion
+ - Verify that excluding satellites produces more meaningful components
 
 4. **Verify PageRank results**:
-   - Confirm that PageRank uses the full graph
-   - Check that important entities connected to metadata are properly ranked
+ - Confirm that PageRank uses the full graph
+ - Check that important entities connected to metadata are properly ranked
 
 ## Backwards Compatibility
 
-✅ **Fully backwards compatible**
+ **Fully backwards compatible**
 
 - If you don't specify `satellite_collections` or `core_collections`, the system uses auto-classification
 - Existing code works without changes

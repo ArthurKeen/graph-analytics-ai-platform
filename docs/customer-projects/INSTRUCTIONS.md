@@ -4,13 +4,13 @@
 
 This guide explains how to use the latest features in your project that imports the `graph-analytics-ai-platform` library.
 
-**New Features** ✨:
+**New Features** :
 - **Interactive HTML Reports with Plotly Charts** - Beautiful visualizations for your analysis results
 - **Collection Selection** - Intelligent selection of graph collections for different algorithms
 
 ---
 
-## 🎨 NEW: Interactive HTML Reports with Charts
+## NEW: Interactive HTML Reports with Charts
 
 ### What's New
 
@@ -34,8 +34,8 @@ from graph_analytics_ai.ai.reporting import ReportGenerator, HTMLReportFormatter
 # Generate report with interactive charts (enabled by default)
 generator = ReportGenerator(enable_charts=True)
 report = generator.generate_report(execution_result, context={
-    "use_case": {"title": "Your Analysis Name"},
-    "requirements": {"domain": "your domain"}
+ "use_case": {"title": "Your Analysis Name"},
+ "requirements": {"domain": "your domain"}
 })
 
 # Format as HTML
@@ -45,9 +45,9 @@ html_content = formatter.format_report(report, charts=charts)
 
 # Save
 with open('report.html', 'w') as f:
-    f.write(html_content)
+ f.write(html_content)
 
-print(f"✅ Generated report with {len(charts)} interactive charts!")
+print(f" Generated report with {len(charts)} interactive charts!")
 ```
 
 ### What Charts Are Generated
@@ -68,8 +68,8 @@ For Premion household identity resolution (WCC):
 # Your existing workflow automatically generates charts
 generator = ReportGenerator(enable_charts=True)
 report = generator.generate_report(wcc_execution_result, context={
-    "use_case": {"title": "Household Identity Resolution"},
-    "requirements": {"domain": "advertising technology"}
+ "use_case": {"title": "Household Identity Resolution"},
+ "requirements": {"domain": "advertising technology"}
 })
 
 # Get charts
@@ -78,7 +78,7 @@ charts = report.metadata.get('charts', {})
 html = formatter.format_report(report, charts=charts)
 
 with open('household_analysis_report.html', 'w') as f:
-    f.write(html)
+ f.write(html)
 
 # Result: 3 interactive charts showing:
 # 1. Top 10 largest household clusters (bar chart)
@@ -88,12 +88,12 @@ with open('household_analysis_report.html', 'w') as f:
 
 ### Chart Features
 
-✅ **Interactive** - Hover for exact values, zoom to explore, pan to navigate  
-✅ **Professional** - Modern gradient design, color-coded  
-✅ **Exportable** - Download charts as PNG for presentations  
-✅ **Responsive** - Works on desktop, tablet, mobile  
-✅ **Print-Friendly** - Formatted for PDF export  
-✅ **Offline** - No internet required after generation  
+ **Interactive** - Hover for exact values, zoom to explore, pan to navigate 
+ **Professional** - Modern gradient design, color-coded 
+ **Exportable** - Download charts as PNG for presentations 
+ **Responsive** - Works on desktop, tablet, mobile 
+ **Print-Friendly** - Formatted for PDF export 
+ **Offline** - No internet required after generation 
 
 ### Disabling Charts
 
@@ -112,7 +112,7 @@ generator = ReportGenerator(enable_charts=False)
 
 ---
 
-## 📊 Collection Selection Feature
+## Collection Selection Feature
 
 This guide also explains how to use the **Collection Selection** feature for intelligent collection filtering.
 
@@ -142,24 +142,24 @@ from graph_analytics_ai.ai.templates import TemplateGenerator
 
 # Initialize with your collection roles
 generator = TemplateGenerator(
-    graph_name="premion_media_graph",
-    satellite_collections=[
-        # Reference data, lookups, metadata
-        "audience_metadata",
-        "device_specs",
-        "geo_lookups",
-        "rate_cards",
-        "configuration_settings"
-    ],
-    core_collections=[
-        # Primary business entities
-        "audiences",
-        "campaigns",
-        "creatives",
-        "devices",
-        "publishers",
-        "placements"
-    ]
+ graph_name="premion_media_graph",
+ satellite_collections=[
+ # Reference data, lookups, metadata
+ "audience_metadata",
+ "device_specs",
+ "geo_lookups",
+ "rate_cards",
+ "configuration_settings"
+ ],
+ core_collections=[
+ # Primary business entities
+ "audiences",
+ "campaigns",
+ "creatives",
+ "devices",
+ "publishers",
+ "placements"
+ ]
 )
 ```
 
@@ -255,9 +255,9 @@ from graph_analytics_ai.ai.templates import TemplateGenerator
 
 # 1. Define collection roles
 generator = TemplateGenerator(
-    graph_name="your_graph",
-    satellite_collections=["metadata", "configs"],
-    core_collections=["entities", "relationships"]
+ graph_name="your_graph",
+ satellite_collections=["metadata", "configs"],
+ core_collections=["entities", "relationships"]
 )
 
 # 2. Generate templates
@@ -265,19 +265,19 @@ templates = generator.generate_templates(use_cases, schema)
 
 # 3. Review selections before execution
 for template in templates:
-    algo = template.algorithm.algorithm.value
-    colls = template.config.vertex_collections
-    reasoning = template.metadata.get('collection_selection_reasoning', 'N/A')
-    
-    print(f"\n{template.name}")
-    print(f"  Algorithm: {algo}")
-    print(f"  Collections: {colls}")
-    print(f"  Reasoning: {reasoning}")
-    
-    # Check for exclusions
-    excluded = template.metadata.get('excluded_collections', {})
-    if excluded.get('vertices'):
-        print(f"  Excluded: {excluded['vertices']}")
+ algo = template.algorithm.algorithm.value
+ colls = template.config.vertex_collections
+ reasoning = template.metadata.get('collection_selection_reasoning', 'N/A')
+ 
+ print(f"\n{template.name}")
+ print(f" Algorithm: {algo}")
+ print(f" Collections: {colls}")
+ print(f" Reasoning: {reasoning}")
+ 
+ # Check for exclusions
+ excluded = template.metadata.get('excluded_collections', {})
+ if excluded.get('vertices'):
+ print(f" Excluded: {excluded['vertices']}")
 ```
 
 ### Pattern 2: Testing Selections First
@@ -287,10 +287,10 @@ from graph_analytics_ai.ai.templates import select_collections_for_algorithm, Al
 
 # Before running expensive analyses, test what will be selected
 wcc_selection = select_collections_for_algorithm(
-    algorithm=AlgorithmType.WCC,
-    schema=your_schema,
-    satellite_collections=["audience_metadata", "device_specs"],
-    core_collections=["audiences", "campaigns"]
+ algorithm=AlgorithmType.WCC,
+ schema=your_schema,
+ satellite_collections=["audience_metadata", "device_specs"],
+ core_collections=["audiences", "campaigns"]
 )
 
 print(f"WCC will use: {wcc_selection.vertex_collections}")
@@ -311,16 +311,16 @@ from graph_analytics_ai.ai.templates import TemplateGenerator
 
 # Create configured generator
 generator = TemplateGenerator(
-    graph_name="your_graph",
-    satellite_collections=["metadata"],
-    core_collections=["entities"]
+ graph_name="your_graph",
+ satellite_collections=["metadata"],
+ core_collections=["entities"]
 )
 
 # Pass to workflow if it accepts a template_generator parameter
 # (Check WorkflowOrchestrator API - this may vary)
 orchestrator = WorkflowOrchestrator(
-    graph_name="your_graph",
-    template_generator=generator  # If supported
+ graph_name="your_graph",
+ template_generator=generator # If supported
 )
 
 # Or generate templates separately and pass them in
@@ -362,11 +362,11 @@ templates = generator.generate_templates(use_cases, schema)
 
 # Review what was classified
 for template in templates:
-    if template.algorithm.algorithm == AlgorithmType.WCC:
-        print(f"Auto-classified as core: {template.config.vertex_collections}")
-        excluded = template.metadata.get('excluded_collections', {})
-        if excluded.get('vertices'):
-            print(f"Auto-classified as satellite: {excluded['vertices']}")
+ if template.algorithm.algorithm == AlgorithmType.WCC:
+ print(f"Auto-classified as core: {template.config.vertex_collections}")
+ excluded = template.metadata.get('excluded_collections', {})
+ if excluded.get('vertices'):
+ print(f"Auto-classified as satellite: {excluded['vertices']}")
 
 # Then explicitly configure based on what you observed
 ```
@@ -382,8 +382,8 @@ Compare WCC results with and without satellite exclusion:
 ```python
 # Generate templates with satellite exclusion
 generator_with_exclusion = TemplateGenerator(
-    graph_name="your_graph",
-    satellite_collections=["metadata", "configs"]
+ graph_name="your_graph",
+ satellite_collections=["metadata", "configs"]
 )
 templates_excluded = generator_with_exclusion.generate_templates(use_cases, schema)
 
@@ -405,8 +405,8 @@ pr_template = [t for t in templates_excluded if t.algorithm.algorithm == Algorit
 all_collections = list(schema.vertex_collections.keys())
 
 assert set(pr_template.config.vertex_collections) == set(all_collections), \
-    "PageRank should include all collections"
-print("✓ PageRank using full graph")
+ "PageRank should include all collections"
+print(" PageRank using full graph")
 ```
 
 ### 3. Review Selection Reasoning
@@ -414,15 +414,15 @@ print("✓ PageRank using full graph")
 ```python
 # Check that reasoning makes sense
 for template in templates:
-    reasoning = template.metadata.get('collection_selection_reasoning', '')
-    print(f"\n{template.algorithm.algorithm.value}:")
-    print(f"  {reasoning}")
-    
-    # Validate reasoning matches algorithm type
-    if template.algorithm.algorithm in [AlgorithmType.WCC, AlgorithmType.SCC]:
-        assert "core graph" in reasoning.lower() or "exclude" in reasoning.lower()
-    elif template.algorithm.algorithm in [AlgorithmType.PAGERANK, AlgorithmType.BETWEENNESS_CENTRALITY]:
-        assert "complete graph" in reasoning.lower() or "full graph" in reasoning.lower()
+ reasoning = template.metadata.get('collection_selection_reasoning', '')
+ print(f"\n{template.algorithm.algorithm.value}:")
+ print(f" {reasoning}")
+ 
+ # Validate reasoning matches algorithm type
+ if template.algorithm.algorithm in [AlgorithmType.WCC, AlgorithmType.SCC]:
+ assert "core graph" in reasoning.lower() or "exclude" in reasoning.lower()
+ elif template.algorithm.algorithm in [AlgorithmType.PAGERANK, AlgorithmType.BETWEENNESS_CENTRALITY]:
+ assert "complete graph" in reasoning.lower() or "full graph" in reasoning.lower()
 ```
 
 ---
@@ -439,8 +439,8 @@ for template in templates:
 ```python
 # Explicitly exclude satellites
 generator = TemplateGenerator(
-    graph_name="your_graph",
-    satellite_collections=["metadata", "configs", "lookups"]  # Add all satellites
+ graph_name="your_graph",
+ satellite_collections=["metadata", "configs", "lookups"] # Add all satellites
 )
 ```
 
@@ -454,9 +454,9 @@ generator = TemplateGenerator(
 ```python
 # Verify PageRank is using full graph
 pr_selection = select_collections_for_algorithm(
-    AlgorithmType.PAGERANK,
-    schema,
-    satellite_collections=["metadata"]
+ AlgorithmType.PAGERANK,
+ schema,
+ satellite_collections=["metadata"]
 )
 print(f"PageRank collections: {pr_selection.vertex_collections}")
 # Should be comprehensive
@@ -470,9 +470,9 @@ print(f"PageRank collections: {pr_selection.vertex_collections}")
 ```python
 # Override with explicit core_collections
 generator = TemplateGenerator(
-    graph_name="your_graph",
-    core_collections=["important_collection"],  # Force as core
-    satellite_collections=["reference_data"]
+ graph_name="your_graph",
+ core_collections=["important_collection"], # Force as core
+ satellite_collections=["reference_data"]
 )
 ```
 
@@ -487,9 +487,9 @@ templates = generator.generate_templates(use_cases, schema)
 # Check what was selected
 wcc_templates = [t for t in templates if t.algorithm.algorithm == AlgorithmType.WCC]
 for template in wcc_templates:
-    print(f"Used: {template.config.vertex_collections}")
-    excluded = template.metadata.get('excluded_collections', {})
-    print(f"Excluded: {excluded.get('vertices', [])}")
+ print(f"Used: {template.config.vertex_collections}")
+ excluded = template.metadata.get('excluded_collections', {})
+ print(f"Excluded: {excluded.get('vertices', [])}")
 
 # Use this to inform your explicit configuration
 ```
@@ -513,20 +513,20 @@ use_cases = use_case_generator.generate(requirements, schema)
 
 # 3. Create template generator with collection roles
 generator = TemplateGenerator(
-    graph_name="premion_media_graph",
-    satellite_collections=[
-        "audience_metadata",
-        "device_specs",
-        "geo_lookups",
-        "rate_cards"
-    ],
-    core_collections=[
-        "audiences",
-        "campaigns",
-        "creatives",
-        "devices",
-        "publishers"
-    ]
+ graph_name="premion_media_graph",
+ satellite_collections=[
+ "audience_metadata",
+ "device_specs",
+ "geo_lookups",
+ "rate_cards"
+ ],
+ core_collections=[
+ "audiences",
+ "campaigns",
+ "creatives",
+ "devices",
+ "publishers"
+ ]
 )
 
 # 4. Generate templates (collection selection happens here)
@@ -535,22 +535,22 @@ templates = generator.generate_templates(use_cases, schema)
 # 5. Review selections
 print("\n=== Collection Selections ===")
 for template in templates:
-    print(f"\n{template.name}")
-    print(f"  Algorithm: {template.algorithm.algorithm.value}")
-    print(f"  Vertex Collections: {template.config.vertex_collections}")
-    
-    reasoning = template.metadata.get('collection_selection_reasoning', 'N/A')
-    print(f"  Reasoning: {reasoning}")
-    
-    excluded = template.metadata.get('excluded_collections', {})
-    if excluded.get('vertices'):
-        print(f"  Excluded Vertices: {excluded['vertices']}")
-    if excluded.get('edges'):
-        print(f"  Excluded Edges: {excluded['edges']}")
-    
-    size = template.metadata.get('estimated_graph_size', {})
-    if size:
-        print(f"  Graph Size: {size.get('vertices', 0)} vertices, {size.get('edges', 0)} edges")
+ print(f"\n{template.name}")
+ print(f" Algorithm: {template.algorithm.algorithm.value}")
+ print(f" Vertex Collections: {template.config.vertex_collections}")
+ 
+ reasoning = template.metadata.get('collection_selection_reasoning', 'N/A')
+ print(f" Reasoning: {reasoning}")
+ 
+ excluded = template.metadata.get('excluded_collections', {})
+ if excluded.get('vertices'):
+ print(f" Excluded Vertices: {excluded['vertices']}")
+ if excluded.get('edges'):
+ print(f" Excluded Edges: {excluded['edges']}")
+ 
+ size = template.metadata.get('estimated_graph_size', {})
+ if size:
+ print(f" Graph Size: {size.get('vertices', 0)} vertices, {size.get('edges', 0)} edges")
 
 # 6. Execute templates
 from graph_analytics_ai.ai.execution import AnalysisExecutor
@@ -559,10 +559,10 @@ executor = AnalysisExecutor(gae_connection)
 results = []
 
 for template in templates:
-    print(f"\nExecuting: {template.name}")
-    result = executor.execute(template)
-    results.append(result)
-    print(f"  Status: {result.status}")
+ print(f"\nExecuting: {template.name}")
+ result = executor.execute(template)
+ results.append(result)
+ print(f" Status: {result.status}")
 
 # 7. Generate reports
 from graph_analytics_ai.ai.reporting import ReportGenerator, HTMLReportFormatter
@@ -572,24 +572,24 @@ report_gen = ReportGenerator(enable_charts=True)
 reports = []
 
 for result in results:
-    report = report_gen.generate_report(result, context={
-        "use_case": {"title": result.job.template_name},
-        "requirements": {"domain": "your domain"}
-    })
-    reports.append(report)
-    
-    # Save as HTML with charts
-    formatter = HTMLReportFormatter()
-    charts = report.metadata.get('charts', {})
-    html = formatter.format_report(report, charts=charts)
-    
-    filename = f"{result.job.template_name.replace(' ', '_')}_report.html"
-    with open(filename, 'w') as f:
-        f.write(html)
-    
-    print(f"  Saved: {filename} ({len(charts)} charts)")
+ report = report_gen.generate_report(result, context={
+ "use_case": {"title": result.job.template_name},
+ "requirements": {"domain": "your domain"}
+ })
+ reports.append(report)
+ 
+ # Save as HTML with charts
+ formatter = HTMLReportFormatter()
+ charts = report.metadata.get('charts', {})
+ html = formatter.format_report(report, charts=charts)
+ 
+ filename = f"{result.job.template_name.replace(' ', '_')}_report.html"
+ with open(filename, 'w') as f:
+ f.write(html)
+ 
+ print(f" Saved: {filename} ({len(charts)} charts)")
 
-print(f"\n✓ Generated {len(reports)} HTML reports with interactive charts")
+print(f"\n Generated {len(reports)} HTML reports with interactive charts")
 ```
 
 ---
@@ -600,11 +600,11 @@ print(f"\n✓ Generated {len(reports)} HTML reports with interactive charts")
 
 ```python
 TemplateGenerator(
-    graph_name: str,
-    default_engine_size: EngineSize = EngineSize.SMALL,
-    auto_optimize: bool = True,
-    satellite_collections: Optional[List[str]] = None,  # NEW
-    core_collections: Optional[List[str]] = None        # NEW
+ graph_name: str,
+ default_engine_size: EngineSize = EngineSize.SMALL,
+ auto_optimize: bool = True,
+ satellite_collections: Optional[List[str]] = None, # NEW
+ core_collections: Optional[List[str]] = None # NEW
 )
 ```
 
@@ -618,10 +618,10 @@ TemplateGenerator(
 from graph_analytics_ai.ai.templates import select_collections_for_algorithm
 
 selection = select_collections_for_algorithm(
-    algorithm: AlgorithmType,
-    schema: GraphSchema,
-    satellite_collections: Optional[List[str]] = None,
-    core_collections: Optional[List[str]] = None
+ algorithm: AlgorithmType,
+ schema: GraphSchema,
+ satellite_collections: Optional[List[str]] = None,
+ core_collections: Optional[List[str]] = None
 ) -> CollectionSelection
 ```
 

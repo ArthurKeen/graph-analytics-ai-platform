@@ -1,11 +1,11 @@
 # Workflow Bypass Audit
 
-**Date:** December 18, 2025  
+**Date:** December 18, 2025 
 **Issue:** Manual scripts bypassing the agentic workflow and available APIs
 
 ---
 
-## ✅ PROPER AGENTIC WORKFLOW APIs
+## PROPER AGENTIC WORKFLOW APIs
 
 The project provides two approved workflow entry points:
 
@@ -25,7 +25,7 @@ The project provides two approved workflow entry points:
 
 ---
 
-## ❌ BYPASS SCRIPTS IDENTIFIED
+## BYPASS SCRIPTS IDENTIFIED
 
 ### Critical Bypasses (Direct GAE/DB Access)
 
@@ -103,17 +103,17 @@ The project provides two approved workflow entry points:
 - **Contents:** Manually created JSON templates + execution script
 - **Bypass:** Entire directory bypasses `TemplateAgent` LLM generation
 - **Files:**
-  - `household_identity_resolution.json`
-  - `commercial_ip_filtering.json`
-  - `cross_device_attribution.json`
-  - `audience_propagation.json`
-  - `inventory_influence.json`
-  - `execute_templates.py`
-  - `manifest.json`
+ - `household_identity_resolution.json`
+ - `commercial_ip_filtering.json`
+ - `cross_device_attribution.json`
+ - `audience_propagation.json`
+ - `inventory_influence.json`
+ - `execute_templates.py`
+ - `manifest.json`
 
 ---
 
-## 📊 BYPASS SUMMARY
+## BYPASS SUMMARY
 
 | Category | Count | Action |
 |----------|-------|--------|
@@ -124,22 +124,22 @@ The project provides two approved workflow entry points:
 
 ---
 
-## ✅ APPROVED SCRIPTS (Keep These)
+## APPROVED SCRIPTS (Keep These)
 
 ### Production Scripts
-- ✅ `run_full_agentic_workflow.py` - Uses `AgenticWorkflowRunner` (CORRECT)
-- ✅ `run_agentic_workflow.py` - Uses `WorkflowOrchestrator` (CORRECT)
-- ✅ `run_premion_workflow.py` - Uses `WorkflowOrchestrator` (CORRECT)
-- ✅ `view_agentic_results.py` - Results viewer (utility)
+- `run_full_agentic_workflow.py` - Uses `AgenticWorkflowRunner` (CORRECT)
+- `run_agentic_workflow.py` - Uses `WorkflowOrchestrator` (CORRECT)
+- `run_premion_workflow.py` - Uses `WorkflowOrchestrator` (CORRECT)
+- `view_agentic_results.py` - Results viewer (utility)
 
 ### Example Scripts
-- ✅ `examples/agentic_workflow_example.py` - Demonstrates proper API usage
-- ✅ `examples/agentic_workflow_demo.py` - Educational demo
-- ✅ `examples/validate_workflows.py` - Compares both workflows
+- `examples/agentic_workflow_example.py` - Demonstrates proper API usage
+- `examples/agentic_workflow_demo.py` - Educational demo
+- `examples/validate_workflows.py` - Compares both workflows
 
 ---
 
-## 🔧 RECOMMENDED ACTIONS
+## RECOMMENDED ACTIONS
 
 ### 1. Delete All Bypass Scripts
 ```bash
@@ -181,7 +181,7 @@ Remove references to manual scripts in:
 
 ---
 
-## 💡 CORRECT USAGE PATTERNS
+## CORRECT USAGE PATTERNS
 
 ### For Premion Use Case (CORRECT)
 
@@ -190,45 +190,45 @@ Remove references to manual scripts in:
 from graph_analytics_ai.ai.agents.runner import AgenticWorkflowRunner
 from graph_analytics_ai.db_connection import get_db_connection
 
-# ✅ CORRECT: Use AgenticWorkflowRunner
+# CORRECT: Use AgenticWorkflowRunner
 runner = AgenticWorkflowRunner(
-    db_connection=get_db_connection(),
-    graph_name="PremionIdentityGraph"
+ db_connection=get_db_connection(),
+ graph_name="PremionIdentityGraph"
 )
 
 # Run complete workflow - agents handle everything
 final_state = runner.run(
-    input_documents=[{
-        "path": "consumer_media_use_cases.md",
-        "content": doc_content,
-        "type": "text/markdown"
-    }],
-    max_executions=3
+ input_documents=[{
+ "path": "consumer_media_use_cases.md",
+ "content": doc_content,
+ "type": "text/markdown"
+ }],
+ max_executions=3
 )
 
 # Access results
 for report in final_state.reports:
-    print(report.title)
+ print(report.title)
 ```
 
 ### What NOT To Do (INCORRECT)
 
 ```python
-# ❌ INCORRECT: Direct GAE access
+# INCORRECT: Direct GAE access
 from graph_analytics_ai.gae_connection import get_gae_connection
 gae = get_gae_connection()
-gae.run_wcc(graph_id)  # Bypasses workflow!
+gae.run_wcc(graph_id) # Bypasses workflow!
 
-# ❌ INCORRECT: Manual template generation
-templates = [{"algorithm": "wcc", ...}]  # Bypasses LLM!
+# INCORRECT: Manual template generation
+templates = [{"algorithm": "wcc", ...}] # Bypasses LLM!
 
-# ❌ INCORRECT: Direct database queries for results
-db.aql.execute("FOR doc IN results...")  # Bypasses reporting!
+# INCORRECT: Direct database queries for results
+db.aql.execute("FOR doc IN results...") # Bypasses reporting!
 ```
 
 ---
 
-## 🎯 CONCLUSION
+## CONCLUSION
 
 **Total files to remove:** 14 (13 scripts + 1 directory)
 

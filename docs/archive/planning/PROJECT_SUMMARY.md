@@ -7,7 +7,7 @@ This project extracts common Graph Analytics Engine (GAE) orchestration function
 ## Source Projects
 
 1. **dnb_er** (`~/code/dnb_er`) - AMP deployment
-2. **matpriskollen** (`~/code/matpriskollen`) - AMP deployment  
+2. **matpriskollen** (`~/code/matpriskollen`) - AMP deployment 
 3. **psi-graph-analytics** (`~/code/psi-graph-analytics`) - Self-managed deployment
 
 ## What Was Created
@@ -18,15 +18,15 @@ This project extracts common Graph Analytics Engine (GAE) orchestration function
 - **`config.py`** - Configuration management supporting both AMP and self-managed
 - **`db_connection.py`** - Unified ArangoDB connection helper
 - **`gae_connection.py`** - GAE connection classes:
-  - `GAEManager` - For AMP deployments
-  - `GenAIGAEConnection` - For self-managed deployments
-  - `GAEConnectionBase` - Abstract base class
-  - `get_gae_connection()` - Factory function
+ - `GAEManager` - For AMP deployments
+ - `GenAIGAEConnection` - For self-managed deployments
+ - `GAEConnectionBase` - Abstract base class
+ - `get_gae_connection()` - Factory function
 - **`gae_orchestrator.py`** - Complete workflow orchestration:
-  - `GAEOrchestrator` - Main orchestrator class
-  - `AnalysisConfig` - Analysis configuration dataclass
-  - `AnalysisResult` - Analysis result dataclass
-  - `AnalysisStatus` - Status enum
+ - `GAEOrchestrator` - Main orchestrator class
+ - `AnalysisConfig` - Analysis configuration dataclass
+ - `AnalysisResult` - Analysis result dataclass
+ - `AnalysisStatus` - Status enum
 
 ### Documentation
 
@@ -115,10 +115,10 @@ The library uses environment variables via `.env` file:
 from graph_analytics_ai import GAEOrchestrator, AnalysisConfig
 
 config = AnalysisConfig(
-    name="my_analysis",
-    vertex_collections=["vertices"],
-    edge_collections=["edges"],
-    algorithm="pagerank"
+ name="my_analysis",
+ vertex_collections=["vertices"],
+ edge_collections=["edges"],
+ algorithm="pagerank"
 )
 
 orchestrator = GAEOrchestrator()
@@ -145,23 +145,23 @@ Each source project has detailed migration instructions in `MIGRATION_GUIDE.md`:
 
 ```
 graph-analytics-ai/
-├── graph_analytics_ai/          # Main library package
-│   ├── __init__.py
-│   ├── config.py
-│   ├── db_connection.py
-│   ├── gae_connection.py
-│   └── gae_orchestrator.py
-├── examples/                     # Usage examples
-│   └── basic_usage.py
-├── .gitignore                    # Git ignore rules
-├── CONTRIBUTING.md               # Contribution guidelines
-├── LICENSE                       # MIT License
-├── MIGRATION_GUIDE.md            # Migration instructions
-├── PRD.md                        # Product Requirements Document
-├── PROJECT_SUMMARY.md            # This file
-├── README.md                     # Main documentation
-├── requirements.txt              # Python dependencies
-└── setup.py                     # Package setup
+ graph_analytics_ai/ # Main library package
+ __init__.py
+ config.py
+ db_connection.py
+ gae_connection.py
+ gae_orchestrator.py
+ examples/ # Usage examples
+ basic_usage.py
+ .gitignore # Git ignore rules
+ CONTRIBUTING.md # Contribution guidelines
+ LICENSE # MIT License
+ MIGRATION_GUIDE.md # Migration instructions
+ PRD.md # Product Requirements Document
+ PROJECT_SUMMARY.md # This file
+ README.md # Main documentation
+ requirements.txt # Python dependencies
+ setup.py # Package setup
 ```
 
 ## Dependencies

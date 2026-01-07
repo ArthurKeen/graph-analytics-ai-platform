@@ -10,9 +10,9 @@ Successfully implemented full support for the Betweenness Centrality algorithm i
 
 **Added Abstract Method to Base Class:**
 - Added `run_betweenness()` abstract method to `GAEConnectionBase` with signature:
-  ```python
-  def run_betweenness(self, graph_id: str, maximum_supersteps: int = DEFAULT_MAX_SUPERSTEPS) -> Dict[str, Any]
-  ```
+ ```python
+ def run_betweenness(self, graph_id: str, maximum_supersteps: int = DEFAULT_MAX_SUPERSTEPS) -> Dict[str, Any]
+ ```
 
 **Implemented in GAEManager (AMP):**
 - Added full implementation of `run_betweenness()` method
@@ -34,11 +34,11 @@ Successfully implemented full support for the Betweenness Centrality algorithm i
 
 **Updated Default Parameters:**
 - Added default parameters for Betweenness Centrality:
-  ```python
-  AlgorithmType.BETWEENNESS_CENTRALITY: {
-      "maximum_supersteps": 100
-  }
-  ```
+ ```python
+ AlgorithmType.BETWEENNESS_CENTRALITY: {
+ "maximum_supersteps": 100
+ }
+ ```
 
 ### 3. Orchestrator (`graph_analytics_ai/gae_orchestrator.py`)
 
@@ -91,8 +91,8 @@ The library now supports 5 working GAE algorithms:
 Betweenness Centrality uses the GAE API endpoint:
 - **Endpoint**: `POST /v1/betweenness`
 - **Parameters**:
-  - `graph_id` (required): The loaded graph ID
-  - `maximum_supersteps` (optional): Maximum iterations (default: 100)
+ - `graph_id` (required): The loaded graph ID
+ - `maximum_supersteps` (optional): Maximum iterations (default: 100)
 
 ## Usage Example
 
@@ -105,25 +105,25 @@ orchestrator = GAEOrchestrator()
 
 # Run betweenness centrality analysis
 result = orchestrator.run_analysis(
-    database="my_database",
-    vertex_collections=["users"],
-    edge_collections=["follows"],
-    algorithm=AlgorithmType.BETWEENNESS_CENTRALITY,
-    algorithm_params={"maximum_supersteps": 100}
+ database="my_database",
+ vertex_collections=["users"],
+ edge_collections=["follows"],
+ algorithm=AlgorithmType.BETWEENNESS_CENTRALITY,
+ algorithm_params={"maximum_supersteps": 100}
 )
 ```
 
 ## Implementation Status
 
-✅ Abstract method defined in base class  
-✅ Implementation in GAEManager (AMP)  
-✅ Implementation in GenAIGAEConnection (Self-managed)  
-✅ Algorithm enum updated  
-✅ Default parameters added  
-✅ Orchestrator integration  
-✅ Parameter validation  
-✅ Unit tests  
-✅ All tests passing  
+ Abstract method defined in base class 
+ Implementation in GAEManager (AMP) 
+ Implementation in GenAIGAEConnection (Self-managed) 
+ Algorithm enum updated 
+ Default parameters added 
+ Orchestrator integration 
+ Parameter validation 
+ Unit tests 
+ All tests passing 
 
 ## Next Steps (Optional)
 
@@ -140,7 +140,7 @@ If additional GAE algorithms need to be added in the future, follow this same pa
 
 ---
 
-**Date**: December 18, 2025  
-**Status**: ✅ Complete  
+**Date**: December 18, 2025 
+**Status**: Complete 
 **Tests**: All passing (357/357)
 

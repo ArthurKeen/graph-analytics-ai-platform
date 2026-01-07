@@ -34,19 +34,19 @@ result = orchestrator.run_analysis(config)
 
 # Create execution summary
 summary = ExecutionSummary(
-    workflow_id="my_workflow_001",
-    started_at=result.start_time,
-    completed_at=result.end_time,
-    templates_executed=1,
-    templates_succeeded=1 if result.status == "completed" else 0
+ workflow_id="my_workflow_001",
+ started_at=result.start_time,
+ completed_at=result.end_time,
+ templates_executed=1,
+ templates_succeeded=1 if result.status == "completed" else 0
 )
 
 # Add timing breakdown
 summary.timing_breakdown = TimingBreakdown(
-    graph_load_seconds=result.load_time_seconds,
-    algorithm_execution_seconds=result.execution_time_seconds,
-    results_store_seconds=result.store_time_seconds,
-    total_seconds=result.duration_seconds
+ graph_load_seconds=result.load_time_seconds,
+ algorithm_execution_seconds=result.execution_time_seconds,
+ results_store_seconds=result.store_time_seconds,
+ total_seconds=result.duration_seconds
 )
 
 # Generate report
@@ -65,25 +65,25 @@ from graph_analytics_ai.ai.reporting import ReportConfig, ReportSection
 
 # Minimal executive summary only
 minimal_config = ReportConfig(
-    include_sections=[ReportSection.EXECUTIVE_SUMMARY],
-    include_costs=False
+ include_sections=[ReportSection.EXECUTIVE_SUMMARY],
+ include_costs=False
 )
 
 # Full detailed report
 detailed_config = ReportConfig(
-    include_all_sections=True,
-    include_detailed_timing=True,
-    include_error_details=True,
-    include_raw_metrics=True
+ include_all_sections=True,
+ include_detailed_timing=True,
+ include_error_details=True,
+ include_raw_metrics=True
 )
 
 # Cost-focused report for stakeholders
 cost_config = ReportConfig(
-    include_sections=[
-        ReportSection.EXECUTIVE_SUMMARY,
-        ReportSection.COST_ANALYSIS
-    ],
-    include_costs=True
+ include_sections=[
+ ReportSection.EXECUTIVE_SUMMARY,
+ ReportSection.COST_ANALYSIS
+ ],
+ include_costs=True
 )
 
 formatter = ExecutionReportFormatter(cost_config)
@@ -93,7 +93,7 @@ report = formatter.format_report(summary)
 ## Report Sections
 
 ### Executive Summary
-- Overall status (✅ success / ⚠️ partial / ❌ failed)
+- Overall status ( success / partial / failed)
 - Success rate percentage
 - Total duration and cost
 - Quick stats (vertices, edges, results processed)
@@ -126,7 +126,7 @@ Example:
 
 ### Algorithm Details
 - Per-algorithm execution table
-- Status indicators (✅/❌)
+- Status indicators (/)
 - Execution time
 - Resource counts
 - Retry attempts
@@ -149,23 +149,23 @@ from datetime import datetime
 
 # Create summary for multiple algorithms
 summary = ExecutionSummary(
-    workflow_id="batch_analysis_001",
-    started_at=datetime.now(),
-    templates_executed=5
+ workflow_id="batch_analysis_001",
+ started_at=datetime.now(),
+ templates_executed=5
 )
 
 # Add stats for each algorithm
 for result in algorithm_results:
-    summary.add_algorithm_stats(AlgorithmExecutionStats(
-        algorithm=result.algorithm,
-        job_id=result.job_id,
-        execution_time_seconds=result.execution_time_seconds,
-        vertex_count=result.vertex_count,
-        edge_count=result.edge_count,
-        results_count=result.documents_updated,
-        status="completed" if result.status == AnalysisStatus.COMPLETED else "failed",
-        error_message=result.error_message if result.status != AnalysisStatus.COMPLETED else None
-    ))
+ summary.add_algorithm_stats(AlgorithmExecutionStats(
+ algorithm=result.algorithm,
+ job_id=result.job_id,
+ execution_time_seconds=result.execution_time_seconds,
+ vertex_count=result.vertex_count,
+ edge_count=result.edge_count,
+ results_count=result.documents_updated,
+ status="completed" if result.status == AnalysisStatus.COMPLETED else "failed",
+ error_message=result.error_message if result.status != AnalysisStatus.COMPLETED else None
+ ))
 
 # Automatically calculates aggregates
 print(f"Success rate: {summary.success_rate}%")
@@ -178,15 +178,15 @@ print(f"Total vertices: {summary.total_vertices_processed:,}")
 ```python
 # Customize decimal places and visibility options
 custom_config = ReportConfig(
-    include_sections=[
-        ReportSection.EXECUTIVE_SUMMARY,
-        ReportSection.TIMING_BREAKDOWN,
-        ReportSection.PERFORMANCE_METRICS
-    ],
-    decimal_places=4,  # More precision
-    show_timestamps=True,
-    show_percentages=True,
-    max_algorithm_details=20  # Show more algorithms
+ include_sections=[
+ ReportSection.EXECUTIVE_SUMMARY,
+ ReportSection.TIMING_BREAKDOWN,
+ ReportSection.PERFORMANCE_METRICS
+ ],
+ decimal_places=4, # More precision
+ show_timestamps=True,
+ show_percentages=True,
+ max_algorithm_details=20 # Show more algorithms
 )
 
 formatter = ExecutionReportFormatter(custom_config)
@@ -200,23 +200,23 @@ from graph_analytics_ai.ai.reporting.config import WorkflowReportConfig
 
 # Configure reporting for workflow
 report_config = WorkflowReportConfig(
-    enable_execution_reporting=True,
-    execution_report=ReportConfig(
-        include_all_sections=True
-    )
+ enable_execution_reporting=True,
+ execution_report=ReportConfig(
+ include_all_sections=True
+ )
 )
 
 # Initialize with report config
 orchestrator = WorkflowOrchestrator(
-    output_dir="./outputs",
-    report_config=report_config
+ output_dir="./outputs",
+ report_config=report_config
 )
 
 # Reports will be generated automatically in outputs/reports/
 result = orchestrator.run_complete_workflow(...)
 
 if result.execution_report_path:
-    print(f"Execution report: {result.execution_report_path}")
+ print(f"Execution report: {result.execution_report_path}")
 ```
 
 ## Metrics Reference
@@ -294,22 +294,22 @@ from graph_analytics_ai.ai.reporting import ExecutionReportFormatter
 
 # Create summary
 summary = ExecutionSummary(
-    workflow_id="pagerank_analysis_001",
-    started_at=datetime(2025, 12, 18, 10, 0, 0),
-    completed_at=datetime(2025, 12, 18, 10, 2, 15),
-    templates_executed=1,
-    templates_succeeded=1
+ workflow_id="pagerank_analysis_001",
+ started_at=datetime(2025, 12, 18, 10, 0, 0),
+ completed_at=datetime(2025, 12, 18, 10, 2, 15),
+ templates_executed=1,
+ templates_succeeded=1
 )
 
 # Add algorithm stats
 summary.add_algorithm_stats(AlgorithmExecutionStats(
-    algorithm="pagerank",
-    job_id="job_abc123",
-    execution_time_seconds=125.3,
-    vertex_count=15234,
-    edge_count=45891,
-    results_count=15234,
-    status="completed"
+ algorithm="pagerank",
+ job_id="job_abc123",
+ execution_time_seconds=125.3,
+ vertex_count=15234,
+ edge_count=45891,
+ results_count=15234,
+ status="completed"
 ))
 
 # Generate report
@@ -323,34 +323,34 @@ print(report)
 ```python
 # Multiple algorithms with cost tracking
 summary = ExecutionSummary(
-    workflow_id="batch_analysis_001",
-    started_at=datetime(2025, 12, 18, 10, 0, 0),
-    completed_at=datetime(2025, 12, 18, 10, 15, 30),
-    templates_executed=3,
-    templates_succeeded=3,
-    engine_size="e16",
-    deployment_mode="amp"
+ workflow_id="batch_analysis_001",
+ started_at=datetime(2025, 12, 18, 10, 0, 0),
+ completed_at=datetime(2025, 12, 18, 10, 15, 30),
+ templates_executed=3,
+ templates_succeeded=3,
+ engine_size="e16",
+ deployment_mode="amp"
 )
 
 # Add cost breakdown
 summary.cost_breakdown = CostBreakdown(
-    engine_deployment_cost_usd=0.0050,
-    runtime_cost_usd=0.0823,
-    total_cost_usd=0.0873,
-    runtime_minutes=15.5,
-    engine_size="e16"
+ engine_deployment_cost_usd=0.0050,
+ runtime_cost_usd=0.0823,
+ total_cost_usd=0.0873,
+ runtime_minutes=15.5,
+ engine_size="e16"
 )
 
 # Add multiple algorithm stats
 for algo in ["pagerank", "wcc", "label_propagation"]:
-    summary.add_algorithm_stats(AlgorithmExecutionStats(
-        algorithm=algo,
-        execution_time_seconds=300.0,
-        vertex_count=15234,
-        edge_count=45891,
-        results_count=15234,
-        status="completed"
-    ))
+ summary.add_algorithm_stats(AlgorithmExecutionStats(
+ algorithm=algo,
+ execution_time_seconds=300.0,
+ vertex_count=15234,
+ edge_count=45891,
+ results_count=15234,
+ status="completed"
+ ))
 
 # Generate detailed report
 config = ReportConfig(include_all_sections=True)
@@ -425,7 +425,7 @@ See module docstrings for complete API documentation:
 
 ---
 
-**Version:** 1.0.0  
-**Last Updated:** December 18, 2025  
+**Version:** 1.0.0 
+**Last Updated:** December 18, 2025 
 **Status:** Production Ready
 
