@@ -7,10 +7,30 @@ Provides high-level interface with monitoring and result collection.
 
 from datetime import datetime
 from typing import List, Optional, Dict, Any
+import logging
 
 from ...gae_orchestrator import GAEOrchestrator, AnalysisConfig
 from ..templates.models import AnalysisTemplate
 from .models import AnalysisJob, ExecutionResult, ExecutionStatus, ExecutionConfig
+
+# Optional catalog imports - catalog is optional dependency
+try:
+    from ...catalog import AnalysisCatalog
+    from ...catalog.models import (
+        AnalysisExecution,
+        GraphConfig,
+        PerformanceMetrics,
+        ResultSample,
+        ExecutionStatus as CatalogExecutionStatus,
+        generate_execution_id,
+        current_timestamp,
+    )
+
+    CATALOG_AVAILABLE = True
+except ImportError:
+    CATALOG_AVAILABLE = False
+
+logger = logging.getLogger(__name__)
 
 
 class AnalysisExecutor:
@@ -45,6 +65,10 @@ class AnalysisExecutor:
         self,
         config: Optional[ExecutionConfig] = None,
         orchestrator: Optional[GAEOrchestrator] = None,
+        catalog: Optional["AnalysisCatalog"] = None,
+        auto_track: bool = True,
+        epoch_id: Optional[str] = None,
+        workflow_mode: str = "traditional",
     ):
         """
         Initialize analysis executor.
@@ -52,13 +76,34 @@ class AnalysisExecutor:
         Args:
             config: Execution configuration (uses defaults if None)
             orchestrator: Existing orchestrator (creates new if None)
+            catalog: Analysis catalog for tracking executions (optional)
+            auto_track: Automatically track executions if catalog provided
+            epoch_id: Default epoch ID for tracked executions
+            workflow_mode: Workflow mode identifier (traditional, agentic, parallel_agentic)
         """
         self.config = config or ExecutionConfig()
         self.orchestrator = orchestrator or GAEOrchestrator()
         self.job_history: List[AnalysisJob] = []
 
+        # Catalog integration (optional)
+        self.catalog = catalog if CATALOG_AVAILABLE else None
+        self.auto_track = auto_track and self.catalog is not None
+        self.epoch_id = epoch_id
+        self.workflow_mode = workflow_mode
+
+        if catalog and not CATALOG_AVAILABLE:
+            logger.warning(
+                "Catalog provided but catalog module not available. "
+                "Install catalog dependencies to enable tracking."
+            )
+
     def execute_template(
-        self, template: AnalysisTemplate, wait: bool = True
+        self,
+        template: AnalysisTemplate,
+        wait: bool = True,
+        epoch_id: Optional[str] = None,
+        requirements_id: Optional[str] = None,
+        use_case_id: Optional[str] = None,
     ) -> ExecutionResult:
         """
         Execute a single analysis template.
@@ -66,6 +111,9 @@ class AnalysisExecutor:
         Args:
             template: Template to execute
             wait: Whether to wait for completion
+            epoch_id: Optional epoch ID (overrides default)
+            requirements_id: Optional requirements ID (for lineage tracking)
+            use_case_id: Optional use case ID (for lineage tracking)
 
         Returns:
             ExecutionResult with job info and results
@@ -123,6 +171,20 @@ class AnalysisExecutor:
                 if self.config.auto_collect_results:
                     results = self._collect_results(job)
                     job.result_count = len(results)
+
+                # Track execution in catalog if enabled
+                if self.auto_track and self.catalog:
+                    try:
+                        self._track_execution(
+                            job,
+                            template,
+                            epoch_id=epoch_id,
+                            requirements_id=requirements_id,
+                            use_case_id=use_case_id,
+                        )
+                    except Exception as e:
+                        # Log but don't fail execution if tracking fails
+                        logger.warning(f"Failed to track execution in catalog: {e}")
 
                 return ExecutionResult(
                     job=job,
@@ -202,9 +264,12 @@ class AnalysisExecutor:
         # DEBUG LOGGING - Track collection and algorithm values
         print("\n[EXECUTOR DEBUG] Template to Config Conversion:")
         print(f"  Template name: {template.name}")
-        print(
-            f"  Template algorithm: {template.algorithm.algorithm.value if hasattr(template.algorithm, 'algorithm') else template.algorithm}"
+        template_algo = (
+            template.algorithm.algorithm.value
+            if hasattr(template.algorithm, "algorithm")
+            else template.algorithm
         )
+        print(f"  Template algorithm: {template_algo}")
         print(f"  Config dict algorithm: {algorithm}")
         print(f"  Vertex collections ({len(vertex_collections)}): {vertex_collections}")
         print(f"  Edge collections ({len(edge_collections)}): {edge_collections}")
@@ -368,6 +433,108 @@ class AnalysisExecutor:
             # Log error but don't fail
             print(f"Warning: Could not collect results: {e}")
             return []
+
+    def _track_execution(
+        self,
+        job: AnalysisJob,
+        template: AnalysisTemplate,
+        epoch_id: Optional[str] = None,
+        requirements_id: Optional[str] = None,
+        use_case_id: Optional[str] = None,
+    ) -> None:
+        """
+        Track execution in catalog.
+
+        Args:
+            job: Completed job
+            template: Executed template
+            epoch_id: Optional epoch ID
+            requirements_id: Optional requirements ID
+            use_case_id: Optional use case ID
+        """
+        if not CATALOG_AVAILABLE or not self.catalog:
+            return
+
+        try:
+            # Extract graph configuration from template
+            graph_config = GraphConfig(
+                graph_name=getattr(template, "graph_name", "unknown"),
+                graph_type=(
+                    "named_graph"
+                    if hasattr(template, "graph_name")
+                    else "explicit_collections"
+                ),
+                vertex_collections=getattr(template, "vertex_collections", []),
+                edge_collections=getattr(template, "edge_collections", []),
+                vertex_count=0,  # Would need to query DB
+                edge_count=0,  # Would need to query DB
+            )
+
+            # Create performance metrics
+            perf_metrics = PerformanceMetrics(
+                execution_time_seconds=job.execution_time_seconds or 0.0,
+                cost_usd=None,  # Could be calculated based on engine size/time
+            )
+
+            # Create result sample if we have results
+            result_sample = None
+            if job.result_count and job.result_count > 0:
+                # Would sample top results here
+                result_sample = ResultSample(
+                    top_results=[],  # Could populate from job results
+                    summary_stats={},
+                    sample_size=0,
+                )
+
+            # Map job status to catalog status
+            status_map = {
+                ExecutionStatus.COMPLETED: CatalogExecutionStatus.COMPLETED,
+                ExecutionStatus.FAILED: CatalogExecutionStatus.FAILED,
+            }
+            catalog_status = status_map.get(
+                job.status, CatalogExecutionStatus.COMPLETED
+            )
+
+            # Create catalog execution record
+            execution = AnalysisExecution(
+                execution_id=generate_execution_id(),
+                timestamp=job.submitted_at or current_timestamp(),
+                algorithm=job.algorithm,
+                algorithm_version="1.0",  # Could be tracked
+                parameters=(
+                    template.algorithm.params
+                    if hasattr(template.algorithm, "params")
+                    else {}
+                ),
+                template_id=getattr(template, "template_id", f"template-{job.job_id}"),
+                template_name=template.name,
+                graph_config=graph_config,
+                results_location=job.result_collection or "unknown",
+                result_count=job.result_count or 0,
+                performance_metrics=perf_metrics,
+                status=catalog_status,
+                requirements_id=requirements_id,
+                use_case_id=use_case_id or template.use_case_id,
+                epoch_id=epoch_id or self.epoch_id,
+                result_sample=result_sample,
+                error_message=job.error_message,
+                workflow_mode=self.workflow_mode,
+                metadata={
+                    "job_id": job.job_id,
+                    "engine_size": job.metadata.get("engine_size", "unknown"),
+                    "estimated_runtime": job.metadata.get("estimated_runtime"),
+                },
+            )
+
+            # Track in catalog
+            execution_id = self.catalog.track_execution(execution)
+            logger.info(
+                f"Tracked execution {execution_id} for template '{template.name}'"
+            )
+
+        except Exception as e:
+            logger.error(f"Error tracking execution: {e}", exc_info=True)
+            raise
 
     def get_execution_summary(self) -> Dict[str, Any]:
         """

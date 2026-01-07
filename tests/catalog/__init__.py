@@ -1,0 +1,1 @@
+"""Test catalog initialization."""
