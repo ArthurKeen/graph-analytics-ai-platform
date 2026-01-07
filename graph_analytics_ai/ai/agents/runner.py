@@ -4,7 +4,6 @@ Agentic workflow runner.
 High-level interface for running the agentic workflow.
 """
 
-import asyncio
 from typing import Dict, List, Optional, Any
 
 from ..llm import create_llm_provider
@@ -49,6 +48,7 @@ class AgenticWorkflowRunner:
         satellite_collections: Optional[List[str]] = None,
         enable_tracing: bool = True,
         enable_debug_mode: bool = False,
+        catalog: Optional[Any] = None,
     ):
         """
         Initialize workflow runner.
@@ -58,9 +58,11 @@ class AgenticWorkflowRunner:
             llm_provider: LLM provider (creates default if None)
             graph_name: Name of graph for templates
             core_collections: Core business entity collections for analysis
-            satellite_collections: Satellite/metadata collections to exclude from connectivity algorithms
+            satellite_collections: Satellite/metadata collections to exclude from
+                connectivity algorithms
             enable_tracing: Whether to enable workflow tracing (default: True)
             enable_debug_mode: Whether to enable verbose debug mode (default: False)
+            catalog: Optional analysis catalog for tracking executions and lineage
         """
         self.db = db_connection or get_db_connection()
         self.llm_provider = llm_provider or create_llm_provider()
@@ -69,6 +71,7 @@ class AgenticWorkflowRunner:
         self.satellite_collections = satellite_collections or []
         self.enable_tracing = enable_tracing
         self.enable_debug_mode = enable_debug_mode
+        self.catalog = catalog
 
         # Initialize tracing
         self.trace_collector = None
@@ -92,7 +95,7 @@ class AgenticWorkflowRunner:
 
         # Initialize orchestrator
         self.orchestrator = OrchestratorAgent(
-            llm_provider=self.llm_provider, agents=self.agents
+            llm_provider=self.llm_provider, agents=self.agents, catalog=self.catalog
         )
         if self.trace_collector:
             self.orchestrator.trace_collector = self.trace_collector
@@ -106,10 +109,14 @@ class AgenticWorkflowRunner:
                 trace_collector=self.trace_collector,
             ),
             AgentNames.REQUIREMENTS_ANALYST: RequirementsAgent(
-                llm_provider=self.llm_provider, trace_collector=self.trace_collector
+                llm_provider=self.llm_provider,
+                trace_collector=self.trace_collector,
+                catalog=self.catalog,
             ),
             AgentNames.USE_CASE_EXPERT: UseCaseAgent(
-                llm_provider=self.llm_provider, trace_collector=self.trace_collector
+                llm_provider=self.llm_provider,
+                trace_collector=self.trace_collector,
+                catalog=self.catalog,
             ),
             AgentNames.TEMPLATE_ENGINEER: TemplateAgent(
                 llm_provider=self.llm_provider,
@@ -117,9 +124,12 @@ class AgenticWorkflowRunner:
                 core_collections=self.core_collections,
                 satellite_collections=self.satellite_collections,
                 trace_collector=self.trace_collector,
+                catalog=self.catalog,
             ),
             AgentNames.EXECUTION_SPECIALIST: ExecutionAgent(
-                llm_provider=self.llm_provider, trace_collector=self.trace_collector
+                llm_provider=self.llm_provider,
+                trace_collector=self.trace_collector,
+                catalog=self.catalog,
             ),
             AgentNames.REPORTING_SPECIALIST: ReportingAgent(
                 llm_provider=self.llm_provider, trace_collector=self.trace_collector

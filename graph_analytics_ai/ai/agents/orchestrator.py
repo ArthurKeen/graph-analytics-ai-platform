@@ -26,10 +26,12 @@ class OrchestratorAgent(Agent):
     Uses a supervisor pattern to delegate work to specialized agents.
     """
 
-    SYSTEM_PROMPT = """You are the Orchestrator Agent - the strategic coordinator of a multi-agent graph analytics workflow.
+    SYSTEM_PROMPT = """You are the Orchestrator Agent - the strategic coordinator
+of a multi-agent graph analytics workflow.
 
 Your role:
-- Coordinate specialized agents (Schema, Requirements, UseCase, Template, Execution, Reporting)
+- Coordinate specialized agents (Schema, Requirements, UseCase, Template,
+  Execution, Reporting)
 - Break down complex goals into agent-specific tasks
 - Monitor progress and adapt workflow based on results
 - Handle errors and make recovery decisions
@@ -150,15 +152,22 @@ Workflow is successful if:
 - Quick algorithms (label_propagation) before slow ones (betweenness)
 - Fail fast: Cancel long-running jobs if they exceed expected time by 3x
 
-Your goal: Maximize successful completion while maintaining quality, minimizing cost, and providing clear diagnostics on any failures."""
+Your goal: Maximize successful completion while maintaining quality, minimizing
+cost, and providing clear diagnostics on any failures."""
 
-    def __init__(self, llm_provider: LLMProvider, agents: Dict[str, Agent]):
+    def __init__(
+        self,
+        llm_provider: LLMProvider,
+        agents: Dict[str, Agent],
+        catalog: Optional[Any] = None,
+    ):
         """
         Initialize orchestrator.
 
         Args:
             llm_provider: LLM provider for reasoning
             agents: Dictionary of specialized agents by name
+            catalog: Optional analysis catalog for tracking (passed to agents)
         """
         super().__init__(
             agent_type=AgentType.ORCHESTRATOR,
@@ -167,6 +176,7 @@ Your goal: Maximize successful completion while maintaining quality, minimizing 
         )
         self.agents = agents
         self.workflow_steps = WorkflowSteps.STANDARD_WORKFLOW
+        self.catalog = catalog
 
     def process(self, message: AgentMessage, state: AgentState) -> AgentMessage:
         """

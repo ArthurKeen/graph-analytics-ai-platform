@@ -180,7 +180,10 @@ Your expertise:
 Your goal: Transform business needs into structured requirements."""
 
     def __init__(
-        self, llm_provider: LLMProvider, trace_collector: Optional[Any] = None
+        self,
+        llm_provider: LLMProvider,
+        trace_collector: Optional[Any] = None,
+        catalog: Optional[Any] = None,
     ):
         super().__init__(
             agent_type=AgentType.REQUIREMENTS,
@@ -191,6 +194,8 @@ Your goal: Transform business needs into structured requirements."""
         )
         self.parser = DocumentParser()
         self.extractor = RequirementsExtractor(llm_provider)
+        self.catalog = catalog
+        self.auto_track = catalog is not None
 
     @handle_agent_errors
     def process(self, message: AgentMessage, state: AgentState) -> AgentMessage:
@@ -243,8 +248,18 @@ Your goal: Transform business needs into structured requirements."""
         state.requirements = requirements
         state.mark_step_complete("requirements_extraction")
 
+        # Track requirements in catalog if enabled
+        if self.auto_track and self.catalog:
+            try:
+                self._track_requirements(requirements)
+            except Exception as e:
+                self.log(
+                    f"Failed to track requirements in catalog: {e}", "warning"
+                )
+
         self.log(
-            f"Extracted: {len(requirements.objectives)} objectives, {len(requirements.requirements)} requirements"
+            f"Extracted: {len(requirements.objectives)} objectives, "
+            f"{len(requirements.requirements)} requirements"
         )
 
         return self.create_success_message(
@@ -321,8 +336,18 @@ Your goal: Transform business needs into structured requirements."""
         state.requirements = requirements
         await state.mark_step_complete_async("requirements_extraction")
 
+        # Track requirements in catalog if enabled (async)
+        if self.auto_track and self.catalog:
+            try:
+                await self._track_requirements_async(requirements)
+            except Exception as e:
+                self.log(
+                    f"Failed to track requirements in catalog: {e}", "warning"
+                )
+
         self.log(
-            f"Extracted: {len(requirements.objectives)} objectives, {len(requirements.requirements)} requirements"
+            f"Extracted: {len(requirements.objectives)} objectives, "
+            f"{len(requirements.requirements)} requirements"
         )
 
         return self.create_success_message(
@@ -336,6 +361,41 @@ Your goal: Transform business needs into structured requirements."""
             },
             reply_to=message.message_id,
         )
+
+    def _track_requirements(self, requirements):
+        """Track extracted requirements in catalog (sync)."""
+        import logging
+
+        logger = logging.getLogger(__name__)
+
+        try:
+            # Track in catalog
+            req_id = self.catalog.track_requirements(requirements)
+            logger.info(f"Tracked requirements {req_id} in catalog")
+        except Exception as e:
+            logger.error(f"Error tracking requirements: {e}", exc_info=True)
+            raise
+
+    async def _track_requirements_async(self, requirements):
+        """Track extracted requirements in catalog (async)."""
+        import logging
+
+        logger = logging.getLogger(__name__)
+
+        try:
+            # Check if catalog has async method
+            if hasattr(self.catalog, "track_requirements_async"):
+                req_id = await self.catalog.track_requirements_async(requirements)
+            else:
+                # Fall back to sync in executor
+                loop = asyncio.get_event_loop()
+                req_id = await loop.run_in_executor(
+                    None, self.catalog.track_requirements, requirements
+                )
+            logger.info(f"Tracked requirements {req_id} in catalog")
+        except Exception as e:
+            logger.error(f"Error tracking requirements: {e}", exc_info=True)
+            raise
 
 
 class UseCaseAgent(SpecializedAgent):
@@ -356,7 +416,10 @@ Your expertise:
 Your goal: Generate actionable analytics use cases."""
 
     def __init__(
-        self, llm_provider: LLMProvider, trace_collector: Optional[Any] = None
+        self,
+        llm_provider: LLMProvider,
+        trace_collector: Optional[Any] = None,
+        catalog: Optional[Any] = None,
     ):
         super().__init__(
             agent_type=AgentType.USE_CASE,
@@ -366,6 +429,8 @@ Your goal: Generate actionable analytics use cases."""
             trace_collector=trace_collector,
         )
         self.generator = UseCaseGenerator()
+        self.catalog = catalog
+        self.auto_track = catalog is not None
 
     @handle_agent_errors
     def process(self, message: AgentMessage, state: AgentState) -> AgentMessage:
@@ -379,6 +444,14 @@ Your goal: Generate actionable analytics use cases."""
 
         state.use_cases = use_cases
         state.mark_step_complete("use_case_generation")
+
+        # Track use cases in catalog if enabled
+        if self.auto_track and self.catalog:
+            try:
+                for use_case in use_cases:
+                    self._track_use_case(use_case, state.requirements)
+            except Exception as e:
+                self.log(f"Failed to track use cases in catalog: {e}", "warning")
 
         self.log(f"Generated {len(use_cases)} use cases")
 
@@ -417,6 +490,14 @@ Your goal: Generate actionable analytics use cases."""
         state.use_cases = use_cases
         await state.mark_step_complete_async("use_case_generation")
 
+        # Track use cases in catalog if enabled (async)
+        if self.auto_track and self.catalog:
+            try:
+                for use_case in use_cases:
+                    await self._track_use_case_async(use_case, state.requirements)
+            except Exception as e:
+                self.log(f"Failed to track use cases in catalog: {e}", "warning")
+
         self.log(f"Generated {len(use_cases)} use cases")
 
         return self.create_success_message(
@@ -434,6 +515,41 @@ Your goal: Generate actionable analytics use cases."""
             },
             reply_to=message.message_id,
         )
+
+    def _track_use_case(self, use_case, requirements):
+        """Track generated use case in catalog (sync)."""
+        import logging
+
+        logger = logging.getLogger(__name__)
+
+        try:
+            # Track in catalog with requirements linkage
+            uc_id = self.catalog.track_use_case(use_case)
+            logger.info(f"Tracked use case {uc_id} in catalog")
+        except Exception as e:
+            logger.error(f"Error tracking use case: {e}", exc_info=True)
+            raise
+
+    async def _track_use_case_async(self, use_case, requirements):
+        """Track generated use case in catalog (async)."""
+        import logging
+
+        logger = logging.getLogger(__name__)
+
+        try:
+            # Check if catalog has async method
+            if hasattr(self.catalog, "track_use_case_async"):
+                uc_id = await self.catalog.track_use_case_async(use_case)
+            else:
+                # Fall back to sync in executor
+                loop = asyncio.get_event_loop()
+                uc_id = await loop.run_in_executor(
+                    None, self.catalog.track_use_case, use_case
+                )
+            logger.info(f"Tracked use case {uc_id} in catalog")
+        except Exception as e:
+            logger.error(f"Error tracking use case: {e}", exc_info=True)
+            raise
 
 
 class TemplateAgent(SpecializedAgent):
@@ -460,6 +576,7 @@ Your goal: Create optimized, executable analysis templates."""
         core_collections: Optional[List[str]] = None,
         satellite_collections: Optional[List[str]] = None,
         trace_collector: Optional[Any] = None,
+        catalog: Optional[Any] = None,
     ):
         super().__init__(
             agent_type=AgentType.TEMPLATE,
@@ -473,6 +590,8 @@ Your goal: Create optimized, executable analysis templates."""
             core_collections=core_collections,
             satellite_collections=satellite_collections,
         )
+        self.catalog = catalog
+        self.auto_track = catalog is not None
 
     @handle_agent_errors
     def process(self, message: AgentMessage, state: AgentState) -> AgentMessage:
@@ -488,6 +607,14 @@ Your goal: Create optimized, executable analysis templates."""
 
         state.templates = templates
         state.mark_step_complete("template_generation")
+
+        # Track templates in catalog if enabled
+        if self.auto_track and self.catalog:
+            try:
+                for template in templates:
+                    self._track_template(template, state.use_cases)
+            except Exception as e:
+                self.log(f"Failed to track templates in catalog: {e}", "warning")
 
         self.log(f"Generated {len(templates)} templates")
 
@@ -538,6 +665,14 @@ Your goal: Create optimized, executable analysis templates."""
         state.templates = templates
         await state.mark_step_complete_async("template_generation")
 
+        # Track templates in catalog if enabled (async)
+        if self.auto_track and self.catalog:
+            try:
+                for template in templates:
+                    await self._track_template_async(template, state.use_cases)
+            except Exception as e:
+                self.log(f"Failed to track templates in catalog: {e}", "warning")
+
         self.log(f"Generated {len(templates)} templates")
 
         return self.create_success_message(
@@ -564,6 +699,41 @@ Your goal: Create optimized, executable analysis templates."""
             reply_to=message.message_id,
         )
 
+    def _track_template(self, template, use_cases):
+        """Track generated template in catalog (sync)."""
+        import logging
+
+        logger = logging.getLogger(__name__)
+
+        try:
+            # Track in catalog
+            template_id = self.catalog.track_template(template)
+            logger.info(f"Tracked template {template_id} in catalog")
+        except Exception as e:
+            logger.error(f"Error tracking template: {e}", exc_info=True)
+            raise
+
+    async def _track_template_async(self, template, use_cases):
+        """Track generated template in catalog (async)."""
+        import logging
+
+        logger = logging.getLogger(__name__)
+
+        try:
+            # Check if catalog has async method
+            if hasattr(self.catalog, "track_template_async"):
+                template_id = await self.catalog.track_template_async(template)
+            else:
+                # Fall back to sync in executor
+                loop = asyncio.get_event_loop()
+                template_id = await loop.run_in_executor(
+                    None, self.catalog.track_template, template
+                )
+            logger.info(f"Tracked template {template_id} in catalog")
+        except Exception as e:
+            logger.error(f"Error tracking template: {e}", exc_info=True)
+            raise
+
 
 class ExecutionAgent(SpecializedAgent):
     """
@@ -583,7 +753,10 @@ Your expertise:
 Your goal: Execute analyses reliably and efficiently."""
 
     def __init__(
-        self, llm_provider: LLMProvider, trace_collector: Optional[Any] = None
+        self,
+        llm_provider: LLMProvider,
+        trace_collector: Optional[Any] = None,
+        catalog: Optional[Any] = None,
     ):
         super().__init__(
             agent_type=AgentType.EXECUTION,
@@ -592,7 +765,10 @@ Your goal: Execute analyses reliably and efficiently."""
             system_prompt=self.SYSTEM_PROMPT,
             trace_collector=trace_collector,
         )
-        self.executor = AnalysisExecutor()
+        # Create executor with catalog support and agentic workflow mode
+        self.executor = AnalysisExecutor(
+            catalog=catalog, workflow_mode="agentic" if catalog else "traditional"
+        )
 
     @handle_agent_errors
     def process(self, message: AgentMessage, state: AgentState) -> AgentMessage:
