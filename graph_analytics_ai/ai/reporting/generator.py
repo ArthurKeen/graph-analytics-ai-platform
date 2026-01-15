@@ -508,27 +508,34 @@ class ReportGenerator:
         if not insights:
             return "LOW"
         
-        # Check for critical keywords in titles/descriptions
-        critical_keywords = ["fraud", "botnet", "breach", "attack", "critical", "failure"]
-        high_keywords = ["risk", "anomaly", "suspicious", "over-aggregation", "false positive"]
+        # Check for critical keywords in titles/descriptions (very specific, high-severity terms)
+        critical_keywords = ["fraud", "botnet", "breach", "attack", "failure", "malicious"]
+        high_keywords = ["risk", "suspicious", "over-aggregation", "false positive"]
+        medium_keywords = ["anomaly", "unusual", "inconsisten"]  # Moved anomaly to medium
         
         critical_count = 0
         high_count = 0
+        medium_count = 0
         
         for insight in insights:
             text = (insight.title + " " + insight.description).lower()
             
+            # Check in priority order
             if any(kw in text for kw in critical_keywords):
                 critical_count += 1
             elif any(kw in text for kw in high_keywords):
                 high_count += 1
+            elif any(kw in text for kw in medium_keywords):
+                medium_count += 1
         
         # Assess based on counts and confidence
         if critical_count > 0:
             return "CRITICAL"
         elif high_count >= 2 or (high_count >= 1 and any(i.confidence > 0.8 for i in insights)):
             return "HIGH"
-        elif high_count >= 1:
+        elif high_count >= 1 or medium_count >= 2:
+            return "MEDIUM"
+        elif medium_count >= 1:
             return "MEDIUM"
         else:
             return "LOW"
