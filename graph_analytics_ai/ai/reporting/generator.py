@@ -133,6 +133,10 @@ class ReportGenerator:
 
         # Generate summary
         report.summary = self._generate_summary(report)
+        
+        # Extract action items and risk assessment for HTML formatting
+        report.metadata["risk_level"] = self._assess_risk_level(report.insights)
+        report.metadata["action_items"] = self._extract_action_items(report)
 
         # Generate charts (if enabled)
         if self.enable_charts and self.chart_generator and execution_result.results:
@@ -445,30 +449,137 @@ class ReportGenerator:
         return recommendations[:10]  # Limit to top 10
 
     def _generate_summary(self, report: AnalysisReport) -> str:
-        """Generate executive summary."""
+        """
+        Generate executive summary with key findings, risks, and actions.
+        
+        Creates a comprehensive 3-4 sentence summary covering:
+        - What was analyzed
+        - Key findings (top insights)
+        - Risk level assessment
+        - Priority actions
+        """
         lines = []
 
+        # Basic stats
+        result_count = report.dataset_info.get('result_count', 0)
         lines.append(
-            f"Analysis of {report.dataset_info.get('result_count', 0)} results using {report.algorithm} algorithm."
+            f"Analysis of {result_count:,} results using {report.algorithm} algorithm"
         )
 
+        # Key findings from top insights
         if report.insights:
-            lines.append(f"Found {len(report.insights)} key insights.")
-
+            lines.append(f"identified {len(report.insights)} key insights")
+            
+            # Highlight top insight
+            top_insight = max(report.insights, key=lambda x: x.confidence)
+            if top_insight.confidence >= 0.7:
+                lines.append(f"with highest confidence finding: {top_insight.title}")
+        
+        # Risk assessment
+        risk_level = self._assess_risk_level(report.insights)
+        if risk_level != "LOW":
+            lines.append(f"**Risk Level: {risk_level}**")
+        
+        # Priority actions
         if report.recommendations:
-            high_priority = len(
-                [
-                    r
-                    for r in report.recommendations
-                    if r.priority in ("high", "critical")
-                ]
-            )
-            if high_priority > 0:
+            high_priority = [
+                r for r in report.recommendations 
+                if r.priority in ("high", "critical")
+            ]
+            if high_priority:
                 lines.append(
-                    f"Generated {len(report.recommendations)} recommendations, {high_priority} high priority."
+                    f"{len(high_priority)} immediate action{'' if len(high_priority) == 1 else 's'} required"
                 )
 
-        return " ".join(lines)
+        # Join with proper punctuation
+        summary = ". ".join(lines)
+        if not summary.endswith('.'):
+            summary += "."
+        
+        return summary
+    
+    def _assess_risk_level(self, insights: List[Insight]) -> str:
+        """
+        Assess overall risk level from insights.
+        
+        Returns:
+            "CRITICAL", "HIGH", "MEDIUM", or "LOW"
+        """
+        if not insights:
+            return "LOW"
+        
+        # Check for critical keywords in titles/descriptions
+        critical_keywords = ["fraud", "botnet", "breach", "attack", "critical", "failure"]
+        high_keywords = ["risk", "anomaly", "suspicious", "over-aggregation", "false positive"]
+        
+        critical_count = 0
+        high_count = 0
+        
+        for insight in insights:
+            text = (insight.title + " " + insight.description).lower()
+            
+            if any(kw in text for kw in critical_keywords):
+                critical_count += 1
+            elif any(kw in text for kw in high_keywords):
+                high_count += 1
+        
+        # Assess based on counts and confidence
+        if critical_count > 0:
+            return "CRITICAL"
+        elif high_count >= 2 or (high_count >= 1 and any(i.confidence > 0.8 for i in insights)):
+            return "HIGH"
+        elif high_count >= 1:
+            return "MEDIUM"
+        else:
+            return "LOW"
+    
+    def _extract_action_items(self, report: AnalysisReport) -> List[Dict[str, str]]:
+        """
+        Extract prioritized action items from insights and recommendations.
+        
+        Returns:
+            List of action items with priority, action, and source
+        """
+        import re
+        
+        actions = []
+        
+        # Extract from insights' business impacts
+        for insight in report.insights:
+            impact = insight.business_impact
+            
+            # Look for action keywords
+            action_patterns = [
+                (r'IMMEDIATE[:\s]+(.+?)(?:\.|$)', 'IMMEDIATE'),
+                (r'ACTION[:\s]+(.+?)(?:\.|$)', 'HIGH'),
+                (r'RECOMMENDATION[:\s]+(.+?)(?:\.|$)', 'MEDIUM'),
+                (r'CRITICAL[:\s]+(.+?)(?:\.|$)', 'CRITICAL'),
+            ]
+            
+            for pattern, priority in action_patterns:
+                matches = re.findall(pattern, impact, re.IGNORECASE)
+                for match in matches:
+                    actions.append({
+                        'priority': priority,
+                        'action': match.strip(),
+                        'source': f"Insight: {insight.title[:50]}...",
+                        'confidence': insight.confidence
+                    })
+        
+        # Extract from recommendations
+        for rec in report.recommendations:
+            actions.append({
+                'priority': rec.priority.upper() if rec.priority else 'MEDIUM',
+                'action': rec.description,
+                'source': f"Recommendation: {rec.title[:50]}...",
+                'confidence': 0.8  # Recommendations generally high confidence
+            })
+        
+        # Sort by priority (CRITICAL > IMMEDIATE > HIGH > MEDIUM > LOW)
+        priority_order = {'CRITICAL': 0, 'IMMEDIATE': 1, 'HIGH': 2, 'MEDIUM': 3, 'LOW': 4}
+        actions.sort(key=lambda x: (priority_order.get(x['priority'], 5), -x['confidence']))
+        
+        return actions[:10]  # Top 10 actions
 
     def _generate_batch_summary(
         self, report: AnalysisReport, execution_results: List[ExecutionResult]
