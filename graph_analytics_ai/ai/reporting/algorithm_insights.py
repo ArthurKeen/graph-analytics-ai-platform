@@ -150,10 +150,10 @@ def detect_pagerank_adtech_patterns(results: List[Dict[str, Any]]) -> List[Dict[
                 "title": f"Top-10 Dominated by {dominant_type} Nodes ({dominant_count}/10)",
                 "description": f"{dominant_count} out of top 10 nodes are {dominant_type} type. "
                               f"For attribution and inventory analysis, expect {dominant_type}s to be central hubs.",
-                "business_impact": f"INSIGHT: {dominant_type} nodes are primary attribution bridges. "
-                                 f"{'WARNING: If IPs dominate, validate data quality (IPs should not outrank content/apps).'
-                                    if dominant_type == 'IP' else 
-                                    'EXPECTED: Site/App nodes as top influencers indicates healthy network structure.'}",
+                "business_impact": (
+                    f"INSIGHT: {dominant_type} nodes are primary attribution bridges. "
+                    f"{'WARNING: If IPs dominate, validate data quality (IPs should not outrank content/apps).' if dominant_type == 'IP' else 'EXPECTED: Site/App nodes as top influencers indicates healthy network structure.'}"
+                ),
                 "confidence": 0.80
             })
     
