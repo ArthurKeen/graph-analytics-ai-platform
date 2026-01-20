@@ -559,6 +559,49 @@ gaai parse-requirements \
 gaai status --checkpoint checkpoint.json
 ```
 
+### 🛠️ CLI Utilities (NEW in v3.0+)
+
+The library now includes reusable command-line utilities for common tasks:
+
+**Token Management:**
+```bash
+# Get or refresh OASIS token for AMP authentication
+python -m graph_analytics_ai.auth.oasis_token_helper
+
+# Check token status
+python -m graph_analytics_ai.auth.oasis_token_helper --status
+
+# Force refresh
+python -m graph_analytics_ai.auth.oasis_token_helper --refresh
+```
+
+**Connection Testing:**
+```bash
+# Test and verify database connection
+python -m graph_analytics_ai.cli.test_connection
+```
+
+**GAE Management:**
+```bash
+# List and cleanup GAE engines
+python -m graph_analytics_ai.cli.gae_cleanup
+```
+
+**Python API:**
+```python
+from graph_analytics_ai.auth import get_or_refresh_token
+from graph_analytics_ai.cli.test_connection import test_connection
+
+# Get authentication token
+token = get_or_refresh_token()
+
+# Test connection
+if test_connection():
+    print("Ready to run workflow!")
+```
+
+📖 **Full Documentation:** [CLI Utilities Guide](docs/CLI_UTILITIES_GUIDE.md)
+
 ---
 
 ##  Examples
