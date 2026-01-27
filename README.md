@@ -1,6 +1,6 @@
-#  AI-Assisted Graph Analytics Platform
+# AI-Powered Graph Analytics Platform
 
-**Enterprise-grade AI platform for automated graph analytics - Traditional or Agentic**
+**Autonomous AI agents transform business requirements into graph insights**
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
