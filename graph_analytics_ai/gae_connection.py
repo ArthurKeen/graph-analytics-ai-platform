@@ -837,8 +837,14 @@ class GenAIGAEConnection(GAEConnectionBase):
     def deploy_engine(
         self, size_id: str = "e8", type_id: str = "gral"
     ) -> Dict[str, Any]:
-        """Deploy engine (alias for start_engine for compatibility)."""
-        service_id = self.start_engine()
+        """
+        Deploy engine (compatibility with AMP interface).
+
+        For self-managed deployments, we must ensure the service is actually
+        reachable before returning; otherwise immediate Engine API calls can
+        intermittently fail with 404s during rollout.
+        """
+        service_id = self.ensure_service(size_id=size_id, reuse_existing=True, wait_for_ready=True)
         return {"id": service_id, "status": {"is_started": True, "succeeded": True}}
 
     def stop_engine(self, service_id: Optional[str] = None) -> bool:
@@ -897,22 +903,37 @@ class GenAIGAEConnection(GAEConnectionBase):
         """
         service_id = None
 
-        # 1. Try to reuse existing service
+        # 1. Try to reuse an existing service
         if reuse_existing:
             print("Checking for existing GAE services...")
             try:
                 services = self.list_services()
 
-                # Filter for DEPLOYED GRAL services
+                # Prefer reusing an already-deployed GRAL service.
+                # Some deployments do not populate `type`, so fall back to the serviceId prefix.
+                candidates: List[str] = []
                 for service in services:
-                    if (
-                        service.get("status") == "DEPLOYED"
-                        and service.get("type") == "gral"
-                    ):
-                        service_id = service.get("serviceId")
-                        print(f"Found existing DEPLOYED service: {service_id}")
-                        self.engine_id = service_id
+                    sid = str(service.get("serviceId") or "")
+                    status = service.get("status")
+                    svc_type = service.get("type")
+
+                    if status != "DEPLOYED":
+                        continue
+                    if svc_type == "gral" or sid.startswith("arangodb-gral-"):
+                        candidates.append(sid)
+
+                # Probe each candidate once; pick the first that responds.
+                for sid in candidates:
+                    try:
+                        self.engine_id = sid
+                        self._get_engine_url()
+                        self.get_engine_version()
+                        print(f"Found ready DEPLOYED service: {sid}")
+                        service_id = sid
                         break
+                    except Exception:
+                        continue
+
             except Exception as e:
                 print(f"Warning: Failed to list services: {e}")
 
@@ -1339,6 +1360,21 @@ class GenAIGAEConnection(GAEConnectionBase):
         except Exception as e:
             print(f"Connection test failed: {e}")
             return False
+
+    def get_engine_version(self) -> Dict[str, Any]:
+        """
+        Get engine version (self-managed).
+
+        This is used as a lightweight readiness probe for newly spawned GRAL pods.
+        """
+        if not self.engine_id:
+            raise ValueError("No engine running. Call start_engine() first.")
+
+        return self._make_request(
+            method="GET",
+            endpoint=f"{API_VERSION_PREFIX}version",
+            error_message="Failed to get engine version",
+        )
 
     def list_graphs(self) -> List[Dict[str, Any]]:
         """
