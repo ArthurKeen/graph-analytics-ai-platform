@@ -14,6 +14,15 @@ from .config import (
     ReportSection as ConfigReportSection,
 )
 from .formatter import ExecutionReportFormatter
+from .custom_verticals import (
+    load_custom_vertical,
+    load_platform_custom_vertical,
+    register_custom_vertical,
+    save_custom_vertical,
+    get_industry_prompt_with_custom,
+    list_all_verticals,
+)
+from .vertical_schema import validate_vertical_schema, get_example_vertical
 
 # Optional chart generation (requires plotly)
 try:
@@ -44,4 +53,13 @@ __all__ = [
     "ChartGenerator",
     "HTMLReportFormatter",
     "is_plotly_available",
+    # Custom vertical support
+    "load_custom_vertical",
+    "load_platform_custom_vertical",
+    "register_custom_vertical",
+    "save_custom_vertical",
+    "get_industry_prompt_with_custom",
+    "list_all_verticals",
+    "validate_vertical_schema",
+    "get_example_vertical",
 ]
