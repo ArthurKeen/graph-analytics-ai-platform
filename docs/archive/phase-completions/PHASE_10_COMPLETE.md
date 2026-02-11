@@ -135,6 +135,8 @@ Phase 10 implements a complete **agentic workflow system** with autonomous agent
 graph TB
  Orch[Orchestrator Agent<br/>Supervisor<br/>• Coordinates workflow<br/>• Delegates tasks<br/>• Monitors progress]
  
+ Vert[Industry Vertical Resolver<br/>• Built-in / custom / auto-generate<br/>• Provides domain prompt + patterns]
+ 
  Schema[Schema Analyst<br/>• Extracts schema<br/>• Analyzes structure<br/>• Generates insights]
  
  Req[Requirements Analyst<br/>• Parses documents<br/>• Extracts requirements<br/>• Validates completeness]
@@ -147,6 +149,9 @@ graph TB
  
  Report[Reporting Specialist<br/>• Analyzes results<br/>• Generates insights<br/>• Creates reports]
  
+ Catalog[(Analytics Catalog<br/>epoch + lineage)]
+ 
+ Orch --> Vert
  Orch --> Schema
  Orch --> Req
  Schema --> UseCase
@@ -155,6 +160,8 @@ graph TB
  Template --> Exec
  Exec --> Report
  
+ Vert -.-> Orch
+ 
  Schema -.->|result| Orch
  Req -.->|result| Orch
  UseCase -.->|result| Orch
@@ -162,13 +169,21 @@ graph TB
  Exec -.->|result| Orch
  Report -.->|result| Orch
  
+ Orch -.->|create/reuse epoch| Catalog
+ Req -.->|track_requirements| Catalog
+ UseCase -.->|track_use_case| Catalog
+ Template -.->|track_template| Catalog
+ Exec -.->|track_execution| Catalog
+ 
  style Orch fill:#e1f5ff,stroke:#01579b,stroke-width:3px
+ style Vert fill:#bbdefb,stroke:#1565c0,stroke-width:2px
  style Schema fill:#fff9c4,stroke:#f57f17,stroke-width:2px
  style Req fill:#fff9c4,stroke:#f57f17,stroke-width:2px
  style UseCase fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
  style Template fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
  style Exec fill:#ffe0b2,stroke:#e65100,stroke-width:2px
  style Report fill:#c5e1a5,stroke:#33691e,stroke-width:2px
+ style Catalog fill:#ede7f6,stroke:#4527a0,stroke-width:2px
 ```
 
 ---
@@ -180,27 +195,37 @@ From the demo, actual agent messages:
 ```mermaid
 sequenceDiagram
  participant Orch as Orchestrator
+ participant Vert as IndustryVertical
  participant Schema as SchemaAnalyst
  participant Req as RequirementsAnalyst
  participant UC as UseCaseExpert
  participant Temp as TemplateEngineer
  participant Exec as ExecutionSpecialist
  participant Rep as ReportingSpecialist
+ participant Catalog as AnalyticsCatalog
+ 
+ Orch->>Vert: task: "Resolve/generate industry vertical"
+ Vert-->>Orch: result: " Loaded domain prompt + patterns"
+ Orch->>Catalog: create/reuse epoch
  
  Orch->>Schema: task: "Analyze the graph database schema"
  Schema-->>Orch: result: " Extracted: 3V + 5E, complexity 3.7/10"
  
  Orch->>Req: task: "Extract business requirements"
  Req-->>Orch: result: " Extracted: 1 objectives, 1 requirements"
+ Orch->>Catalog: track_requirements
  
  Orch->>UC: task: "Generate analytics use cases"
  UC-->>Orch: result: " Generated 2 use cases"
+ Orch->>Catalog: track_use_case
  
  Orch->>Temp: task: "Generate GAE templates"
  Temp-->>Orch: result: " Generated 2 templates"
+ Orch->>Catalog: track_template
  
  Orch->>Exec: task: "Execute analyses"
  Exec-->>Orch: result: " Executed 2 analyses successfully"
+ Orch->>Catalog: track_execution
  
  Orch->>Rep: task: "Generate reports"
  Rep-->>Orch: result: " Generated 2 reports with insights"

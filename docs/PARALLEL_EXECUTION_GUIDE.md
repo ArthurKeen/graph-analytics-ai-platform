@@ -90,8 +90,9 @@ The parallel execution system intelligently orchestrates agents to run independe
 
 ```mermaid
 graph TD
- A[Orchestrator Agent] --> B[Schema Analysis Agent]
- A --> C[Requirements Extraction Agent]
+ A[Orchestrator Agent] --> V[Industry Vertical Resolver<br/>built-in/custom/auto-generate]
+ V --> B[Schema Analysis Agent]
+ V --> C[Requirements Extraction Agent]
  
  B --> D[Use Case Generation Agent]
  C --> D
@@ -112,8 +113,18 @@ graph TD
  G2 --> H
  G3 --> H
  G4 --> H
+
+ K[(Analytics Catalog<br/>epoch + lineage)]:::catalog
+ C -.-> K
+ D -.-> K
+ E -.-> K
+ F1 -.-> K
+ F2 -.-> K
+ F3 -.-> K
+ F4 -.-> K
  
  style A fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+ style V fill:#bbdefb,stroke:#1565c0,stroke-width:2px
  style B fill:#fff9c4,stroke:#f57f17,stroke-width:2px
  style C fill:#fff9c4,stroke:#f57f17,stroke-width:2px
  style D fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
@@ -127,6 +138,7 @@ graph TD
  style G3 fill:#c5e1a5,stroke:#33691e,stroke-width:2px
  style G4 fill:#c5e1a5,stroke:#33691e,stroke-width:2px
  style H fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+ classDef catalog fill:#ede7f6,stroke:#4527a0,stroke-width:2px
 ```
 
 **Key Features:**
@@ -140,7 +152,8 @@ graph TD
 
 ```mermaid
 graph LR
- A[Schema] --> B[Requirements]
+ V[Industry Vertical] --> A[Schema]
+ V --> B[Requirements]
  B --> C[Use Cases]
  C --> D[Templates]
  D --> E[Execute 1]
@@ -150,6 +163,7 @@ graph LR
  H --> I[Report 2]
  I --> J[Report 3]
  
+ style V fill:#ffcdd2,stroke:#c62828
  style A fill:#ffcdd2,stroke:#c62828
  style B fill:#ffcdd2,stroke:#c62828
  style E fill:#ffcdd2,stroke:#c62828
@@ -164,6 +178,10 @@ graph LR
 
 ```mermaid
 graph TB
+ subgraph Phase0[" Phase 0: Industry Vertical (auto)"]
+ V[Resolve industry prompt + patterns]
+ end
+ 
  subgraph Phase1[" Phase 1: Parallel (2x speedup)"]
  A[Schema Analysis]
  B[Requirements Extraction]
@@ -189,6 +207,10 @@ graph TB
  R3[Generate Report 3]
  end
  
+ K[(Analytics Catalog)]:::catalog
+ 
+ V --> A
+ V --> B
  A --> C
  B --> C
  C --> D
@@ -199,9 +221,17 @@ graph TB
  E2 --> R2
  E3 --> R3
  
+ C -.-> K
+ D -.-> K
+ E1 -.-> K
+ E2 -.-> K
+ E3 -.-> K
+ 
+ style Phase0 fill:#bbdefb,stroke:#1565c0,stroke-width:3px
  style Phase1 fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
  style Phase4 fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
  style Phase5 fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+ classDef catalog fill:#ede7f6,stroke:#4527a0,stroke-width:2px
 ```
 
 ### 3. Async Agent Architecture

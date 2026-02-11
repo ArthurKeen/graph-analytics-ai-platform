@@ -19,8 +19,8 @@ graph LR
     A[Choose Your Workflow Mode]
     
     A --> B[Traditional<br/>Orchestrator<br/>Step-by-step control]
-    A --> C[Agentic<br/>Workflow<br/>Autonomous AI]
-    A --> D[ Parallel Agentic<br/>40-60% Faster<br/>Best Performance]
+    A --> C[Agentic<br/>Workflow<br/>Autonomous AI<br/>+ Vertical + Catalog]
+    A --> D[ Parallel Agentic<br/>40-60% Faster<br/>Best Performance<br/>+ Vertical + Catalog]
     
     style A fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
     style B fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
@@ -328,6 +328,8 @@ Both workflow modes execute the same underlying pipeline:
 ```mermaid
 graph TB
     Input[Business Requirements<br/>PDF/DOCX/Text]
+
+    Vertical[Industry Vertical Resolver<br/>Built-in / Project Custom / Auto-generate<br/>• Loads domain prompt + patterns<br/>• Writes .graph-analytics/industry_vertical.json (when generated)]
     
     Schema[Schema Extract<br/>Extract graph structure]
     Req[Requirements<br/>Parse business needs]
@@ -335,9 +337,12 @@ graph TB
     Template[Templates<br/>Generate GAE configs]
     Execute[Execute<br/>Run on ArangoDB GAE]
     Report[Report<br/>Generate insights]
+
+    Catalog[(Analytics Catalog<br/>Epochs + lineage + time-series<br/>Requirements → Use Cases → Templates → Executions)]
     
     Output[Actionable Intelligence Reports<br/>• Business insights with confidence scores<br/>• Prioritized recommendations<br/>• Multiple output formats]
     
+    Input --> Vertical
     Input --> Schema
     Input --> Req
     Schema --> UseCase
@@ -346,15 +351,22 @@ graph TB
     Template --> Execute
     Execute --> Report
     Report --> Output
+
+    Req -.->|track_requirements| Catalog
+    UseCase -.->|track_use_case| Catalog
+    Template -.->|track_template| Catalog
+    Execute -.->|track_execution| Catalog
     
     style Input fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
     style Output fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    style Vertical fill:#bbdefb,stroke:#1565c0,stroke-width:2px
     style Schema fill:#fff9c4,stroke:#f57f17,stroke-width:2px
     style Req fill:#fff9c4,stroke:#f57f17,stroke-width:2px
     style UseCase fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
     style Template fill:#e0f2f1,stroke:#00796b,stroke-width:2px
     style Execute fill:#ffe0b2,stroke:#e65100,stroke-width:2px
     style Report fill:#c5e1a5,stroke:#558b2f,stroke-width:2px
+    style Catalog fill:#ede7f6,stroke:#4527a0,stroke-width:2px
 ```
 
 ### Workflow Mode Comparison
@@ -388,6 +400,8 @@ The agentic system uses 6 specialized AI agents coordinated by a supervisor:
 graph TB
     subgraph "Agentic Workflow System"
         Orch[Orchestrator Agent<br/>Supervisor Pattern<br/>• Coordinates all agents<br/>• Intelligent routing<br/>• Error recovery]
+
+        Vertical[Industry Vertical Resolver<br/>• Built-in verticals<br/>• Project custom verticals<br/>• Auto-generate if missing<br/>• Provides domain prompt + patterns]
         
         Schema[Schema Analyst<br/>Graph DB Expert<br/>• Extracts structure<br/>• Analyzes patterns]
         
@@ -401,7 +415,10 @@ graph TB
         
         Report[Reporting Specialist<br/>BI Expert<br/>• Generates insights<br/>• Creates reports]
     end
+
+    Catalog[(Analytics Catalog<br/>Epochs + lineage + time-series)]
     
+    Orch --> Vertical
     Orch --> Schema
     Orch --> Req
     Schema --> UseCase
@@ -409,6 +426,8 @@ graph TB
     UseCase --> Template
     Template --> Exec
     Exec --> Report
+
+    Vertical -.->|domain prompt| Orch
     
     Schema -.->|result| Orch
     Req -.->|result| Orch
@@ -416,14 +435,22 @@ graph TB
     Template -.->|result| Orch
     Exec -.->|result| Orch
     Report -.->|result| Orch
+
+    Orch -.->|create/reuse epoch| Catalog
+    Req -.->|track_requirements| Catalog
+    UseCase -.->|track_use_case| Catalog
+    Template -.->|track_template| Catalog
+    Exec -.->|track_execution| Catalog
     
     style Orch fill:#e1f5ff,stroke:#01579b,stroke-width:3px
+    style Vertical fill:#bbdefb,stroke:#1565c0,stroke-width:2px
     style Schema fill:#fff9c4,stroke:#f57f17,stroke-width:2px
     style Req fill:#fff9c4,stroke:#f57f17,stroke-width:2px
     style UseCase fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
     style Template fill:#e0f2f1,stroke:#00796b,stroke-width:2px
     style Exec fill:#ffe0b2,stroke:#e65100,stroke-width:2px
     style Report fill:#c5e1a5,stroke:#558b2f,stroke-width:2px
+    style Catalog fill:#ede7f6,stroke:#4527a0,stroke-width:2px
 ```
 
 ### Parallel Execution Architecture (v3.1.0)
@@ -432,6 +459,10 @@ graph TB
 
 ```mermaid
 graph TB
+    subgraph Stage0[" Industry Vertical: Auto (built-in/custom/generate)"]
+        Vertical[Resolve industry prompt + patterns]
+    end
+
     subgraph Stage1[" Initial Analysis: Parallel (2x speedup)"]
         Schema[Schema Analysis]
         Req[Requirements Extraction]
@@ -456,7 +487,11 @@ graph TB
         R2[Generate Report 2]
         R3[Generate Report N...]
     end
+
+    Catalog[(Analytics Catalog<br/>epoch + lineage)]
     
+    Vertical --> Schema
+    Vertical --> Req
     Schema --> UseCase
     Req --> UseCase
     UseCase --> Template
@@ -466,12 +501,20 @@ graph TB
     E1 --> R1
     E2 --> R2
     E3 --> R3
+
+    UseCase -.->|track_use_case| Catalog
+    Template -.->|track_template| Catalog
+    E1 -.->|track_execution| Catalog
+    E2 -.->|track_execution| Catalog
+    E3 -.->|track_execution| Catalog
     
+    style Stage0 fill:#bbdefb,stroke:#1565c0,stroke-width:3px
     style Stage1 fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
     style Stage4 fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
     style Stage5 fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
     style Stage2 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
     style Stage3 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    style Catalog fill:#ede7f6,stroke:#4527a0,stroke-width:2px
 ```
 
 **Performance Gains:**

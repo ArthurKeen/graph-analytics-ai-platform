@@ -25,49 +25,18 @@ Enable the agentic workflow to automatically detect when no matching industry ve
 
 ### High-Level Flow
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│ 1. User runs workflow with industry="auto" or unknown industry │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│ 2. Check if custom vertical exists in client project            │
-│    Look for: .graph-analytics/industry_vertical.json            │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-                    ┌─────────┴─────────┐
-                    │ Found?            │
-                    └─────────┬─────────┘
-                         Yes  │  No
-                    ┌─────────┴─────────┐
-                    ↓                   ↓
-        ┌────────────────────┐  ┌──────────────────────┐
-        │ Load custom        │  │ Check business       │
-        │ vertical and use   │  │ requirements doc     │
-        └────────────────────┘  └──────────────────────┘
-                                          ↓
-                                ┌──────────────────────┐
-                                │ IndustryVertical     │
-                                │ Generation Agent     │
-                                │ - Analyze domain     │
-                                │ - Extract entities   │
-                                │ - Identify patterns  │
-                                │ - Generate prompt    │
-                                └──────────────────────┘
-                                          ↓
-                                ┌──────────────────────┐
-                                │ Save to client       │
-                                │ project:             │
-                                │ .graph-analytics/    │
-                                │   industry_vertical  │
-                                │   .json              │
-                                └──────────────────────┘
-                                          ↓
-                                ┌──────────────────────┐
-                                │ Use generated        │
-                                │ vertical for         │
-                                │ analysis             │
-                                └──────────────────────┘
+```mermaid
+flowchart TD
+  A["1. Run workflow<br/>industry = 'auto' or unknown"] --> B["2. Check client project for custom vertical<br/>.graph-analytics/industry_vertical.json"]
+  B --> C{Found?}
+
+  C -- Yes --> D["Load custom vertical and use"]
+  C -- No --> E["Check business requirements doc(s)"]
+  E --> F["IndustryVertical Generation Agent<br/>- Analyze domain<br/>- Extract entities<br/>- Identify patterns<br/>- Generate prompt"]
+  F --> G["Save to client project<br/>.graph-analytics/industry_vertical.json"]
+  G --> H["Use generated vertical for analysis"]
+
+  D --> H
 ```
 
 ---

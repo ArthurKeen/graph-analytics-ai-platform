@@ -163,14 +163,20 @@ Agents communicate through:
 sequenceDiagram
  participant User
  participant Orch as Orchestrator Agent
+ participant Vert as Industry Vertical Resolver
  participant Schema as Schema Analysis Agent
  participant Req as Requirements Agent
  participant UseCase as Use Case Agent
  participant Template as Template Agent
  participant Exec as Execution Agent
  participant Report as Reporting Agent
+ participant Catalog as Analytics Catalog
  
  User->>Orch: "Analyze customer database for fraud detection"
+
+ Orch->>Vert: Resolve industry prompt (built-in/custom/auto-generate)
+ Vert-->>Orch: Industry prompt + domain patterns loaded
+ Orch->>Catalog: Create/reuse epoch for this run
  
  par Parallel Analysis
  Orch->>Schema: Analyze schema
@@ -179,15 +185,19 @@ sequenceDiagram
  
  Schema-->>Orch: "Transaction network, 1M+ edges"
  Req-->>Orch: "Detect fraudulent patterns"
+ Orch->>Catalog: Track requirements (lineage root)
  
  Orch->>UseCase: Generate use cases for fraud detection
  UseCase-->>Orch: "PageRank for influencers, WCC for communities"
+ Orch->>Catalog: Track use cases
  
  Orch->>Template: Create optimized templates
  Template-->>Orch: "2 templates (e32 engine)"
+ Orch->>Catalog: Track templates
  
  Orch->>Exec: Execute analyses
  Exec-->>Orch: "Completed successfully"
+ Orch->>Catalog: Track executions (with results + performance)
  
  Orch->>Report: Generate actionable report
  Report-->>Orch: "3 high-risk communities identified"
@@ -275,6 +285,7 @@ sequenceDiagram
 graph TB
  subgraph "Agentic Workflow Architecture"
  Orch[Orchestrator Agent<br/>Supervisor]
+ Vert[Industry Vertical Resolver<br/>built-in/custom/auto-generate]
  
  Schema[Schema Analysis Agent<br/>Graph DB Expert]
  Req[Requirements Agent<br/>Business Analyst]
@@ -282,7 +293,9 @@ graph TB
  Template[Template Agent<br/>Analytics Engineer]
  Exec[Execution Agent<br/>Operations Specialist]
  Report[Reporting Agent<br/>BI Expert]
+ Catalog[(Analytics Catalog<br/>epoch + lineage)]
  
+ Orch --> Vert
  Orch --> Schema
  Orch --> Req
  Orch --> UseCase
@@ -290,21 +303,30 @@ graph TB
  Orch --> Exec
  Orch --> Report
  
+ Vert -.-> Orch
  Schema -.-> Orch
  Req -.-> Orch
  UseCase -.-> Orch
  Template -.-> Orch
  Exec -.-> Orch
  Report -.-> Orch
+
+ Orch -.->|create/reuse epoch| Catalog
+ Req -.->|track_requirements| Catalog
+ UseCase -.->|track_use_case| Catalog
+ Template -.->|track_template| Catalog
+ Exec -.->|track_execution| Catalog
  end
  
  style Orch fill:#e1f5ff,stroke:#01579b,stroke-width:3px
+ style Vert fill:#bbdefb,stroke:#1565c0,stroke-width:2px
  style Schema fill:#fff9c4,stroke:#f57f17,stroke-width:2px
  style Req fill:#fff9c4,stroke:#f57f17,stroke-width:2px
  style UseCase fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
  style Template fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
  style Exec fill:#ffe0b2,stroke:#e65100,stroke-width:2px
  style Report fill:#c5e1a5,stroke:#33691e,stroke-width:2px
+ style Catalog fill:#ede7f6,stroke:#4527a0,stroke-width:2px
 ```
 
 **Agent Roles:**
