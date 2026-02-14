@@ -863,7 +863,16 @@ class GenAIGAEConnection(GAEConnectionBase):
             response = requests.delete(
                 url, headers=headers, timeout=self.timeout, verify=self.verify_ssl
             )
-            response.raise_for_status()
+            try:
+                response.raise_for_status()
+            except requests.exceptions.HTTPError:
+                # Some deployments return a 500 with a NOT_FOUND payload when the
+                # Helm release is already gone. Treat that as successfully stopped.
+                body = (response.text or "").lower()
+                if response.status_code == 500 and ("not found" in body or "release" in body):
+                    print("Engine already stopped (not found)")
+                else:
+                    raise
 
             print("Engine stopped successfully")
             if service_id == self.engine_id:
@@ -948,14 +957,27 @@ class GenAIGAEConnection(GAEConnectionBase):
         if wait_for_ready:
             print(f"Waiting for service {service_id} to be ready...")
 
+            # Some deployments exhibit a brief period where the service is DEPLOYED
+            # but the GRAL ingress route is not yet fully propagated. During this
+            # time, /v1/version may intermittently return 404/503 even though the
+            # pod is starting. To avoid flakiness (e.g. loaddata 404 right after a
+            # single successful probe), require a few consecutive successful probes.
+            consecutive_ok = 0
+            required_consecutive_ok = 3
+
             for i in range(max_retries):
                 try:
                     # Test connection by checking version
                     self._get_engine_url()  # Ensures URL is constructed correctly
                     self.get_engine_version()
-                    print(f"✓ Service {service_id} is ready")
-                    return service_id
+                    consecutive_ok += 1
+                    if consecutive_ok >= required_consecutive_ok:
+                        print(f"✓ Service {service_id} is ready")
+                        # Small warm-up delay to reduce immediate POST flakiness
+                        time.sleep(2)
+                        return service_id
                 except Exception:
+                    consecutive_ok = 0
                     if i % 5 == 0:  # Log every 5th attempt to avoid spam
                         print(f"  Waiting for API... ({i+1}/{max_retries})")
                     time.sleep(retry_interval)
@@ -1019,52 +1041,76 @@ class GenAIGAEConnection(GAEConnectionBase):
         url = f"{engine_url}/{endpoint.lstrip('/')}"
         headers = self._get_headers()
 
-        try:
-            if method == "GET":
-                response = requests.get(
-                    url, headers=headers, timeout=self.timeout, verify=self.verify_ssl
+        # The GRAL ingress route can be briefly inconsistent during rollout:
+        # some calls may hit the ArangoDB router (JSON "unknown path '/gral/..'")
+        # or an Envoy upstream error before the service is fully ready. Retry a
+        # few times on those transient signatures.
+        max_attempts = int(os.getenv("GAE_ENGINE_API_RETRIES", "5") or "5")
+        for attempt in range(1, max_attempts + 1):
+            try:
+                if method == "GET":
+                    response = requests.get(
+                        url, headers=headers, timeout=self.timeout, verify=self.verify_ssl
+                    )
+                elif method == "POST":
+                    response = requests.post(
+                        url,
+                        headers=headers,
+                        json=payload,
+                        timeout=self.timeout,
+                        verify=self.verify_ssl,
+                    )
+                elif method == "DELETE":
+                    response = requests.delete(
+                        url, headers=headers, timeout=self.timeout, verify=self.verify_ssl
+                    )
+                else:
+                    raise ValueError(f"Unsupported HTTP method: {method}")
+
+                response.raise_for_status()
+
+                result = response.json() if response.text else {}
+
+                # Format success message with job_id if present
+                if success_message:
+                    job_id = result.get("job_id", result.get("id", "N/A"))
+                    formatted_msg = (
+                        success_message.format(job_id=job_id)
+                        if "{job_id}" in success_message
+                        else success_message
+                    )
+                    print(f"{ICON_SUCCESS} {formatted_msg}")
+
+                return result
+
+            except requests.exceptions.HTTPError as e:
+                status = e.response.status_code if e.response is not None else None
+                body = (e.response.text or "") if e.response is not None else ""
+                body_l = body.lower()
+
+                is_transient_gral_route = (
+                    status in (404, 503)
+                    and (
+                        "unknown path '/gral/" in body_l
+                        or "upstream connect error" in body_l
+                        or "connection refused" in body_l
+                        or "disconnect/reset before headers" in body_l
+                    )
                 )
-            elif method == "POST":
-                response = requests.post(
-                    url,
-                    headers=headers,
-                    json=payload,
-                    timeout=self.timeout,
-                    verify=self.verify_ssl,
-                )
-            elif method == "DELETE":
-                response = requests.delete(
-                    url, headers=headers, timeout=self.timeout, verify=self.verify_ssl
-                )
-            else:
-                raise ValueError(f"Unsupported HTTP method: {method}")
+                if is_transient_gral_route and attempt < max_attempts:
+                    time.sleep(2)
+                    continue
 
-            response.raise_for_status()
+                error_msg = error_message or "Request failed"
+                print(f"{ICON_ERROR} {error_msg}: {e}")
+                if body:
+                    print(f"   Response: {body[:200]}")
+                raise
 
-            result = response.json() if response.text else {}
-
-            # Format success message with job_id if present
-            if success_message:
-                job_id = result.get("job_id", result.get("id", "N/A"))
-                formatted_msg = (
-                    success_message.format(job_id=job_id)
-                    if "{job_id}" in success_message
-                    else success_message
-                )
-                print(f"{ICON_SUCCESS} {formatted_msg}")
-
-            return result
-
-        except requests.exceptions.HTTPError as e:
-            error_msg = error_message or "Request failed"
-            print(f"{ICON_ERROR} {error_msg}: {e}")
-            if e.response is not None and e.response.text:
-                print(f"   Response: {e.response.text[:200]}")
-            raise
-        except Exception as e:
-            error_msg = error_message or "Request failed"
-            print(f"{ICON_ERROR} {error_msg}: {e}")
-            raise
+            except Exception as e:
+                error_msg = error_message or "Request failed"
+                print(f"{ICON_ERROR} {error_msg}: {e}")
+                raise
 
     def _normalize_job_response(self, job: Dict[str, Any]) -> Dict[str, Any]:
         """
