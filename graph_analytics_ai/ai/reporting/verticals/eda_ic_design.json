@@ -1,0 +1,154 @@
+{
+  "metadata": {
+    "name": "eda_ic_design",
+    "display_name": "Integrated Circuit (IC) Design & Electronic Design Automation (EDA)",
+    "version": "1.0",
+    "generated_at": "2026-02-11T00:00:00Z",
+    "generated_by": "PlatformCustomVertical",
+    "source_documents": [
+      "user_provided_domain_description"
+    ]
+  },
+  "domain_context": {
+    "industry": "Integrated Circuit (IC) Design & Electronic Design Automation (EDA)",
+    "business_focus": "Build a unified digital twin of RTL + specs + history to accelerate verification, reduce LLM token spend via semantic-bridge constrained retrieval, and reduce organizational risk (bus factor) across critical IP blocks.",
+    "key_entities": {
+      "nodes": [
+        "RTL_Module: High-level hardware blocks / IP components (ASIC/SoC hierarchy)",
+        "RTL_Port: Module interface pins (I/O) and protocol endpoints",
+        "RTL_Signal: Internal wires/registers/nets carrying data/control signals",
+        "RTL_LogicChunk: Behavioral units (always/assign blocks, combinational/sequential logic)",
+        "FSM_StateMachine: Extracted finite state machine representing control behavior",
+        "FSM_State: Individual state within an FSM",
+        "Author: Hardware engineer identity",
+        "GitCommit: Source control snapshot with temporal metadata",
+        "Golden_Entity: Canonical entity extracted from specs (GraphRAG normalization)",
+        "Chunk: Text chunk from unstructured documents (specs, PDFs, architecture notes)"
+      ],
+      "edges": [
+        "CONTAINS: Structural containment (module → submodule/logic/child elements)",
+        "HAS_PORT: Module → ports",
+        "HAS_SIGNAL: Module/logic → signals/nets/registers",
+        "TRANSITIONS_TO: FSM control-flow transitions between states",
+        "MODIFIED: Commit/author → RTL element modified",
+        "MAINTAINS: Author → RTL module ownership/maintenance relationship",
+        "RESOLVED_TO: Semantic bridge linking RTL structure ↔ spec entities/chunks"
+      ]
+    },
+    "key_metrics": [
+      "Semantic bridge coverage (% of spec entities/chunks resolved to RTL elements)",
+      "Token savings estimate (retrieval set size with semantic-bridge constraints vs pure vector search)",
+      "Bus factor per RTL module / IP block (unique maintainers, last-touch authorship concentration)",
+      "Change impact radius (graph distance / affected fan-out when a module/signal changes)",
+      "FSM health (unreachable states, dead-end states, transition density, rare transitions)",
+      "Integration risk (cross-IP dependency density, interface complexity, protocol fan-in/fan-out)",
+      "Reuse leverage (modules reused across projects, similarity clusters, duplicate logic chunks)",
+      "Verification traceability (spec → RTL resolution depth; gaps and ambiguous mappings)"
+    ],
+    "terminology": {
+      "units": [
+        "LOC (lines of code)",
+        "signals",
+        "states",
+        "modules",
+        "commits",
+        "days"
+      ],
+      "regulations": [
+        "ISO 26262 (automotive functional safety) (if applicable)",
+        "DO-254 (airborne electronic hardware) (if applicable)"
+      ],
+      "thresholds": {
+        "bus_factor_high_risk": "bus_factor <= 1",
+        "semantic_bridge_low_coverage": "< 0.30",
+        "semantic_bridge_good_coverage": ">= 0.70",
+        "fsm_unreachable_states_high_risk": ">= 5 unreachable states or >= 10% of states unreachable",
+        "mega_module_suspect": "top 1% by fan-in/fan-out or logic-chunk count"
+      }
+    }
+  },
+  "analysis_prompt": "You are analyzing an Integrated Circuit (IC) design and EDA “digital twin” graph that connects RTL structure, extracted control-flow (FSMs), unstructured design documentation (GraphRAG chunks/entities), and temporal history (authors/commits).\n\nYour job is to turn graph analytics results (community detection, PageRank/centrality, cycle finding, and related metrics) into 3–7 highly specific, actionable engineering insights.\n\nThis domain has extreme scale (millions of nodes, billions of edges). Your analysis must prioritize: (1) risk hotspots, (2) verification traceability gaps, (3) expensive-to-debug dependency structures, and (4) organizational fragility (bus factor).\n\n## Domain Context\n\n### What the graph represents\n- RTL design hierarchy at the module/port/signal/logic-chunk level (e.g., SystemVerilog modules, always blocks, assigns).\n- Extracted finite state machines (FSM_StateMachine, FSM_State, TRANSITIONS_TO) that model control flow.\n- Documentation layer (Chunk, Golden_Entity) extracted from architecture specs, PDFs, and requirements.\n- Semantic-bridge edges (RESOLVED_TO) that link documentation entities to precise RTL components.\n- Temporal history: Author and GitCommit nodes/edges that indicate who changed what and when.\n\n### Why this matters (business goals)\n1. **Reduce verification/debug time**: pinpoint the true control/dataflow chokepoints and fragile dependencies.\n2. **Reduce AI token spend**: prefer semantic-bridge constrained retrieval (graph traversals) over broad vector search.\n3. **Prevent knowledge loss**: detect “bus factor = 1” modules and spread ownership before key people leave.\n4. **Enable time-travel analysis**: trace requirement shifts and RTL changes across commits.\n\n## Key Entities & Interpretation\n\n### Structural RTL entities\n- RTL_Module: IP blocks; may represent vendor IP, internally developed IP, or integration wrappers.\n- RTL_Port: interfaces; high fan-in/out ports often indicate protocol hubs.\n- RTL_Signal: nets/registers; high-degree signals often represent clocks/resets/buses or dangerous global wires.\n- RTL_LogicChunk: behavioral logic; may correspond to a small region of code, an always_ff block, or an assign block.\n\n### Control-flow entities\n- FSM_StateMachine / FSM_State: extracted control behavior. Quality issues include unreachable states, dead-ends, or over-complex transition graphs.\n\n### Documentation entities\n- Chunk / Golden_Entity: spec text blocks and canonicalized concepts. These become useful only when connected via RESOLVED_TO.\n\n### Temporal entities\n- Author / GitCommit: used for ownership concentration, churn, and “last touched” recency.\n\n## Analysis Principles (how to reason)\n\n### 1) Quantify, then explain\nEvery insight must include concrete numbers (counts, percentiles, ratios, coverage percentages). Avoid vague language.\n\n### 2) Always connect to engineering action\nProvide recommended next steps: add semantic bridges, refactor dependency cycles, add assertions/coverage, assign secondary maintainers, or isolate interfaces.\n\n### 3) Prefer structural relevance over semantic similarity\nWhen talking about documentation retrieval, explicitly compare:\n- vector-only retrieval (semantically related but structurally irrelevant) vs\n- semantic-bridge constrained retrieval (spec → resolved RTL subgraph)\n\n### 4) Scale-aware prioritization\nFocus on the top-k hotspots (e.g., top 1% by centrality, largest components, highest churn, or lowest traceability) rather than “average” behavior.\n\n## What to look for (algorithm-to-domain mapping)\n\n### Weakly Connected Components (WCC)\nInterpret WCCs as “integration islands.”\n- A very large WCC might be expected for a tightly integrated SoC, but it can also signal poor modular isolation.\n- Many small WCCs can indicate disconnected IP blocks (reuse libraries not integrated) or missing edges in extraction.\n\nLook for:\n- orphaned spec chunks/entities (Chunk/Golden_Entity components that do not connect to RTL via RESOLVED_TO)\n- isolated RTL modules that are not reachable from top-level integration modules\n- unexpected fragmentation across IP boundaries that should be connected\n\n### PageRank / Centrality\nInterpret high centrality as “design leverage” and “blast radius.”\n- High PageRank RTL_Module: change impact is large; treat as “critical IP.”\n- High PageRank RTL_Signal / RTL_Port: likely a protocol hub, clock/reset distribution, or shared bus.\n- High PageRank Golden_Entity/Chunk: likely a critical requirement/constraint with many resolved connections.\n\nLook for:\n- critical modules with bus factor 1\n- high-centrality nodes with low semantic-bridge coverage (high leverage but poorly documented/linked)\n- interface chokepoints: a small set of ports/signals bridging many modules\n\n### Cycle Detection\nCycles can represent:\n- combinational loops (dangerous),\n- dependency cycles between IP blocks (architecturally expensive),\n- feedback control loops in FSM/logic (may be expected, but can hide corner cases).\n\nLook for:\n- small tight cycles among RTL_LogicChunk/RTL_Signal (potential combinational loops)\n- cycles that cross module boundaries (integration anti-patterns)\n- long cycles that include FSM states (complex control sequences with verification risk)\n\n### Temporal/Ownership patterns (derived from Author/GitCommit)\n- “Bus factor = 1” modules: only one maintainer or one author accounts for overwhelming majority of changes.\n- High churn modules: frequent commits + high centrality = risk of regressions.\n- Time-travel traceability: spec entities that changed (new/edited chunks) without corresponding RTL changes, or vice versa.\n\n## Domain-Specific Risk Signals\n\n### Traceability risk (spec → RTL)\n- Low RESOLVED_TO coverage: spec concepts are not connected to concrete RTL.\n- Ambiguous bridges: one spec entity resolves to many unrelated modules.\n- Bridge gaps in safety/security-critical modules.\n\n### Complexity risk\n- Mega-modules: extremely high fan-in/fan-out, huge logic-chunk counts, or bridging many communities.\n- Global signals: reset/clock/bus nets that create accidental coupling.\n- Deep FSMs with unreachable/dead-end states.\n\n### Organizational risk\n- Bus factor ≤ 1 in critical IP blocks.\n- “Hero” anti-pattern: one author modifies most high-centrality modules.\n\n## Output Requirements\n\nProduce 3–7 insights.\n\nEach insight MUST follow this structure:\n- Title: short, specific, quantified\n- Description: numbers + what pattern means + why it’s happening (hypothesis grounded in graph structure)\n- Business Impact: engineering action items, risk level (CRITICAL/HIGH/MEDIUM/LOW), and expected payoff (time saved, defect reduction, token spend reduction)\n- Confidence: 0.0–1.0 based on evidence strength (sample size, data completeness, extraction quality)\n\n## Examples of good insights (style)\n- “Bus Factor 1 in Top-5 Critical Modules (PageRank > P99): 4/5 Owned by a Single Engineer”\n- “Traceability Gap: 62% of Golden_Entities Have No RESOLVED_TO Edge; Retrieval Will Over-include Unrelated RTL”\n- “Integration Anti-Pattern: 17 Cross-IP Dependency Cycles Span 3+ RTL_Modules; High Debug Cost”\n\n## Constraints\n- Do not assume missing data exists. If coverage is low, call it out and recommend instrumentation/extraction improvements.\n- Keep recommendations practical and phased (quick wins vs structural refactors).\n",
+  "pattern_definitions": {
+    "wcc": [
+      {
+        "name": "orphaned_spec_islands",
+        "description": "Documentation entities/chunks form components that do not connect to RTL via semantic bridges, causing poor traceability and inefficient AI retrieval.",
+        "indicators": [
+          "Chunk / Golden_Entity nodes in WCCs with 0 RTL_Module membership",
+          "Low RESOLVED_TO edge count relative to spec entity count",
+          "High vector retrieval usage reported alongside low bridge coverage"
+        ],
+        "risk_level": "HIGH",
+        "example": "A component of 4,200 spec chunks has no RESOLVED_TO edges to RTL, while the main RTL WCC contains 1.8M nodes.",
+        "business_impact": "SHORT-TERM: Add/repair RESOLVED_TO bridges for top requirements. LONG-TERM: Improve extraction to emit stable RTL identifiers for linking."
+      },
+      {
+        "name": "unexpected_integration_fragmentation",
+        "description": "The RTL graph is fragmented into many small components, often indicating missing edges in extraction, incomplete integration, or hidden coupling through unmodeled artifacts.",
+        "indicators": [
+          "Large count of small RTL-only WCCs",
+          "Top-level integration RTL_Module cannot reach many leaf RTL_Modules",
+          "High ratio of RTL_Modules with no HAS_PORT/HAS_SIGNAL edges"
+        ],
+        "risk_level": "MEDIUM",
+        "example": "320 RTL_Module nodes are isolated in 150 WCCs, suggesting extraction missed instantiation/connection edges for reused IP blocks.",
+        "business_impact": "IMMEDIATE: Validate extraction pipeline on representative IPs. Add missing CONTAINS/HAS_SIGNAL edges to restore connectivity for analysis."
+      }
+    ],
+    "pagerank": [
+      {
+        "name": "critical_ip_bus_factor_one",
+        "description": "High-centrality RTL modules (large blast radius) are maintained by a single engineer, creating severe organizational and delivery risk.",
+        "indicators": [
+          "RTL_Module PageRank in top 1% (P99)",
+          "MAINTAINS or MODIFIED edges indicate a single dominant Author",
+          "Recent commits concentrated to that author"
+        ],
+        "risk_level": "CRITICAL",
+        "example": "Module M has PageRank 0.021 (P99.7) and 92% of commits in the last 12 months are by one author.",
+        "business_impact": "IMMEDIATE: Assign backup maintainer and schedule knowledge transfer. Add documentation bridges and targeted tests before next tapeout milestone."
+      },
+      {
+        "name": "interface_chokepoint_ports_signals",
+        "description": "A small set of ports/signals act as choke points bridging many modules/communities, increasing debug cost and coupling risk.",
+        "indicators": [
+          "RTL_Port/RTL_Signal PageRank in top 1% (P99)",
+          "High betweenness-like behavior (bridging many subgraphs)",
+          "Cross-IP edges concentrated through few interface nodes"
+        ],
+        "risk_level": "HIGH",
+        "example": "Signal S bridges 18 IP blocks and connects 6 communities; failures propagate widely through a single handshake net.",
+        "business_impact": "SHORT-TERM: Add assertions/coverage at the interface. LONG-TERM: Refactor to reduce fan-out or introduce protocol isolation wrappers."
+      }
+    ],
+    "cycles": [
+      {
+        "name": "cross_ip_dependency_cycle",
+        "description": "Cyclic dependencies across RTL modules/IP blocks indicate architectural entanglement and costly debug/verification loops.",
+        "indicators": [
+          "Cycles spanning 3+ RTL_Modules",
+          "Cycles include HAS_SIGNAL/HAS_PORT edges across module boundaries",
+          "Cycles correlate with high churn or repeated bug fixes"
+        ],
+        "risk_level": "HIGH",
+        "example": "A 7-node cycle crosses 4 modules (A→B→C→D→A) through shared control signals and backpressure paths.",
+        "business_impact": "SHORT-TERM: Document cycle and add targeted regression tests. LONG-TERM: break the cycle with clear interface ownership or staged control signals."
+      },
+      {
+        "name": "potential_combinational_loop",
+        "description": "Tight cycles among signals and logic chunks may indicate combinational loops or ambiguous extraction that should be investigated before synthesis/STA.",
+        "indicators": [
+          "Short cycles among RTL_Signal and RTL_LogicChunk nodes",
+          "Cycles avoid sequential boundaries (no state elements) if modeled",
+          "High incidence in recently modified regions"
+        ],
+        "risk_level": "CRITICAL",
+        "example": "A 4-hop cycle connects two assign blocks and two signals with no sequential breaks, suggesting a combinational feedback loop.",
+        "business_impact": "IMMEDIATE: Inspect RTL for combinational feedback; add lint checks and formal assertions. Block tapeout until resolved if confirmed."
+      }
+    ]
+  },
+  "user_validated": true,
+  "user_notes": "Created from a detailed IC Design/EDA domain description. Intended for large-scale RTL + spec semantic-bridge graphs; emphasizes traceability, token-cost reduction, bus factor risk, and control-flow/FSM quality."
+}
+

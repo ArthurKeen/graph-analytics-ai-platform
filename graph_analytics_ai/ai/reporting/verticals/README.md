@@ -8,9 +8,7 @@ This directory contains custom industry verticals that have been promoted from c
 
 ```
 verticals/
-  supply_chain.json       ← Custom vertical for supply chain
-  healthcare.json         ← Custom vertical for healthcare
-  cybersecurity.json      ← Custom vertical for cybersecurity
+  eda_ic_design.json      ← Custom vertical for IC Design & EDA
   README.md              ← This file
 ```
 
@@ -207,7 +205,7 @@ if verticals["project_custom"]:
 
 ## Current Verticals in Registry
 
-As of February 10, 2026:
+As of February 11, 2026:
 
 **Built-in Verticals (5):**
 - adtech (Ad-Tech / Identity Resolution)
@@ -216,8 +214,8 @@ As of February 10, 2026:
 - social (Social Networks)
 - generic (Generic Analysis)
 
-**Platform Custom Verticals (0):**
-- None yet - you can be the first!
+**Platform Custom Verticals (1):**
+- eda_ic_design (Integrated Circuit (IC) Design & Electronic Design Automation (EDA))
 
 ---
 
