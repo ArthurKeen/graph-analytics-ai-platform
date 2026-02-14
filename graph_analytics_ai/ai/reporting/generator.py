@@ -1642,29 +1642,35 @@ Provide ONLY the reformatted insights, nothing else."""
         return "\n".join(lines)
 
     def _format_html(self, report: AnalysisReport) -> str:
-        """Format report as HTML."""
-        # Convert markdown to HTML (basic)
-        markdown = self._format_markdown(report)
+        """Format report as interactive HTML (Plotly + structured layout)."""
+        # Prefer the dedicated HTML formatter (renders actual HTML + embedded charts).
+        # Fallback to markdown-in-pre only if formatter import fails for any reason.
+        try:
+            from .html_formatter import HTMLReportFormatter
 
-        html = f"""<!DOCTYPE html>
+            charts = {}
+            if isinstance(getattr(report, "metadata", None), dict):
+                charts = report.metadata.get("charts") or {}
+
+            formatter = HTMLReportFormatter(theme="modern")
+            return formatter.format_report(report, charts=charts)
+        except Exception:
+            # Last-resort fallback (keeps backward compatibility)
+            markdown = self._format_markdown(report)
+            return f"""<!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>{report.title}</title>
     <style>
         body {{ font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; }}
-        h1 {{ color: #333; }}
-        h2 {{ color: #666; border-bottom: 2px solid #ddd; padding-bottom: 5px; }}
-        table {{ border-collapse: collapse; width: 100%; }}
-        th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
-        th {{ background-color: #f2f2f2; }}
+        pre {{ white-space: pre-wrap; }}
     </style>
 </head>
 <body>
     <pre>{markdown}</pre>
 </body>
 </html>"""
-
-        return html
 
     def _format_text(self, report: AnalysisReport) -> str:
         """Format report as plain text."""

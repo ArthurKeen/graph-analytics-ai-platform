@@ -267,7 +267,28 @@ How will you know if the graph analytics are providing value?
 
 ---
 
-## 11. Data Quality Notes (OPTIONAL)
+## 11. Reporting & Deliverables (RECOMMENDED)
+
+Be explicit about *how* you want results delivered. This prevents “HTML reports” that are actually plain text/Markdown wrappers.
+
+### Report Formats
+- **Interactive HTML (Plotly charts)**: [Yes/No]
+  - **Requirement:** Plotly must be installed in the runtime environment (`pip install plotly`)
+  - **Expectation:** HTML includes interactive charts (hover/zoom/pan) plus insights/recommendations
+- **Markdown**: [Yes/No] (good for PR reviews and lightweight sharing)
+- **JSON**: [Yes/No] (good for downstream automation)
+- **Where to save reports**: [e.g., `output/reports/`]
+
+### Visualizations (if interactive HTML = Yes)
+- Algorithms to chart: [e.g., PageRank, WCC, SCC, Betweenness]
+- Top-K defaults: [e.g., 20 top nodes, 10 largest components]
+- Stakeholders: [who will read the charts]
+
+**Tip:** If you want interactive HTML reports, also see `docs/INTERACTIVE_REPORT_GENERATION.md`.
+
+---
+
+## 12. Data Quality Notes (OPTIONAL)
 
 **Data Completeness:**
 - [e.g., 95% of suppliers have location data]
@@ -283,7 +304,7 @@ How will you know if the graph analytics are providing value?
 
 ---
 
-## 12. Stakeholder Information (OPTIONAL)
+## 13. Stakeholder Information (OPTIONAL)
 
 **Primary Stakeholders:**
 - [Name/Role]: [e.g., Sarah Chen, VP Supply Chain] - [Primary user]

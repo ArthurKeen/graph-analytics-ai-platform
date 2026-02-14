@@ -22,6 +22,7 @@ Use the template at `templates/business_requirements_template.md`
 - Graph Structure (nodes and edges)
 - Key Metrics & KPIs
 - Patterns to Detect
+- Reporting & Deliverables (interactive HTML vs markdown vs JSON)
 - **Example Insights** (most important - shows what good looks like)
 
 ### 2. Generate Your Custom Vertical

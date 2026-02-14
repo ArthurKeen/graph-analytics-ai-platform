@@ -166,6 +166,7 @@ See `examples/requirements_template.md` for a complete template, or use this qui
 **Outputs Needed:**
 - [Output 1]
 - [Output 2]
+- **Report Format:** [Interactive HTML (Plotly) | Markdown | JSON] (choose one or more)
 
 ### REQ-002: [Title]
 ...

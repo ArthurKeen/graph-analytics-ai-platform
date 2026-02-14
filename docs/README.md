@@ -2,8 +2,8 @@
 
 **Graph Analytics AI Platform Documentation**
 
-Last Updated: December 22, 2025 
-Version: 1.1.0
+Last Updated: February 11, 2026
+Version: 1.2.0
 
 ---
 
@@ -164,6 +164,9 @@ Historical documentation (for reference only):
 
 This documentation is actively maintained. Recent additions:
 
+- **Feb 11, 2026**: Reorganized catalog + agent-quality docs under `docs/catalog/` and `docs/agent-quality/`
+- **Feb 11, 2026**: Documented custom vertical generation workflow (`industry="auto"`) and added quickstart guide
+- **Feb 11, 2026**: Updated analytics catalog docs to reflect workflow adapters and idempotent (overwrite-by-key) tracking
 - **Dec 22, 2025**: Added Interactive Report Generation guide
 - **Dec 22, 2025**: Reorganized documentation structure
 - **Dec 22, 2025**: Created customer projects section
