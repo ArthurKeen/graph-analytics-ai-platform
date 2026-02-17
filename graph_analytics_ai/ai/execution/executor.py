@@ -12,6 +12,7 @@ import logging
 from ...gae_orchestrator import GAEOrchestrator, AnalysisConfig
 from ..templates.models import AnalysisTemplate
 from .models import AnalysisJob, ExecutionResult, ExecutionStatus, ExecutionConfig
+from .result_selector import ResultSelector
 
 # Optional catalog imports - catalog is optional dependency
 try:
@@ -423,10 +424,32 @@ class AnalysisExecutor:
                 print(f"Warning: Result collection {job.result_collection} is empty")
                 return []
 
-            # Get up to max_results
-            results = list(collection.all(limit=self.config.max_results_to_fetch))
+            # Get up to max_results using an algorithm-aware selection strategy
+            results, effective_selection = ResultSelector.select_results(
+                db,
+                collection_name=job.result_collection,
+                algorithm=job.algorithm,
+                limit=self.config.max_results_to_fetch,
+                selection=self.config.result_selection,
+            )
 
-            print(f"✓ Collected {len(results)} results from {job.result_collection}")
+            selection_desc = effective_selection.strategy.value
+            if effective_selection.strategy.value == "top_k" and effective_selection.sort_field:
+                direction = "desc" if effective_selection.sort_desc else "asc"
+                selection_desc = f"top_k({effective_selection.sort_field} {direction})"
+            elif (
+                effective_selection.strategy.value == "largest_groups"
+                and effective_selection.group_field
+            ):
+                selection_desc = (
+                    f"largest_groups({effective_selection.group_field}, "
+                    f"groups={effective_selection.groups}, per_group={effective_selection.per_group})"
+                )
+
+            print(
+                f"✓ Collected {len(results)} results from {job.result_collection} "
+                f"(selection={selection_desc})"
+            )
             return results
 
         except Exception as e:

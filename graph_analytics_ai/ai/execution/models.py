@@ -31,6 +31,58 @@ class JobStatus(Enum):
     CANCELLED = "cancelled"
 
 
+class ResultSelectionStrategy(Enum):
+    """Strategy for selecting a subset of result documents for downstream analysis."""
+
+    STORAGE_FIRST = "storage_first"
+    """Fetch the first N documents in default iteration order (legacy behavior)."""
+
+    TOP_K = "top_k"
+    """Sort by a numeric field and fetch the top N."""
+
+    LARGEST_GROUPS = "largest_groups"
+    """Prefer documents from the largest groups (by group_field count)."""
+
+    RANDOM = "random"
+    """Random sample (non-deterministic unless using a deterministic expression)."""
+
+
+@dataclass
+class ResultSelectionConfig:
+    """
+    Configuration for selecting which subset of result documents to fetch.
+
+    Note: This controls only *which* documents are fetched for LLM analysis, charts,
+    and report generation. It does not affect the algorithm output itself.
+    """
+
+    strategy: ResultSelectionStrategy = ResultSelectionStrategy.STORAGE_FIRST
+
+    # TOP_K
+    sort_field: Optional[str] = None
+    sort_desc: bool = True
+
+    # LARGEST_GROUPS
+    group_field: Optional[str] = None
+    groups: int = 10
+    per_group: Optional[int] = None
+
+    # RANDOM
+    random_seed: Optional[int] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            "strategy": self.strategy.value,
+            "sort_field": self.sort_field,
+            "sort_desc": self.sort_desc,
+            "group_field": self.group_field,
+            "groups": self.groups,
+            "per_group": self.per_group,
+            "random_seed": self.random_seed,
+        }
+
+
 @dataclass
 class AnalysisJob:
     """
@@ -113,6 +165,14 @@ class ExecutionConfig:
     max_results_to_fetch: int = 1000
     """Maximum number of result records to fetch."""
 
+    result_selection: Optional[ResultSelectionConfig] = None
+    """
+    Optional strategy for selecting which subset of result records to fetch.
+
+    If None, the executor will choose a sensible algorithm-specific default
+    (e.g., PageRank uses top-k by 'rank'; WCC/SCC prefer largest components).
+    """
+
     retry_on_failure: bool = True
     """Whether to retry failed jobs."""
 
@@ -129,6 +189,9 @@ class ExecutionConfig:
             "max_wait_seconds": self.max_wait_seconds,
             "auto_collect_results": self.auto_collect_results,
             "max_results_to_fetch": self.max_results_to_fetch,
+            "result_selection": (
+                self.result_selection.to_dict() if self.result_selection else None
+            ),
             "retry_on_failure": self.retry_on_failure,
             "max_retries": self.max_retries,
             "store_job_history": self.store_job_history,

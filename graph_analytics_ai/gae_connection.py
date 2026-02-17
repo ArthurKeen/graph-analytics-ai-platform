@@ -1354,7 +1354,12 @@ class GenAIGAEConnection(GAEConnectionBase):
         return self._normalize_job_response(job)
 
     def get_job(self, job_id: str) -> Dict[str, Any]:
-        """Get status of a job."""
+        """Get status of a job.
+
+        Uses GET /v1/jobs/{job_id} per GRAL protocol (https://arangodb.github.io/graph-analytics/).
+        Some platform gateways return 405 Method Not Allowed for that path; in that case
+        we fall back to GET /v1/jobs (list all) and filter by job_id.
+        """
         try:
             job = self._make_request(
                 method="GET",
@@ -1362,8 +1367,27 @@ class GenAIGAEConnection(GAEConnectionBase):
                 error_message=f"Failed to get job {job_id} status",
             )
             return job
+        except requests.exceptions.HTTPError as e:
+            if e.response is not None and e.response.status_code == 405:
+                # Platform gateway may reject GET on /v1/jobs/{id}; use list + filter
+                try:
+                    jobs_resp = self._make_request(
+                        method="GET",
+                        endpoint=f"{API_VERSION_PREFIX}jobs",
+                        error_message=f"Failed to list jobs (fallback for job {job_id})",
+                    )
+                    jobs = jobs_resp.get("jobs", [])
+                    job_id_str = str(job_id)
+                    job_id_int = int(job_id) if str(job_id).isdigit() else None
+                    for j in jobs:
+                        jid = j.get("job_id", j.get("id"))
+                        if jid == job_id or jid == job_id_str or jid == job_id_int:
+                            return j
+                    return {}
+                except Exception:
+                    pass
+            return {}
         except Exception:
-            # Return empty dict on error (backward compatibility)
             return {}
 
     def list_services(self) -> List[Dict[str, Any]]:
