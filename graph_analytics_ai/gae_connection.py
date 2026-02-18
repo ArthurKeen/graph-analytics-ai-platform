@@ -9,6 +9,7 @@ import requests
 import time
 import subprocess
 import logging
+import warnings
 from typing import Optional, Dict, List, Any, Union
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -37,6 +38,14 @@ from .constants import (
 
 
 logger = logging.getLogger(__name__)
+
+# Optional: suppress urllib3 SSL warnings when verify_ssl=False
+try:  # pragma: no cover
+    import urllib3
+    from urllib3.exceptions import InsecureRequestWarning
+except Exception:  # pragma: no cover
+    urllib3 = None
+    InsecureRequestWarning = None
 
 
 class GAEConnectionBase(ABC):
@@ -700,6 +709,23 @@ class GenAIGAEConnection(GAEConnectionBase):
                 "SSL verification is disabled. This may allow man-in-the-middle attacks. "
                 "Only disable SSL verification in trusted environments."
             )
+            suppress = os.getenv("ARANGO_SUPPRESS_INSECURE_WARNINGS", "true").lower() in (
+                "true",
+                "1",
+                "yes",
+            )
+            if suppress and InsecureRequestWarning is not None:
+                # Avoid spamming console output with urllib3 warnings when the user
+                # intentionally disables verification for a trusted environment.
+                try:
+                    if urllib3 is not None:
+                        urllib3.disable_warnings(InsecureRequestWarning)
+                except Exception:
+                    pass
+                try:
+                    warnings.filterwarnings("ignore", category=InsecureRequestWarning)
+                except Exception:
+                    pass
 
         # Will be populated after authentication
         self.jwt_token: Optional[str] = None
@@ -1122,6 +1148,17 @@ class GenAIGAEConnection(GAEConnectionBase):
                     time.sleep(2)
                     continue
 
+                # If we exhausted retries on a known transient rollout signature,
+                # avoid printing noisy [ERROR] lines. The caller (e.g., ensure_service)
+                # already prints periodic "Waiting for API..." status.
+                log_transient = os.getenv("GAE_LOG_TRANSIENT_ERRORS", "false").lower() in (
+                    "true",
+                    "1",
+                    "yes",
+                )
+                if is_transient_gral_route and not log_transient:
+                    raise
+
                 if status == 401 and attempt < max_attempts:
                     # Same as above but for raise_for_status paths.
                     self._refresh_jwt_token()
@@ -1385,38 +1422,68 @@ class GenAIGAEConnection(GAEConnectionBase):
         """Get status of a job.
 
         Uses GET /v1/jobs/{job_id} per GRAL protocol (https://arangodb.github.io/graph-analytics/).
-        Some platform gateways return 405 Method Not Allowed for that path; in that case
-        we fall back to GET /v1/jobs (list all) and filter by job_id.
+        Some platform gateways return 404/405 for that path; in that case we fall back
+        to GET /v1/jobs (list all) and filter by job_id.
         """
+        if not self.engine_id:
+            if self.auto_reuse_services:
+                self.ensure_service()
+            else:
+                self.start_engine()
+
+        engine_url = self._get_engine_url()
+        url = f"{engine_url}/{API_VERSION_PREFIX}jobs/{job_id}"
+        headers = self._get_headers()
+
+        # Try direct per-job endpoint (best signal when available).
         try:
-            job = self._make_request(
-                method="GET",
-                endpoint=f"{API_VERSION_PREFIX}jobs/{job_id}",
-                error_message=f"Failed to get job {job_id} status",
+            response = requests.get(
+                url, headers=headers, timeout=self.timeout, verify=self.verify_ssl
             )
-            return job
-        except requests.exceptions.HTTPError as e:
-            if e.response is not None and e.response.status_code == 405:
-                # Platform gateway may reject GET on /v1/jobs/{id}; use list + filter
-                try:
-                    jobs_resp = self._make_request(
-                        method="GET",
-                        endpoint=f"{API_VERSION_PREFIX}jobs",
-                        error_message=f"Failed to list jobs (fallback for job {job_id})",
-                    )
-                    jobs = jobs_resp.get("jobs", [])
-                    job_id_str = str(job_id)
-                    job_id_int = int(job_id) if str(job_id).isdigit() else None
-                    for j in jobs:
-                        jid = j.get("job_id", j.get("id"))
-                        if jid == job_id or jid == job_id_str or jid == job_id_int:
-                            return j
-                    return {}
-                except Exception:
-                    pass
-            return {}
+            if response.status_code == 401:
+                self._refresh_jwt_token()
+                headers = self._get_headers()
+                response = requests.get(
+                    url, headers=headers, timeout=self.timeout, verify=self.verify_ssl
+                )
+
+            # Some gateways / deployments don't support this path.
+            if response.status_code not in (404, 405):
+                response.raise_for_status()
+                return response.json() if response.text else {}
         except Exception:
-            return {}
+            # We'll attempt a fallback below.
+            pass
+
+        # Fallback: list jobs and filter (works on gateways that block /jobs/{id}).
+        try:
+            list_url = f"{engine_url}/{API_VERSION_PREFIX}jobs"
+            response = requests.get(
+                list_url, headers=headers, timeout=self.timeout, verify=self.verify_ssl
+            )
+            if response.status_code == 401:
+                self._refresh_jwt_token()
+                headers = self._get_headers()
+                response = requests.get(
+                    list_url,
+                    headers=headers,
+                    timeout=self.timeout,
+                    verify=self.verify_ssl,
+                )
+            response.raise_for_status()
+
+            jobs_resp = response.json() if response.text else {}
+            jobs = jobs_resp.get("jobs", [])
+            job_id_str = str(job_id)
+            job_id_int = int(job_id) if str(job_id).isdigit() else None
+            for j in jobs:
+                jid = j.get("job_id", j.get("id"))
+                if jid == job_id or jid == job_id_str or jid == job_id_int:
+                    return j
+        except Exception:
+            pass
+
+        return {}
 
     def list_services(self) -> List[Dict[str, Any]]:
         """

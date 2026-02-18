@@ -867,9 +867,36 @@ class GAEOrchestrator:
 
         start_time = time.time()
         last_status = None
+        missing_job_started_at: Optional[float] = None
+        missing_job_grace_seconds = int(
+            os.getenv("GAE_JOB_NOT_FOUND_GRACE_SECONDS", "15") or "15"
+        )
 
         while True:
             job = self.gae.get_job(job_id)
+            if not job:
+                # When the engine returns 404 "job not found" (or the gateway blocks
+                # /jobs/{id}), the connection layer may return {}. Don't spin until the
+                # full timeout; treat persistent missing jobs as a failure after a
+                # short grace window to allow for eventual-consistency right after submit.
+                now = time.time()
+                if missing_job_started_at is None:
+                    missing_job_started_at = now
+                    self._log(
+                        f"    Status: job not found yet (will retry for ~{missing_job_grace_seconds}s)",
+                        "WARN",
+                    )
+                elif now - missing_job_started_at >= missing_job_grace_seconds:
+                    raise RuntimeError(
+                        f"{description} failed: job {job_id} not found after {missing_job_grace_seconds}s. "
+                        "This often happens if the engine was restarted/cleaned up or the platform gateway "
+                        "does not expose per-job status endpoints."
+                    )
+
+                time.sleep(poll_interval)
+                continue
+            else:
+                missing_job_started_at = None
 
             # GAE API uses different response formats:
             # 1. status-based: {'status': 'succeeded'|'failed'|'running'}
