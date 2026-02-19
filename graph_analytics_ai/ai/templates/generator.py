@@ -140,10 +140,32 @@ class TemplateGenerator:
             print(f"  Type: {use_case.use_case_type}")
             print(f"  Data needs: {use_case.data_needs}")
 
-            # Get suitable algorithms for this use case type
-            algorithms = USE_CASE_TO_ALGORITHM.get(
-                use_case.use_case_type, [AlgorithmType.PAGERANK]  # Default fallback
-            )
+            # Prefer explicit algorithm hints from the use case (when present)
+            algorithms: List[AlgorithmType] = []
+            if getattr(use_case, "graph_algorithms", None):
+                for algo in use_case.graph_algorithms:
+                    if not algo:
+                        continue
+                    key = str(algo).strip().lower()
+                    # Normalize common aliases to supported enum values
+                    alias = {
+                        "betweeness": "betweenness",
+                        "betweenness_centrality": "betweenness",
+                        "labelprop": "label_propagation",
+                        "label-propagation": "label_propagation",
+                        "page_rank": "pagerank",
+                        "page-rank": "pagerank",
+                    }.get(key, key)
+                    try:
+                        algorithms.append(AlgorithmType(alias))
+                    except Exception:
+                        continue
+
+            # Fall back to use-case-type mapping if no explicit algorithm was parsed
+            if not algorithms:
+                algorithms = USE_CASE_TO_ALGORITHM.get(
+                    use_case.use_case_type, [AlgorithmType.PAGERANK]  # Default fallback
+                )
 
             print(
                 f"[TEMPLATE DEBUG] Mapped use case type '{use_case.use_case_type}' to algorithms: {[a.value for a in algorithms]}"

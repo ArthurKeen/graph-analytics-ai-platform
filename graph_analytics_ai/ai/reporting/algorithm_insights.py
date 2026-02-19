@@ -6,6 +6,235 @@ Provides templates for detecting and explaining common patterns in each algorith
 
 from typing import Dict, List, Callable, Any
 
+EDA_SPEC_COLLECTIONS = {"Chunk", "Golden_Entity"}
+EDA_RTL_PREFIXES = ("RTL_", "FSM_")
+
+
+def _collection_from_vertex_id(vertex_id: str) -> str:
+    if not vertex_id:
+        return ""
+    if "/" in vertex_id:
+        return vertex_id.split("/", 1)[0]
+    # Some datasets store bare _key; return empty so callers handle gracefully
+    return ""
+
+
+def detect_wcc_eda_ic_design_patterns(
+    results: List[Dict[str, Any]], total_nodes: int
+) -> List[Dict[str, Any]]:
+    """
+    Detect IC/EDA-specific WCC patterns.
+
+    Primary goals:
+    - Orphaned spec islands (Chunk/Golden_Entity components with no RTL membership)
+    - Unexpected fragmentation across RTL blocks
+    """
+    patterns: List[Dict[str, Any]] = []
+    if not results:
+        return patterns
+
+    # Group by component id
+    components: Dict[Any, List[Dict[str, Any]]] = {}
+    for r in results:
+        comp = r.get("component")
+        components.setdefault(comp, []).append(r)
+
+    component_sizes = [(cid, len(nodes)) for cid, nodes in components.items()]
+    component_sizes.sort(key=lambda x: x[1], reverse=True)
+
+    # Pattern: orphaned spec islands
+    orphan_islands: List[Dict[str, Any]] = []
+    for cid, nodes in components.items():
+        cols = {_collection_from_vertex_id(n.get("id", "")) for n in nodes}
+        cols.discard("")
+        has_rtl = any(c.startswith(EDA_RTL_PREFIXES) for c in cols)
+        has_spec = bool(cols & EDA_SPEC_COLLECTIONS)
+        if has_spec and not has_rtl:
+            orphan_islands.append({"component_id": cid, "size": len(nodes), "cols": cols})
+
+    orphan_islands.sort(key=lambda x: x["size"], reverse=True)
+    if orphan_islands:
+        largest = orphan_islands[0]
+        total_orphan_nodes = sum(x["size"] for x in orphan_islands)
+        pct = (total_orphan_nodes / total_nodes * 100) if total_nodes else 0
+        risk = "HIGH" if pct >= 5 or largest["size"] >= 1000 else "MEDIUM"
+        patterns.append(
+            {
+                "type": "orphaned_spec_islands",
+                "risk_level": risk,
+                "title": f"Traceability Gap: {total_orphan_nodes:,} Spec Nodes in Orphan Components ({pct:.1f}% of WCC sample)",
+                "description": (
+                    f"Detected {len(orphan_islands)} spec-only connected components (Chunk/Golden_Entity) with no RTL membership. "
+                    f"Largest orphan component {largest['component_id']} has {largest['size']:,} nodes. "
+                    "This indicates missing/failed RESOLVED_TO semantic bridges, reducing spec→RTL traceability and increasing retrieval noise."
+                ),
+                "business_impact": (
+                    "SHORT-TERM: Add/repair RESOLVED_TO bridges for top requirements/spec entities. "
+                    "LONG-TERM: Improve extraction to emit stable RTL identifiers for linking and measure bridge coverage per release."
+                ),
+                "confidence": 0.8,
+                "supporting_data": {
+                    "orphan_component_count": len(orphan_islands),
+                    "orphan_node_count": total_orphan_nodes,
+                    "largest_orphan_component": largest,
+                },
+            }
+        )
+
+    # Pattern: unexpected integration fragmentation (RTL-only small components)
+    rtl_only_components = 0
+    isolated_rtl_modules = 0
+    for cid, nodes in components.items():
+        cols = {_collection_from_vertex_id(n.get("id", "")) for n in nodes}
+        cols.discard("")
+        if cols and all(c.startswith(EDA_RTL_PREFIXES) for c in cols):
+            # Count RTL-only components that are small
+            if len(nodes) <= 5:
+                rtl_only_components += 1
+            # Count isolated RTL_Module nodes specifically
+            if len(nodes) == 1:
+                only = nodes[0]
+                if _collection_from_vertex_id(only.get("id", "")) == "RTL_Module":
+                    isolated_rtl_modules += 1
+
+    if rtl_only_components >= 25 or isolated_rtl_modules >= 10:
+        patterns.append(
+            {
+                "type": "unexpected_integration_fragmentation",
+                "risk_level": "MEDIUM",
+                "title": f"Integration Fragmentation: {rtl_only_components} Small RTL-Only Components (incl. {isolated_rtl_modules} isolated RTL_Modules)",
+                "description": (
+                    "The RTL subgraph is fragmented into many small connected components. This often indicates missing edges in extraction "
+                    "(e.g., instantiation/wiring not captured) or incomplete integration of reused IP blocks."
+                ),
+                "business_impact": (
+                    "IMMEDIATE: Validate extraction on representative RTL modules and ensure CONTAINS/HAS_PORT/HAS_SIGNAL/connection edges are emitted. "
+                    "Add missing structural relationships to restore connectivity for analytics."
+                ),
+                "confidence": 0.7,
+                "supporting_data": {
+                    "small_rtl_only_components": rtl_only_components,
+                    "isolated_rtl_modules": isolated_rtl_modules,
+                },
+            }
+        )
+
+    return patterns
+
+
+def detect_pagerank_eda_ic_design_patterns(
+    results: List[Dict[str, Any]]
+) -> List[Dict[str, Any]]:
+    """
+    Detect IC/EDA-specific PageRank patterns from ranked nodes.
+
+    Notes:
+    - Ownership/bus-factor checks require joining to Author/GitCommit subgraph and are handled elsewhere.
+    """
+    patterns: List[Dict[str, Any]] = []
+    if not results or len(results) < 10:
+        return patterns
+
+    sorted_results = sorted(results, key=lambda x: x.get("rank", 0), reverse=True)
+    ranks = [r.get("rank", 0) for r in sorted_results if isinstance(r.get("rank"), (int, float))]
+    if not ranks or max(ranks) == 0:
+        return patterns
+
+    top_20 = sorted_results[:20]
+    top_cols = [_collection_from_vertex_id(r.get("id", "")) for r in top_20]
+    top_cols = [c for c in top_cols if c]
+    port_signal_count = sum(1 for c in top_cols if c in ("RTL_Port", "RTL_Signal"))
+
+    # Pattern: interface chokepoints (ports/signals dominate top ranks)
+    if port_signal_count >= 10:
+        patterns.append(
+            {
+                "type": "interface_chokepoint_ports_signals",
+                "risk_level": "HIGH",
+                "title": f"Interface Chokepoints: {port_signal_count}/20 of Top PageRank Nodes are Ports/Signals",
+                "description": (
+                    "A large fraction of the highest-ranked nodes are RTL_Port/RTL_Signal types, indicating interface hubs and global wires. "
+                    "These are common blast-radius amplifiers and debug bottlenecks."
+                ),
+                "business_impact": (
+                    "SHORT-TERM: Add assertions/coverage at the top-ranked interfaces. "
+                    "LONG-TERM: Refactor to reduce fan-out or introduce isolation wrappers/protocol boundaries."
+                ),
+                "confidence": 0.75,
+                "supporting_data": {
+                    "top_collections": top_cols,
+                    "port_signal_top20": port_signal_count,
+                },
+            }
+        )
+
+    # Pattern: high concentration (few nodes dominate influence)
+    total_rank = sum(ranks)
+    top_10_rank = sum(r.get("rank", 0) for r in sorted_results[:10])
+    top_10_pct = (top_10_rank / total_rank * 100) if total_rank else 0
+    if top_10_pct > 50:
+        patterns.append(
+            {
+                "type": "high_concentration",
+                "risk_level": "MEDIUM",
+                "title": f"Blast Radius Concentration: Top 10 Nodes Account for {top_10_pct:.1f}% of Total PageRank",
+                "description": (
+                    "Influence is highly concentrated in a small set of nodes. In IC/EDA graphs, this often indicates a few core IP blocks or global nets "
+                    "that dominate dependency and traceability flow."
+                ),
+                "business_impact": (
+                    "PRIORITIZE: Treat these nodes as critical IP. Ensure secondary maintainers, documentation bridges, and targeted regression coverage."
+                ),
+                "confidence": 0.7,
+                "supporting_data": {"top_10_pct": top_10_pct, "top_10": sorted_results[:10]},
+            }
+        )
+
+    return patterns
+
+
+def detect_scc_eda_ic_design_patterns(
+    results: List[Dict[str, Any]], total_nodes: int
+) -> List[Dict[str, Any]]:
+    """
+    Detect IC/EDA-specific SCC patterns as a proxy for cyclic dependency risk.
+    """
+    patterns: List[Dict[str, Any]] = []
+    if not results:
+        return patterns
+
+    # Group by SCC component
+    components: Dict[Any, List[Dict[str, Any]]] = {}
+    for r in results:
+        comp = r.get("component")
+        components.setdefault(comp, []).append(r)
+    sizes = sorted((len(nodes) for nodes in components.values()), reverse=True)
+    if not sizes:
+        return patterns
+
+    largest = sizes[0]
+    largest_pct = (largest / total_nodes * 100) if total_nodes else 0
+    if largest_pct >= 10 and largest >= 50:
+        patterns.append(
+            {
+                "type": "cross_ip_dependency_cycle",
+                "risk_level": "HIGH" if largest_pct >= 25 else "MEDIUM",
+                "title": f"Cyclic Core Risk: Largest SCC has {largest:,} nodes ({largest_pct:.1f}% of SCC sample)",
+                "description": (
+                    "A large strongly-connected core indicates cyclic dependencies and tightly coupled subgraphs. "
+                    "This is an architectural risk amplifier and often correlates with expensive verification/debug loops."
+                ),
+                "business_impact": (
+                    "SHORT-TERM: Identify the boundary nodes/interfaces of the dominant SCC and add targeted regression tests. "
+                    "LONG-TERM: Break cycles with clearer ownership boundaries or staged control/backpressure redesign."
+                ),
+                "confidence": 0.7,
+                "supporting_data": {"largest_scc_size": largest, "largest_scc_pct": largest_pct},
+            }
+        )
+
+    return patterns
+
 
 # WCC Pattern Detection for Ad-Tech
 def detect_wcc_adtech_patterns(results: List[Dict[str, Any]], total_nodes: int) -> List[Dict[str, Any]]:
@@ -336,6 +565,8 @@ ALGORITHM_PATTERNS: Dict[str, Dict[str, Callable]] = {
         "fraud": detect_wcc_fraud_patterns,
         "aml": detect_wcc_fraud_patterns,
         "indian_banking": detect_wcc_fraud_patterns,
+        "eda_ic_design": detect_wcc_eda_ic_design_patterns,
+        "eda": detect_wcc_eda_ic_design_patterns,
     },
     "pagerank": {
         "adtech": detect_pagerank_adtech_patterns,
@@ -343,11 +574,19 @@ ALGORITHM_PATTERNS: Dict[str, Dict[str, Callable]] = {
         "fraud": detect_pagerank_fraud_patterns,
         "aml": detect_pagerank_fraud_patterns,
         "indian_banking": detect_pagerank_fraud_patterns,
+        "eda_ic_design": detect_pagerank_eda_ic_design_patterns,
+        "eda": detect_pagerank_eda_ic_design_patterns,
+    },
+    "scc": {
+        "eda_ic_design": detect_scc_eda_ic_design_patterns,
+        "eda": detect_scc_eda_ic_design_patterns,
     },
 }
 
 
-def detect_patterns(algorithm: str, industry: str, results: List[Dict[str, Any]], **kwargs) -> List[Dict[str, Any]]:
+def detect_patterns(
+    algorithm: str, industry: str, results: List[Dict[str, Any]], **kwargs
+) -> List[Dict[str, Any]]:
     """
     Detect algorithm and industry-specific patterns in results.
     
@@ -367,4 +606,17 @@ def detect_patterns(algorithm: str, industry: str, results: List[Dict[str, Any]]
         return []
     
     detector = ALGORITHM_PATTERNS[algorithm][industry]
+
+    # Provide common context automatically when not explicitly passed.
+    # This keeps ReportGenerator integration simple while supporting detectors
+    # that rely on global metrics like total node count.
+    try:
+        import inspect
+
+        params = inspect.signature(detector).parameters
+        if "total_nodes" in params and "total_nodes" not in kwargs:
+            kwargs["total_nodes"] = len(results or [])
+    except Exception:
+        pass
+
     return detector(results, **kwargs)

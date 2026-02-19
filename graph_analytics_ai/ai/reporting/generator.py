@@ -19,6 +19,7 @@ from .models import (
     RecommendationType,
     ReportFormat,
 )
+from .algorithm_insights import detect_patterns
 
 
 class ReportGenerator:
@@ -57,7 +58,11 @@ class ReportGenerator:
             enable_charts: Whether to generate interactive charts
             industry: Industry identifier for domain-specific prompts and validation
         """
-        self.llm_provider = llm_provider or create_llm_provider()
+        # Avoid forcing LLM configuration when running in heuristic-only mode.
+        # This is important for catalog-only discovery and offline/report-only usages.
+        self.llm_provider = llm_provider or (
+            create_llm_provider() if use_llm_interpretation else None
+        )
         self.use_llm_interpretation = use_llm_interpretation
         self.enable_charts = enable_charts
         self.industry = industry
@@ -117,6 +122,18 @@ class ReportGenerator:
             },
         )
 
+        # Carry workflow flags into report metadata (used for Discovery Summary).
+        if context and isinstance(context, dict):
+            workflow_ctx = context.get("workflow")
+            if isinstance(workflow_ctx, dict):
+                report.metadata.update(
+                    {
+                        "discovery_mode": bool(workflow_ctx.get("discovery_mode")),
+                        "epoch_id": workflow_ctx.get("epoch_id"),
+                        "baseline_epoch_id": workflow_ctx.get("baseline_epoch_id"),
+                    }
+                )
+
         # Extract metrics from results
         report.metrics = self._extract_metrics(execution_result)
 
@@ -146,6 +163,52 @@ class ReportGenerator:
         report.sections = self._create_sections(report, execution_result)
 
         return report
+
+    def _create_discovery_summary_content(self, report: AnalysisReport) -> str:
+        """Create a high-signal Discovery Summary section."""
+        baseline = report.metadata.get("baseline_comparison") or {}
+
+        delta_insights = [i for i in report.insights if i.title.strip().startswith("Δ")]
+        risk_insights = [
+            i
+            for i in report.insights
+            if i.insight_type in (InsightType.ANOMALY, InsightType.PATTERN)
+        ]
+        risk_insights.sort(key=lambda x: x.confidence or 0.0, reverse=True)
+
+        lines: List[str] = []
+
+        if baseline:
+            lines.append("**Baseline comparison:** enabled")
+            be = baseline.get("baseline_execution_id")
+            if be:
+                lines.append(f"- **Baseline execution:** {be}")
+            bt = baseline.get("baseline_template_name")
+            if bt:
+                lines.append(f"- **Baseline template:** {bt}")
+            lines.append("")
+
+        if delta_insights:
+            lines.append("**New/Changed since baseline**")
+            for ins in delta_insights[:5]:
+                lines.append(f"- {ins.title}")
+            lines.append("")
+
+        lines.append("**Top risks / patterns**")
+        if not risk_insights:
+            lines.append("- _No high-signal patterns detected in this sample._")
+        else:
+            for ins in risk_insights[:5]:
+                lines.append(f"- {ins.title}")
+        lines.append("")
+
+        if report.recommendations:
+            lines.append("**Top recommended next actions**")
+            for rec in report.recommendations[:5]:
+                lines.append(f"- {rec.title}")
+            lines.append("")
+
+        return "\n".join(lines).strip() or "_No discovery summary available._"
 
     def generate_batch_report(
         self,
@@ -286,6 +349,29 @@ class ReportGenerator:
             insights.extend(self._scc_insights(results))
         elif job.algorithm == "betweenness":
             insights.extend(self._betweenness_insights(results))
+
+        # Domain-specific structured pattern detectors (best-effort)
+        try:
+            patterns = detect_patterns(job.algorithm, self.industry, results)
+            for p in patterns:
+                risk = str(p.get("risk_level", "")).upper()
+                insight_type = (
+                    InsightType.ANOMALY
+                    if risk in ("CRITICAL", "HIGH")
+                    else InsightType.PATTERN
+                )
+                insights.append(
+                    Insight(
+                        title=p.get("title", p.get("type", "Pattern detected")),
+                        description=p.get("description", ""),
+                        insight_type=insight_type,
+                        confidence=float(p.get("confidence", 0.7) or 0.7),
+                        business_impact=p.get("business_impact", ""),
+                        supporting_data=p.get("supporting_data", {}),
+                    )
+                )
+        except Exception:
+            pass
 
         return insights
 
@@ -1426,6 +1512,17 @@ Provide ONLY the reformatted insights, nothing else."""
     ) -> List[ReportSection]:
         """Create report sections."""
         sections = []
+
+        # Discovery Summary section (opt-in) - keep at the top
+        if report.metadata.get("discovery_mode") or report.metadata.get(
+            "baseline_comparison"
+        ):
+            sections.append(
+                ReportSection(
+                    title="0. Discovery Summary",
+                    content=self._create_discovery_summary_content(report),
+                )
+            )
 
         # Overview section
         sections.append(

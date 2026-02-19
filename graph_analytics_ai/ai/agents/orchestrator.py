@@ -340,7 +340,12 @@ cost, and providing clear diagnostics on any failures."""
         task_message = self.create_message(
             to_agent=agent_name,
             message_type="task",
-            content={"step": step, "instructions": f"Execute {step}"},
+            content={
+                "step": step,
+                "instructions": f"Execute {step}",
+                "documents": state.input_documents,
+                "max_executions": state.metadata.get("max_executions"),
+            },
         )
 
         state.add_message(task_message)
@@ -399,6 +404,7 @@ cost, and providing clear diagnostics on any failures."""
         self,
         input_documents: Optional[List[Dict[str, Any]]] = None,
         database_config: Optional[Dict[str, Any]] = None,
+        workflow_metadata: Optional[Dict[str, Any]] = None,
     ) -> AgentState:
         """
         Run complete workflow.
@@ -414,6 +420,8 @@ cost, and providing clear diagnostics on any failures."""
         state = AgentState(
             input_documents=input_documents or [], database_config=database_config or {}
         )
+        if workflow_metadata:
+            state.metadata.update(workflow_metadata)
 
         # Start workflow
         start_message = self.create_message(
@@ -431,6 +439,7 @@ cost, and providing clear diagnostics on any failures."""
         input_documents: Optional[List[Dict[str, Any]]] = None,
         database_config: Optional[Dict[str, Any]] = None,
         enable_parallelism: bool = True,
+        workflow_metadata: Optional[Dict[str, Any]] = None,
     ) -> AgentState:
         """
         Run complete workflow with parallel execution (async version).
@@ -453,6 +462,8 @@ cost, and providing clear diagnostics on any failures."""
         state = AgentState(
             input_documents=input_documents or [], database_config=database_config or {}
         )
+        if workflow_metadata:
+            state.metadata.update(workflow_metadata)
 
         self.log("🚀 Starting parallel agentic workflow orchestration")
 
@@ -541,6 +552,7 @@ cost, and providing clear diagnostics on any failures."""
                 "step": step,
                 "instructions": f"Execute {step}",
                 "documents": state.input_documents,  # Pass documents for requirements agent
+                "max_executions": state.metadata.get("max_executions"),
             },
         )
 

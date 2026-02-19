@@ -132,7 +132,10 @@ class AgenticWorkflowRunner:
                 catalog=self.catalog,
             ),
             AgentNames.REPORTING_SPECIALIST: ReportingAgent(
-                llm_provider=self.llm_provider, trace_collector=self.trace_collector
+                llm_provider=self.llm_provider,
+                trace_collector=self.trace_collector,
+                catalog=self.catalog,
+                db_connection=self.db,
             ),
         }
 
@@ -141,6 +144,9 @@ class AgenticWorkflowRunner:
         input_documents: Optional[List[Dict[str, Any]]] = None,
         database_config: Optional[Dict[str, Any]] = None,
         max_executions: int = 3,
+        discovery_mode: bool = False,
+        epoch_id: Optional[str] = None,
+        baseline_epoch_id: Optional[str] = None,
     ) -> AgentState:
         """
         Run complete agentic workflow.
@@ -171,7 +177,14 @@ class AgenticWorkflowRunner:
 
         # Run workflow
         state = self.orchestrator.run_workflow(
-            input_documents=input_documents, database_config=database_config
+            input_documents=input_documents,
+            database_config=database_config,
+            workflow_metadata={
+                "discovery_mode": discovery_mode,
+                "epoch_id": epoch_id,
+                "baseline_epoch_id": baseline_epoch_id,
+                "max_executions": max_executions,
+            },
         )
 
         # Record workflow end
@@ -194,6 +207,9 @@ class AgenticWorkflowRunner:
         database_config: Optional[Dict[str, Any]] = None,
         max_executions: int = 3,
         enable_parallelism: bool = True,
+        discovery_mode: bool = False,
+        epoch_id: Optional[str] = None,
+        baseline_epoch_id: Optional[str] = None,
     ) -> AgentState:
         """
         Run complete agentic workflow with async/parallel execution.
@@ -239,6 +255,12 @@ class AgenticWorkflowRunner:
             input_documents=input_documents,
             database_config=database_config,
             enable_parallelism=enable_parallelism,
+            workflow_metadata={
+                "discovery_mode": discovery_mode,
+                "epoch_id": epoch_id,
+                "baseline_epoch_id": baseline_epoch_id,
+                "max_executions": max_executions,
+            },
         )
 
         # Record workflow end

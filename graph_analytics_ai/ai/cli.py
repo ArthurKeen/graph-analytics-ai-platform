@@ -5,6 +5,7 @@ Provides easy access to all workflow functionality through CLI commands.
 """
 
 import sys
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -153,6 +154,258 @@ def run_workflow(
             click.echo(f"❌ Workflow failed: {result.error_message}", err=True)
             click.echo(f"   Completed steps: {', '.join(result.completed_steps)}")
             sys.exit(1)
+
+    except Exception as e:
+        click.echo(f"❌ Error: {str(e)}", err=True)
+        sys.exit(1)
+
+
+@cli.command("run-agentic")
+@click.option(
+    "--requirements",
+    "-r",
+    multiple=True,
+    required=True,
+    help="Path to business requirements document(s). Can be specified multiple times.",
+)
+@click.option(
+    "--database-endpoint",
+    "-e",
+    required=True,
+    help="ArangoDB endpoint URL (e.g., https://host:8529)",
+)
+@click.option(
+    "--database-name",
+    "-d",
+    required=True,
+    help="Name of the ArangoDB database to analyze",
+)
+@click.option(
+    "--database-username",
+    "-u",
+    default="root",
+    help="Database username (default: root)",
+)
+@click.option("--database-password", "-p", default="", help="Database password")
+@click.option(
+    "--graph-name",
+    default="graph",
+    help="Graph name identifier for templates (default: graph)",
+)
+@click.option(
+    "--max-executions",
+    default=3,
+    type=int,
+    show_default=True,
+    help="Maximum number of analyses to execute (demo safety cap).",
+)
+@click.option(
+    "--parallel/--no-parallel",
+    default=True,
+    show_default=True,
+    help="Run agentic workflow with parallel execution.",
+)
+@click.option(
+    "--discovery/--no-discovery",
+    default=False,
+    show_default=True,
+    help="Enable Discovery Mode (unknown-unknowns health/risk checks).",
+)
+@click.option(
+    "--epoch-id",
+    default=None,
+    help="Catalog epoch id/name for this run (enables baseline comparisons).",
+)
+@click.option(
+    "--baseline-epoch-id",
+    default=None,
+    help="Catalog epoch id/name to compare against (Discovery Mode baseline).",
+)
+def run_agentic(
+    requirements: tuple,
+    database_endpoint: str,
+    database_name: str,
+    database_username: str,
+    database_password: str,
+    graph_name: str,
+    max_executions: int,
+    parallel: bool,
+    discovery: bool,
+    epoch_id: Optional[str],
+    baseline_epoch_id: Optional[str],
+):
+    """
+    Run the autonomous agentic workflow (optionally with Discovery Mode).
+
+    This uses the multi-agent system and can run steps in parallel for speed.
+    """
+    req_paths = list(requirements)
+    for req_path in req_paths:
+        if not Path(req_path).exists():
+            click.echo(f"❌ Error: Requirements file not found: {req_path}", err=True)
+            sys.exit(1)
+
+    # Provide DB config via env (agentic stack uses get_db_connection/get_arango_config)
+    os.environ["ARANGO_ENDPOINT"] = database_endpoint
+    os.environ["ARANGO_DATABASE"] = database_name
+    os.environ["ARANGO_USER"] = database_username
+    os.environ["ARANGO_PASSWORD"] = database_password
+
+    try:
+        from .agents import AgenticWorkflowRunner
+
+        # Enable catalog automatically when Discovery Mode or baselines are requested
+        catalog = None
+        if discovery or epoch_id or baseline_epoch_id:
+            from ..catalog import AnalysisCatalog
+            from ..catalog.storage import ArangoDBStorage
+            from ..db_connection import get_db_connection
+
+            db = get_db_connection()
+            catalog = AnalysisCatalog(ArangoDBStorage(db))
+
+        runner = AgenticWorkflowRunner(graph_name=graph_name, catalog=catalog)
+
+        if parallel:
+            import asyncio
+
+            state = asyncio.run(
+                runner.run_async(
+                    input_documents=req_paths,
+                    max_executions=max_executions,
+                    discovery_mode=discovery,
+                    epoch_id=epoch_id,
+                    baseline_epoch_id=baseline_epoch_id,
+                )
+            )
+        else:
+            state = runner.run(
+                input_documents=req_paths,
+                max_executions=max_executions,
+                discovery_mode=discovery,
+                epoch_id=epoch_id,
+                baseline_epoch_id=baseline_epoch_id,
+            )
+
+        # Exit code based on errors (workflow can complete with partial failures)
+        if state.errors:
+            click.echo(
+                f"⚠️  Completed with {len(state.errors)} error(s). See logs/reports for details.",
+                err=True,
+            )
+            sys.exit(2)
+
+    except Exception as e:
+        click.echo(f"❌ Error: {str(e)}", err=True)
+        sys.exit(1)
+
+
+@cli.command("discovery-from-catalog")
+@click.option(
+    "--database-endpoint",
+    "-e",
+    required=True,
+    help="ArangoDB endpoint URL (e.g., https://host:8529)",
+)
+@click.option(
+    "--database-name",
+    "-d",
+    required=True,
+    help="Name of the ArangoDB database",
+)
+@click.option(
+    "--database-username",
+    "-u",
+    default="root",
+    help="Database username (default: root)",
+)
+@click.option("--database-password", "-p", default="", help="Database password")
+@click.option(
+    "--industry",
+    default="generic",
+    show_default=True,
+    help="Industry vertical (e.g., eda_ic_design). Controls pattern detectors.",
+)
+@click.option(
+    "--graph-name",
+    default=None,
+    help="Optional graph_name filter to restrict catalog executions.",
+)
+@click.option(
+    "--since-epochs",
+    default=5,
+    type=int,
+    show_default=True,
+    help="How many most recent epochs to scan.",
+)
+@click.option(
+    "--baseline-epoch-id",
+    default=None,
+    help="Optional baseline epoch_id to compare against (must exist in catalog).",
+)
+@click.option(
+    "--output-dir",
+    "-o",
+    default="./workflow_output",
+    show_default=True,
+    help="Output directory for discovery report files",
+)
+def discovery_from_catalog(
+    database_endpoint: str,
+    database_name: str,
+    database_username: str,
+    database_password: str,
+    industry: str,
+    graph_name: Optional[str],
+    since_epochs: int,
+    baseline_epoch_id: Optional[str],
+    output_dir: str,
+):
+    """Generate a consolidated Discovery report from catalog + stored results (no new GAE runs)."""
+    os.environ["ARANGO_ENDPOINT"] = database_endpoint
+    os.environ["ARANGO_DATABASE"] = database_name
+    os.environ["ARANGO_USER"] = database_username
+    os.environ["ARANGO_PASSWORD"] = database_password
+
+    try:
+        from ..db_connection import get_db_connection
+        from ..catalog import AnalysisCatalog
+        from ..catalog.storage import ArangoDBStorage
+        from .reporting.catalog_discovery import (
+            CatalogDiscoveryConfig,
+            generate_catalog_discovery_report,
+        )
+        from .reporting.generator import ReportGenerator
+        from .reporting.models import ReportFormat
+
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+        db = get_db_connection()
+        catalog = AnalysisCatalog(ArangoDBStorage(db))
+
+        cfg = CatalogDiscoveryConfig(
+            industry=industry,
+            graph_name=graph_name,
+            since_epochs=since_epochs,
+            baseline_epoch_id=baseline_epoch_id,
+        )
+
+        report = generate_catalog_discovery_report(catalog=catalog, db=db, cfg=cfg)
+
+        formatter = ReportGenerator(
+            llm_provider=None, use_llm_interpretation=False, enable_charts=False
+        )
+        md = formatter.format_report(report, ReportFormat.MARKDOWN)
+        html = formatter.format_report(report, ReportFormat.HTML)
+
+        md_path = Path(output_dir) / "catalog_discovery_report.md"
+        html_path = Path(output_dir) / "catalog_discovery_report.html"
+        md_path.write_text(md)
+        html_path.write_text(html)
+
+        click.echo("✅ Catalog discovery report generated")
+        click.echo(f"📄 Markdown: {md_path}")
+        click.echo(f"🌐 HTML: {html_path}")
 
     except Exception as e:
         click.echo(f"❌ Error: {str(e)}", err=True)

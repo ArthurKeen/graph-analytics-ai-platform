@@ -442,6 +442,19 @@ Your goal: Generate actionable analytics use cases."""
 
         use_cases = self.generator.generate(state.requirements, state.schema_analysis)
 
+        # Opt-in Discovery Mode: add a deterministic unknown-unknowns bundle first
+        if state.metadata.get("discovery_mode"):
+            try:
+                from ..generation.discovery_use_cases import generate_discovery_use_cases
+
+                discovery_cases = generate_discovery_use_cases(
+                    state.schema, state.schema_analysis
+                )
+                # Put discovery first so execution cap prioritizes it
+                use_cases = discovery_cases + use_cases
+            except Exception as e:
+                self.log(f"Discovery use case generation failed: {e}", "warning")
+
         state.use_cases = use_cases
         state.mark_step_complete("use_case_generation")
 
@@ -486,6 +499,17 @@ Your goal: Generate actionable analytics use cases."""
         use_cases = await loop.run_in_executor(
             None, self.generator.generate, state.requirements, state.schema_analysis
         )
+
+        if state.metadata.get("discovery_mode"):
+            try:
+                from ..generation.discovery_use_cases import generate_discovery_use_cases
+
+                discovery_cases = generate_discovery_use_cases(
+                    state.schema, state.schema_analysis
+                )
+                use_cases = discovery_cases + list(use_cases)
+            except Exception as e:
+                self.log(f"Discovery use case generation failed: {e}", "warning")
 
         state.use_cases = use_cases
         await state.mark_step_complete_async("use_case_generation")
@@ -787,7 +811,13 @@ Your goal: Execute analyses reliably and efficiently."""
         results = []
         for template in templates_to_run:
             self.log(f"Executing: {template.name}")
-            result = self.executor.execute_template(template, wait=True)
+            result = self.executor.execute_template(
+                template,
+                wait=True,
+                epoch_id=state.metadata.get("epoch_id"),
+                requirements_id=state.metadata.get("requirements_id"),
+                use_case_id=state.metadata.get("use_case_id"),
+            )
             results.append(result)
 
             if result.success:
@@ -832,7 +862,13 @@ Your goal: Execute analyses reliably and efficiently."""
             self.log(f"Queueing: {template.name}")
             loop = asyncio.get_event_loop()
             task = loop.run_in_executor(
-                None, self.executor.execute_template, template, True  # wait=True
+                None,
+                self.executor.execute_template,
+                template,
+                True,  # wait=True
+                state.metadata.get("epoch_id"),
+                state.metadata.get("requirements_id"),
+                state.metadata.get("use_case_id"),
             )
             tasks.append(task)
 
@@ -928,7 +964,9 @@ Remember: Business stakeholders need insights they can act on immediately, not j
         self, 
         llm_provider: LLMProvider, 
         trace_collector: Optional[Any] = None,
-        industry: str = "generic"
+        industry: str = "generic",
+        catalog: Optional[Any] = None,
+        db_connection: Optional[Any] = None,
     ):
         """
         Initialize ReportingAgent with industry-specific configuration.
@@ -955,6 +993,8 @@ Remember: Business stakeholders need insights they can act on immediately, not j
         )
         
         self.industry = industry
+        self.catalog = catalog
+        self.db = db_connection
         self.generator = ReportGenerator(
             llm_provider, 
             use_llm_interpretation=True,
@@ -977,6 +1017,11 @@ Remember: Business stakeholders need insights they can act on immediately, not j
 
         # Build rich context from workflow state
         context = {
+            "workflow": {
+                "discovery_mode": bool(state.metadata.get("discovery_mode")),
+                "epoch_id": state.metadata.get("epoch_id"),
+                "baseline_epoch_id": state.metadata.get("baseline_epoch_id"),
+            },
             "requirements": {
                 "domain": state.requirements.domain if state.requirements else None,
                 "summary": state.requirements.summary if state.requirements else None,
@@ -1028,6 +1073,20 @@ Remember: Business stakeholders need insights they can act on immediately, not j
             ],
         }
 
+        # Auto-select industry for IC/EDA demo graphs if caller didn't specify
+        if (
+            self.industry == "generic"
+            and state.schema
+            and getattr(state.schema, "vertex_collections", None)
+        ):
+            vnames = set(state.schema.vertex_collections.keys())
+            if any(n.startswith("RTL_") for n in vnames) or any(
+                n.startswith("FSM_") for n in vnames
+            ):
+                self.industry = "eda_ic_design"
+                self.generator.industry = self.industry
+
+        baseline_epoch_id = state.metadata.get("baseline_epoch_id")
         reports = []
         for i, result in enumerate(successful_results):
             # Add use case-specific context if available
@@ -1036,6 +1095,33 @@ Remember: Business stakeholders need insights they can act on immediately, not j
                 use_case_context["use_case"] = context["use_cases"][i]
 
             report = self.generator.generate_report(result, context=use_case_context)
+
+            # Baseline comparison (best-effort): prepend delta insights when available
+            if baseline_epoch_id and self.catalog and self.db:
+                try:
+                    from ..reporting.baseline_comparison import (
+                        compare_against_baseline_epoch,
+                    )
+
+                    comparison = compare_against_baseline_epoch(
+                        catalog=self.catalog,
+                        db=self.db,
+                        baseline_epoch_id=str(baseline_epoch_id),
+                        execution_result=result,
+                    )
+                    if comparison.insights:
+                        report.insights = comparison.insights + report.insights
+                    report.metadata["baseline_comparison"] = {
+                        "baseline_epoch_id": str(baseline_epoch_id),
+                        "baseline_execution_id": comparison.baseline_execution_id,
+                        "baseline_template_name": comparison.baseline_template_name,
+                        "current_metrics": comparison.current_metrics,
+                        "baseline_metrics": comparison.baseline_metrics,
+                        "deltas": comparison.deltas,
+                    }
+                except Exception:
+                    pass
+
             reports.append(report)
 
         state.reports = reports
@@ -1125,6 +1211,20 @@ Remember: Business stakeholders need insights they can act on immediately, not j
             ],
         }
 
+        if (
+            self.industry == "generic"
+            and state.schema
+            and getattr(state.schema, "vertex_collections", None)
+        ):
+            vnames = set(state.schema.vertex_collections.keys())
+            if any(n.startswith("RTL_") for n in vnames) or any(
+                n.startswith("FSM_") for n in vnames
+            ):
+                self.industry = "eda_ic_design"
+                self.generator.industry = self.industry
+
+        baseline_epoch_id = state.metadata.get("baseline_epoch_id")
+
         # Generate reports in parallel!
         tasks = []
         loop = asyncio.get_event_loop()
@@ -1141,6 +1241,38 @@ Remember: Business stakeholders need insights they can act on immediately, not j
 
         # Wait for all reports to be generated
         reports = await asyncio.gather(*tasks)
+
+        # Baseline comparisons are I/O heavy (catalog + DB); do them after report generation
+        if baseline_epoch_id and self.catalog and self.db:
+            try:
+                from ..reporting.baseline_comparison import compare_against_baseline_epoch
+
+                for idx, result in enumerate(successful_results):
+                    try:
+                        comparison = await loop.run_in_executor(
+                            None,
+                            lambda: compare_against_baseline_epoch(
+                                catalog=self.catalog,
+                                db=self.db,
+                                baseline_epoch_id=str(baseline_epoch_id),
+                                execution_result=result,
+                            ),
+                        )
+                        if comparison and comparison.insights:
+                            reports[idx].insights = comparison.insights + reports[idx].insights
+                        if comparison:
+                            reports[idx].metadata["baseline_comparison"] = {
+                                "baseline_epoch_id": str(baseline_epoch_id),
+                                "baseline_execution_id": comparison.baseline_execution_id,
+                                "baseline_template_name": comparison.baseline_template_name,
+                                "current_metrics": comparison.current_metrics,
+                                "baseline_metrics": comparison.baseline_metrics,
+                                "deltas": comparison.deltas,
+                            }
+                    except Exception:
+                        continue
+            except Exception:
+                pass
 
         state.reports = list(reports)
         await state.mark_step_complete_async("reporting")
